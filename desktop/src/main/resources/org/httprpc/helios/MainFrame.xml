@@ -4,27 +4,50 @@
 
 <column-panel spacing="4" padding="8" opaque="true">
     <row-panel>
-        <button name="playButton" style="buttonType: borderless"/>
-        <spacer size="4"/>
-        <button name="previousButton" icon="icons/skip_previous_24dp.svg" style="buttonType: borderless" toolTipText="previous"/>
-        <button name="nextButton" icon="icons/skip_next_24dp.svg" style="buttonType: borderless" toolTipText="next"/>
-        <spacer size="4"/>
-        <toggle-button name="shuffleButton" icon="icons/shuffle_24dp.svg" style="buttonType: borderless" toolTipText="shuffle"/>
+        <row-panel weight="3">
+            <column-panel>
+                <spacer weight="1"/>
+                <button name="playButton" focusable="false" style="buttonType: borderless"/>
+                <spacer weight="1"/>
+            </column-panel>
+
+            <column-panel>
+                <spacer weight="1"/>
+                <row-panel>
+                    <button name="previousButton" icon="icons/skip_previous_24dp.svg; 20"
+                        focusable="false"
+                        style="buttonType: borderless"
+                        toolTipText="previous"/>
+
+                    <button name="nextButton" icon="icons/skip_next_24dp.svg; 20"
+                        focusable="false"
+                        style="buttonType: borderless"
+                        toolTipText="next"/>
+                </row-panel>
+                <spacer weight="1"/>
+            </column-panel>
+
+            <spacer size="4"/>
+
+            <column-panel>
+                <spacer weight="1"/>
+                <toggle-button name="shuffleButton" icon="icons/shuffle_24dp.svg; 16"
+                    focusable="false"
+                    style="buttonType: borderless"
+                    toolTipText="shuffle"/>
+                <spacer weight="1"/>
+            </column-panel>
+        </row-panel>
+
+        <row-panel weight="5">
+            <label name="elapsedTimeLabel" styleClass="small"/>
+            <slider name="positionSlider" weight="1"/>
+            <label name="remainingTimeLabel" styleClass="small"/>
+        </row-panel>
 
         <spacer weight="1"/>
 
-        <column-panel weight="5">
-            <label name="songTitleLabel" horizontalAlignment="center"/>
-            <row-panel>
-                <label name="elapsedTimeLabel" styleClass="small"/>
-                <slider name="positionSlider" weight="1"/>
-                <label name="remainingTimeLabel" styleClass="small"/>
-            </row-panel>
-        </column-panel>
-
-        <spacer weight="1"/>
-
-        <column-panel>
+        <column-panel weight="2">
             <spacer weight="1"/>
             <text-field name="searchTextField" columns="18" leadingIcon="icons/search_24dp.svg; 18"/>
             <spacer weight="1"/>
@@ -38,9 +61,4 @@
 
         <scroll-pane name="albumScrollPane"/>
     </split-pane>
-
-    <row-panel>
-        <spacer weight="1"/>
-        <label name="libraryStatusLabel"/>
-    </row-panel>
 </column-panel>
