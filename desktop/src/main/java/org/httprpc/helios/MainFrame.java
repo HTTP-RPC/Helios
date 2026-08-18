@@ -25,6 +25,7 @@ public class MainFrame extends JFrame implements Runnable {
     private @Outlet JButton nextButton = null;
 
     private @Outlet JToggleButton shuffleButton = null;
+    private @Outlet JToggleButton repeatButton = null;
 
     private @Outlet JLabel elapsedTimeLabel = null;
     private @Outlet JSlider positionSlider = null;
@@ -39,6 +40,9 @@ public class MainFrame extends JFrame implements Runnable {
     private FlatSVGIcon playIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/play_arrow_24dp.svg"));
     private FlatSVGIcon pauseIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/pause_24dp.svg"));
 
+    private FlatSVGIcon shuffleIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/shuffle_24dp.svg"));
+    private FlatSVGIcon repeatIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/repeat_24dp.svg"));
+
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(MainFrame.class.getName());
 
     private MainFrame() {
@@ -50,6 +54,26 @@ public class MainFrame extends JFrame implements Runnable {
 
         playIcon.setColorFilter(playButtonColorFilter);
         pauseIcon.setColorFilter(playButtonColorFilter);
+
+        shuffleIcon = shuffleIcon.derive(16, 16);
+
+        shuffleIcon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> {
+            if (shuffleButton.isSelected() || shuffleButton.getModel().isPressed()) {
+                return UIManager.getColor("Slider.thumbColor");
+            } else {
+                return UILoader.getColor("Button.foreground");
+            }
+        }));
+
+        repeatIcon = repeatIcon.derive(16, 16);
+
+        repeatIcon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> {
+            if (repeatButton.isSelected() || repeatButton.getModel().isPressed()) {
+                return UIManager.getColor("Slider.thumbColor");
+            } else {
+                return UILoader.getColor("Button.foreground");
+            }
+        }));
     }
 
     @Override
@@ -59,6 +83,9 @@ public class MainFrame extends JFrame implements Runnable {
         // TODO
         playButton.setIcon(playIcon);
         playButton.setToolTipText(resourceBundle.getString("play"));
+
+        shuffleButton.setIcon(shuffleIcon);
+        repeatButton.setIcon(repeatIcon);
 
         // TODO
         elapsedTimeLabel.setText("00:00");

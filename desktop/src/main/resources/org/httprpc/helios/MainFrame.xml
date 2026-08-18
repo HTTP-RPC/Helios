@@ -27,21 +27,23 @@
                 <spacer weight="1"/>
             </column-panel>
 
-            <spacer size="4"/>
+            <spacer weight="1"/>
 
             <column-panel>
                 <spacer weight="1"/>
-                <toggle-button name="shuffleButton" icon="icons/shuffle_24dp.svg; 16"
-                    focusable="false"
-                    style="buttonType: borderless"
-                    toolTipText="shuffle"/>
+                <row-panel spacing="4">
+                    <toggle-button name="shuffleButton" focusable="false" style="buttonType: borderless" toolTipText="shuffle"/>
+                    <toggle-button name="repeatButton" focusable="false" style="buttonType: borderless" toolTipText="repeat"/>
+                </row-panel>
                 <spacer weight="1"/>
             </column-panel>
+
+            <spacer size="16"/>
         </row-panel>
 
         <row-panel weight="5">
             <label name="elapsedTimeLabel" styleClass="small"/>
-            <slider name="positionSlider" weight="1"/>
+            <slider name="positionSlider" focusable="false" weight="1"/>
             <label name="remainingTimeLabel" styleClass="small"/>
         </row-panel>
 
