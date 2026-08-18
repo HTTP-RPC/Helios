@@ -2,6 +2,45 @@
 
 <!DOCTYPE column-panel SYSTEM "sierra.dtd">
 
-<column-panel padding="8" opaque="true">
-    <!-- TODO -->
+<column-panel spacing="4" padding="8" opaque="true">
+    <row-panel>
+        <button name="playButton" style="buttonType: borderless"/>
+        <spacer size="4"/>
+        <button name="previousButton" icon="icons/skip_previous_24dp.svg" style="buttonType: borderless" toolTipText="previous"/>
+        <button name="nextButton" icon="icons/skip_next_24dp.svg" style="buttonType: borderless" toolTipText="next"/>
+        <spacer size="4"/>
+        <toggle-button name="shuffleButton" icon="icons/shuffle_24dp.svg" style="buttonType: borderless" toolTipText="shuffle"/>
+
+        <spacer weight="1"/>
+
+        <column-panel weight="5">
+            <label name="songTitleLabel" horizontalAlignment="center"/>
+            <row-panel>
+                <label name="elapsedTimeLabel" styleClass="small"/>
+                <slider name="positionSlider" weight="1"/>
+                <label name="remainingTimeLabel" styleClass="small"/>
+            </row-panel>
+        </column-panel>
+
+        <spacer weight="1"/>
+
+        <column-panel>
+            <spacer weight="1"/>
+            <text-field name="searchTextField" columns="18" leadingIcon="icons/search_24dp.svg; 18"/>
+            <spacer weight="1"/>
+        </column-panel>
+    </row-panel>
+
+    <split-pane name="splitPane" weight="1">
+        <scroll-pane>
+            <list name="artistList" selectionMode="single-selection"/>
+        </scroll-pane>
+
+        <scroll-pane name="albumScrollPane"/>
+    </split-pane>
+
+    <row-panel>
+        <spacer weight="1"/>
+        <label name="libraryStatusLabel"/>
+    </row-panel>
 </column-panel>
