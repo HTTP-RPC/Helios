@@ -1,0 +1,20 @@
+plugins {
+    id 'application'
+}
+
+dependencies {
+    implementation "org.httprpc:kilo-client:${kiloVersion}"
+    implementation "org.httprpc:sierra:${sierraVersion}"
+    implementation "com.formdev:flatlaf:${flatLafVersion}"
+    implementation "com.formdev:flatlaf-extras:${flatLafVersion}"
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs = [
+        '-parameters'
+    ]
+}
+
+jar {
+    archiveFileName = "${project.name}.jar"
+}
