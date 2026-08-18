@@ -27,7 +27,7 @@
                 <spacer weight="1"/>
             </column-panel>
 
-            <spacer weight="1"/>
+            <spacer size="16"/>
 
             <column-panel>
                 <spacer weight="1"/>
