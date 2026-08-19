@@ -17,6 +17,6 @@ create view Artist as select distinct artist as name from Song;
 create view Album as select distinct artist, album as name from Song;
 
 create view ExpandedArtist as select name,
-    (select count(*) from Album where artist = name) as albumCount,
-    (select count(*) from Song where artist = name) as songCount
+    (select count(*) from Album where artist = Artist.name) as albumCount,
+    (select count(*) from Song where artist = Artist.name) as songCount
 from Artist;

@@ -12,6 +12,7 @@ import org.httprpc.sierra.UILoader;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JSplitPane;
@@ -50,6 +51,7 @@ public class MainFrame extends JFrame implements Runnable {
 
     private @Outlet JSplitPane splitPane = null;
 
+    private @Outlet JList<ExpandedArtist> artistList = null;
     private @Outlet JScrollPane albumScrollPane = null;
 
     private FlatSVGIcon playIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/play_arrow_24dp.svg"));
@@ -109,15 +111,10 @@ public class MainFrame extends JFrame implements Runnable {
         elapsedTimeLabel.setText("00:00");
         remainingTimeLabel.setText("-00:00");
 
-        // TODO Preferences
-        setSize(1024, 768);
-
-        // TODO Preferences
-        splitPane.setDividerLocation(280);
+        artistList.setCellRenderer(new ArtistCellRenderer());
 
         var queryBuilder = QueryBuilder.select(ExpandedArtist.class);
 
-        // TODO
         List<ExpandedArtist> artists;
         try (var connection = openConnection();
             var statement = queryBuilder.prepare(connection);
@@ -127,7 +124,23 @@ public class MainFrame extends JFrame implements Runnable {
             throw new RuntimeException(exception);
         }
 
+        artistList.setModel(new ArtistListModel(artists));
+
+        if (!artists.isEmpty()) {
+            artistList.setSelectedIndex(0);
+        }
+
+        // TODO Preferences
+        splitPane.setDividerLocation(280);
+
+        // TODO Preferences
+        setSize(1024, 768);
+
+        setLocationRelativeTo(null);
+
         setVisible(true);
+
+        artistList.requestFocus();
     }
 
     public static void main(String[] args) throws Exception {
