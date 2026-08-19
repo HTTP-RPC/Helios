@@ -10,6 +10,7 @@ import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 import java.awt.Color;
 import java.awt.Component;
+import java.text.ChoiceFormat;
 import java.util.ResourceBundle;
 
 public class ArtistCellRenderer extends ColumnPanel implements ListCellRenderer<ExpandedArtist> {
@@ -30,9 +31,12 @@ public class ArtistCellRenderer extends ColumnPanel implements ListCellRenderer<
         boolean selected, boolean cellHasFocus) {
         nameLabel.setText(value.getName());
 
+        var albumCount = value.getAlbumCount();
+        var songCount = value.getSongCount();
+
         var countText = String.format(resourceBundle.getString("countFormat"),
-            value.getAlbumCount(),
-            value.getSongCount());
+            String.format(resourceBundle.getString(albumCount == 1 ? "singleAlbum" : "multipleAlbums"), albumCount),
+            String.format(resourceBundle.getString(songCount == 1 ? "singleSong" : "multipleSongs"), songCount));
 
         countLabel.setText(countText);
 
