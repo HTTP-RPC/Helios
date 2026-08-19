@@ -3,6 +3,9 @@ package org.httprpc.helios;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import org.httprpc.kilo.beans.BeanAdapter;
+import org.httprpc.kilo.io.TextDecoder;
+import org.httprpc.kilo.sql.QueryBuilder;
 import org.httprpc.sierra.Outlet;
 import org.httprpc.sierra.UILoader;
 
@@ -16,7 +19,19 @@ import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.List;
 import java.util.ResourceBundle;
+
+import static org.httprpc.kilo.util.Collections.*;
+import static org.httprpc.kilo.util.Iterables.*;
 
 public class MainFrame extends JFrame implements Runnable {
     private @Outlet JButton playButton = null;
@@ -42,6 +57,9 @@ public class MainFrame extends JFrame implements Runnable {
 
     private FlatSVGIcon shuffleIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/shuffle_24dp.svg"));
     private FlatSVGIcon repeatIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/repeat_24dp.svg"));
+
+    private static final Path rootDirectory = Path.of(System.getProperty("user.home"), ".helios");
+    private static final Path dbFile = rootDirectory.resolve("media.db");
 
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(MainFrame.class.getName());
 
@@ -97,13 +115,47 @@ public class MainFrame extends JFrame implements Runnable {
         // TODO Preferences
         splitPane.setDividerLocation(280);
 
+        var queryBuilder = QueryBuilder.select(ExpandedArtist.class);
+
+        // TODO
+        List<ExpandedArtist> artists;
+        try (var connection = openConnection();
+            var statement = queryBuilder.prepare(connection);
+            var results = queryBuilder.executeQuery(statement)) {
+            artists = listOf(mapAll(results, BeanAdapter.toType(ExpandedArtist.class)));
+        } catch (SQLException exception) {
+            throw new RuntimeException(exception);
+        }
+
         setVisible(true);
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         // TODO Preferences
         FlatDarkLaf.setup();
 
+        Files.createDirectories(rootDirectory);
+
+        if (!Files.exists(dbFile)) {
+            String sql;
+            try (var inputStream = MainFrame.class.getResourceAsStream("/db.sql")) {
+                var textDecoder = new TextDecoder();
+
+                sql = textDecoder.read(inputStream);
+            } catch (IOException exception) {
+                throw new RuntimeException(exception);
+            }
+
+            try (var connection = openConnection();
+                var statement = connection.createStatement()) {
+                statement.executeUpdate(sql);
+            }
+        }
+
         SwingUtilities.invokeLater(new MainFrame());
+    }
+
+    private static Connection openConnection() throws SQLException {
+        return DriverManager.getConnection(String.format("jdbc:sqlite:%s", dbFile.toAbsolutePath()));
     }
 }

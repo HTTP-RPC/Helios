@@ -7,6 +7,7 @@ dependencies {
     implementation "org.httprpc:sierra:${sierraVersion}"
     implementation "com.formdev:flatlaf:${flatLafVersion}"
     implementation "com.formdev:flatlaf-extras:${flatLafVersion}"
+    implementation "org.xerial:sqlite-jdbc:${sqliteJDBCVersion}"
 }
 
 tasks.withType(JavaCompile).configureEach {
