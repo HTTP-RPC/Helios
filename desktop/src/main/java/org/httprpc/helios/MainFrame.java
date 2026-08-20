@@ -114,7 +114,7 @@ public class MainFrame extends JFrame implements Runnable {
 
         artistList.setCellRenderer(new ArtistCellRenderer());
 
-        var queryBuilder = QueryBuilder.select(ExpandedArtist.class);
+        var queryBuilder = QueryBuilder.select(ExpandedArtist.class).ordered(true);
 
         List<ExpandedArtist> artists;
         try (var connection = openConnection();
