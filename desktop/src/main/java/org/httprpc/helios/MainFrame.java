@@ -141,6 +141,8 @@ public class MainFrame extends JFrame implements Runnable {
 
         setVisible(true);
 
+        setMinimumSize(getPreferredSize());
+
         artistList.requestFocus();
     }
 

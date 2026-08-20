@@ -3,7 +3,7 @@
 <!DOCTYPE column-panel SYSTEM "sierra.dtd">
 
 <column-panel spacing="4" padding="8" opaque="true">
-    <row-panel>
+    <row-panel spacing="32">
         <row-panel weight="3">
             <column-panel>
                 <spacer weight="1"/>
@@ -27,7 +27,7 @@
                 <spacer weight="1"/>
             </column-panel>
 
-            <spacer width="16"/>
+            <spacer weight="1"/>
 
             <column-panel>
                 <spacer weight="1"/>
@@ -37,8 +37,6 @@
                 </row-panel>
                 <spacer weight="1"/>
             </column-panel>
-
-            <spacer width="16"/>
         </row-panel>
 
         <row-panel weight="5">
@@ -47,13 +45,15 @@
             <label name="remainingTimeLabel" styleClass="small"/>
         </row-panel>
 
-        <spacer weight="1"/>
+        <row-panel weight="3">
+            <spacer weight="1"/>
 
-        <column-panel weight="2">
-            <spacer weight="1"/>
-            <text-field name="searchTextField" columns="18" leadingIcon="icons/search_24dp.svg; 18"/>
-            <spacer weight="1"/>
-        </column-panel>
+            <column-panel>
+                <spacer weight="1"/>
+                <text-field name="searchTextField" columns="18" leadingIcon="icons/search_24dp.svg; 18"/>
+                <spacer weight="1"/>
+            </column-panel>
+        </row-panel>
     </row-panel>
 
     <split-pane name="splitPane" weight="1">
