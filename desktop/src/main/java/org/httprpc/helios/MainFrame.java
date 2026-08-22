@@ -21,6 +21,9 @@ import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -31,6 +34,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
@@ -60,6 +65,14 @@ public class MainFrame extends JFrame implements Runnable {
 
     private FlatSVGIcon shuffleIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/shuffle_24dp.svg"));
     private FlatSVGIcon repeatIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/repeat_24dp.svg"));
+
+    private Preferences preferences = Preferences.userRoot().node(this.getClass().getName());
+
+    private static final String DIVIDER_LOCATION = "dividerLocation";
+    private static final String LOCATION_X = "locationX";
+    private static final String LOCATION_Y = "locationY";
+    private static final String SIZE_WIDTH = "sizeWidth";
+    private static final String SIZE_HEIGHT = "sizeHeight";
 
     private static final Path rootDirectory = Path.of(System.getProperty("user.home"), ".helios");
     private static final Path dbFile = rootDirectory.resolve("media.db");
@@ -131,19 +144,39 @@ public class MainFrame extends JFrame implements Runnable {
             artistList.setSelectedIndex(0);
         }
 
-        // TODO Preferences
-        splitPane.setDividerLocation(280);
+        splitPane.setDividerLocation(preferences.getInt(DIVIDER_LOCATION, 280));
 
-        // TODO Preferences
-        setSize(1024, 768);
-
-        setLocationRelativeTo(null);
+        setLocation(preferences.getInt(LOCATION_X, 20), preferences.getInt(LOCATION_Y, 20));
+        setSize(preferences.getInt(SIZE_WIDTH, 960), preferences.getInt(SIZE_HEIGHT, 640));
 
         setVisible(true);
 
         setMinimumSize(getPreferredSize());
 
         artistList.requestFocus();
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent windowEvent) {
+                preferences.putInt(DIVIDER_LOCATION, splitPane.getDividerLocation());
+
+                var location = getLocation();
+
+                preferences.putInt(LOCATION_X, location.x);
+                preferences.putInt(LOCATION_Y, location.y);
+
+                var size = getSize();
+
+                preferences.putInt(SIZE_WIDTH, size.width);
+                preferences.putInt(SIZE_HEIGHT, size.height);
+
+                try {
+                    preferences.flush();
+                } catch (BackingStoreException exception) {
+                    // No-op
+                }
+            }
+        });
     }
 
     public static void main(String[] args) throws Exception {
