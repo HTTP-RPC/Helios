@@ -23,6 +23,13 @@
                         focusable="false"
                         style="buttonType: borderless"
                         toolTipText="next"/>
+
+                    <spacer width="8"/>
+
+                    <toggle-button name="upNextButton" icon="icons/queue_music_24dp.svg; 20"
+                        focusable="false"
+                        style="buttonType: borderless"
+                        toolTipText="upNext"/>
                 </row-panel>
                 <spacer weight="1"/>
             </column-panel>
@@ -47,6 +54,17 @@
 
         <row-panel weight="3">
             <spacer weight="1"/>
+
+            <column-panel>
+                <spacer weight="1"/>
+                <toggle-button name="playlistsButton" icon="icons/list_24dp.svg; 20"
+                    focusable="false"
+                    style="buttonType: borderless"
+                    toolTipText="playlists"/>
+                <spacer weight="1"/>
+            </column-panel>
+
+            <spacer width="8"/>
 
             <column-panel>
                 <spacer weight="1"/>

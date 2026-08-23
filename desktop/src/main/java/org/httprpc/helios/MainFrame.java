@@ -46,12 +46,16 @@ public class MainFrame extends JFrame implements Runnable {
     private @Outlet JButton previousButton = null;
     private @Outlet JButton nextButton = null;
 
+    private @Outlet JToggleButton upNextButton = null;
+
     private @Outlet JToggleButton shuffleButton = null;
     private @Outlet JToggleButton repeatButton = null;
 
     private @Outlet JLabel elapsedTimeLabel = null;
     private @Outlet JSlider positionSlider = null;
     private @Outlet JLabel remainingTimeLabel = null;
+
+    private @Outlet JToggleButton playlistsButton = null;
 
     private @Outlet JTextField searchTextField = null;
 
