@@ -65,13 +65,37 @@
 
     <split-pane name="horizontalSplitPane" weight="1">
         <split-pane orientation="vertical" name="verticalSplitPane">
-            <scroll-pane weight="2">
-                <list name="artistList" selectionMode="single-selection"/>
-            </scroll-pane>
+            <stack-panel>
+                <column-panel padding="4">
+                    <spacer weight="1"/>
+                    <row-panel>
+                        <spacer weight="1"/>
+                        <button icon="icons/add_circle_outline_24dp.svg; 18"
+                            focusable="false"
+                            style="buttonType: borderless"/>
+                    </row-panel>
+                </column-panel>
 
-            <scroll-pane weight="1">
-                <list name="playlistList" selectionMode="single-selection"/>
-            </scroll-pane>
+                <scroll-pane>
+                    <list name="artistList" selectionMode="single-selection"/>
+                </scroll-pane>
+            </stack-panel>
+
+            <stack-panel>
+                <column-panel padding="4">
+                    <spacer weight="1"/>
+                    <row-panel>
+                        <spacer weight="1"/>
+                        <button icon="icons/add_circle_outline_24dp.svg; 18"
+                            focusable="false"
+                            style="buttonType: borderless"/>
+                    </row-panel>
+                </column-panel>
+
+                <scroll-pane>
+                    <list name="playlistList" selectionMode="single-selection"/>
+                </scroll-pane>
+            </stack-panel>
         </split-pane>
 
         <scroll-pane name="albumScrollPane"/>

@@ -145,8 +145,8 @@ public class MainFrame extends JFrame implements Runnable {
             artistList.setSelectedIndex(0);
         }
 
-        horizontalSplitPane.setDividerLocation(preferences.getInt(HORIZONTAL_DIVIDER_LOCATION, 280));
-        verticalSplitPane.setDividerLocation(preferences.getInt(VERTICAL_DIVIDER_LOCATION, 380));
+        horizontalSplitPane.setDividerLocation(preferences.getInt(HORIZONTAL_DIVIDER_LOCATION, 240));
+        verticalSplitPane.setDividerLocation(preferences.getInt(VERTICAL_DIVIDER_LOCATION, 320));
 
         setLocation(preferences.getInt(LOCATION_X, 20), preferences.getInt(LOCATION_Y, 20));
         setSize(preferences.getInt(SIZE_WIDTH, 960), preferences.getInt(SIZE_HEIGHT, 640));
