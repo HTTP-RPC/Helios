@@ -1,6 +1,7 @@
 package org.httprpc.helios;
 
 import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.io.TextDecoder;
@@ -14,7 +15,6 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
-import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
@@ -54,9 +54,6 @@ public class MainFrame extends JFrame implements Runnable {
 
     private @Outlet JTextField searchTextField = null;
 
-    private @Outlet JSplitPane horizontalSplitPane = null;
-    private @Outlet JSplitPane verticalSplitPane = null;
-
     private @Outlet JList<ExpandedArtist> artistList = null;
     private @Outlet JScrollPane albumScrollPane = null;
 
@@ -66,19 +63,18 @@ public class MainFrame extends JFrame implements Runnable {
     private FlatSVGIcon shuffleIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/shuffle_24dp.svg"));
     private FlatSVGIcon repeatIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/repeat_24dp.svg"));
 
-    private Preferences preferences = Preferences.userRoot().node(this.getClass().getName());
-
-    private static final String HORIZONTAL_DIVIDER_LOCATION = "horizontalDividerLocation";
-    private static final String VERTICAL_DIVIDER_LOCATION = "verticalDividerLocation";
-    private static final String LOCATION_X = "locationX";
-    private static final String LOCATION_Y = "locationY";
-    private static final String SIZE_WIDTH = "sizeWidth";
-    private static final String SIZE_HEIGHT = "sizeHeight";
+    private static final String DARK_MODE_KEY = "darkMode";
+    private static final String LOCATION_X_KEY = "locationX";
+    private static final String LOCATION_Y_KEY = "locationY";
+    private static final String SIZE_WIDTH_KEY = "sizeWidth";
+    private static final String SIZE_HEIGHT_KEY = "sizeHeight";
 
     private static final Path rootDirectory = Path.of(System.getProperty("user.home"), ".helios");
     private static final Path dbFile = rootDirectory.resolve("media.db");
 
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(MainFrame.class.getName());
+
+    private static final Preferences preferences = Preferences.userRoot().node(MainFrame.class.getName());
 
     private MainFrame() {
         super(resourceBundle.getString("title"));
@@ -145,11 +141,11 @@ public class MainFrame extends JFrame implements Runnable {
             artistList.setSelectedIndex(0);
         }
 
-        horizontalSplitPane.setDividerLocation(preferences.getInt(HORIZONTAL_DIVIDER_LOCATION, 240));
-        verticalSplitPane.setDividerLocation(preferences.getInt(VERTICAL_DIVIDER_LOCATION, 320));
+        pack();
+        setLocationRelativeTo(null);
 
-        setLocation(preferences.getInt(LOCATION_X, 20), preferences.getInt(LOCATION_Y, 20));
-        setSize(preferences.getInt(SIZE_WIDTH, 960), preferences.getInt(SIZE_HEIGHT, 640));
+        setLocation(preferences.getInt(LOCATION_X_KEY, getX()), preferences.getInt(LOCATION_Y_KEY, getY()));
+        setSize(preferences.getInt(SIZE_WIDTH_KEY, getWidth()), preferences.getInt(SIZE_HEIGHT_KEY, getHeight()));
 
         setVisible(true);
 
@@ -160,18 +156,15 @@ public class MainFrame extends JFrame implements Runnable {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent windowEvent) {
-                preferences.putInt(HORIZONTAL_DIVIDER_LOCATION, horizontalSplitPane.getDividerLocation());
-                preferences.putInt(VERTICAL_DIVIDER_LOCATION, verticalSplitPane.getDividerLocation());
-
                 var location = getLocation();
 
-                preferences.putInt(LOCATION_X, location.x);
-                preferences.putInt(LOCATION_Y, location.y);
+                preferences.putInt(LOCATION_X_KEY, location.x);
+                preferences.putInt(LOCATION_Y_KEY, location.y);
 
                 var size = getSize();
 
-                preferences.putInt(SIZE_WIDTH, size.width);
-                preferences.putInt(SIZE_HEIGHT, size.height);
+                preferences.putInt(SIZE_WIDTH_KEY, size.width);
+                preferences.putInt(SIZE_HEIGHT_KEY, size.height);
 
                 try {
                     preferences.flush();
@@ -183,8 +176,11 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     public static void main(String[] args) throws Exception {
-        // TODO Preferences
-        FlatDarkLaf.setup();
+        if (preferences.getBoolean(DARK_MODE_KEY, true)) {
+            FlatDarkLaf.setup();
+        } else {
+            FlatLightLaf.setup();
+        }
 
         Files.createDirectories(rootDirectory);
 
