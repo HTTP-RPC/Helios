@@ -57,27 +57,22 @@
 
             <column-panel>
                 <spacer weight="1"/>
-                <toggle-button name="playlistsButton" icon="icons/list_24dp.svg; 20"
-                    focusable="false"
-                    style="buttonType: borderless"
-                    toolTipText="playlists"/>
-                <spacer weight="1"/>
-            </column-panel>
-
-            <spacer width="8"/>
-
-            <column-panel>
-                <spacer weight="1"/>
                 <text-field name="searchTextField" columns="18" leadingIcon="icons/search_24dp.svg; 18"/>
                 <spacer weight="1"/>
             </column-panel>
         </row-panel>
     </row-panel>
 
-    <split-pane name="splitPane" weight="1">
-        <scroll-pane>
-            <list name="artistList" selectionMode="single-selection"/>
-        </scroll-pane>
+    <split-pane name="horizontalSplitPane" weight="1">
+        <split-pane orientation="vertical" name="verticalSplitPane">
+            <scroll-pane weight="2">
+                <list name="artistList" selectionMode="single-selection"/>
+            </scroll-pane>
+
+            <scroll-pane weight="1">
+                <list name="playlistList" selectionMode="single-selection"/>
+            </scroll-pane>
+        </split-pane>
 
         <scroll-pane name="albumScrollPane"/>
     </split-pane>

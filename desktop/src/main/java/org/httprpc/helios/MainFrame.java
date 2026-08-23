@@ -1,7 +1,6 @@
 package org.httprpc.helios;
 
 import com.formdev.flatlaf.FlatDarkLaf;
-import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.io.TextDecoder;
@@ -20,15 +19,11 @@ import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import java.awt.Dimension;
-import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -59,7 +54,8 @@ public class MainFrame extends JFrame implements Runnable {
 
     private @Outlet JTextField searchTextField = null;
 
-    private @Outlet JSplitPane splitPane = null;
+    private @Outlet JSplitPane horizontalSplitPane = null;
+    private @Outlet JSplitPane verticalSplitPane = null;
 
     private @Outlet JList<ExpandedArtist> artistList = null;
     private @Outlet JScrollPane albumScrollPane = null;
@@ -72,7 +68,8 @@ public class MainFrame extends JFrame implements Runnable {
 
     private Preferences preferences = Preferences.userRoot().node(this.getClass().getName());
 
-    private static final String DIVIDER_LOCATION = "dividerLocation";
+    private static final String HORIZONTAL_DIVIDER_LOCATION = "horizontalDividerLocation";
+    private static final String VERTICAL_DIVIDER_LOCATION = "verticalDividerLocation";
     private static final String LOCATION_X = "locationX";
     private static final String LOCATION_Y = "locationY";
     private static final String SIZE_WIDTH = "sizeWidth";
@@ -148,7 +145,8 @@ public class MainFrame extends JFrame implements Runnable {
             artistList.setSelectedIndex(0);
         }
 
-        splitPane.setDividerLocation(preferences.getInt(DIVIDER_LOCATION, 280));
+        horizontalSplitPane.setDividerLocation(preferences.getInt(HORIZONTAL_DIVIDER_LOCATION, 280));
+        verticalSplitPane.setDividerLocation(preferences.getInt(VERTICAL_DIVIDER_LOCATION, 380));
 
         setLocation(preferences.getInt(LOCATION_X, 20), preferences.getInt(LOCATION_Y, 20));
         setSize(preferences.getInt(SIZE_WIDTH, 960), preferences.getInt(SIZE_HEIGHT, 640));
@@ -162,7 +160,8 @@ public class MainFrame extends JFrame implements Runnable {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent windowEvent) {
-                preferences.putInt(DIVIDER_LOCATION, splitPane.getDividerLocation());
+                preferences.putInt(HORIZONTAL_DIVIDER_LOCATION, horizontalSplitPane.getDividerLocation());
+                preferences.putInt(VERTICAL_DIVIDER_LOCATION, verticalSplitPane.getDividerLocation());
 
                 var location = getLocation();
 
