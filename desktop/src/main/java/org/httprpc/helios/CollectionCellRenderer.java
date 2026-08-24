@@ -1,17 +1,13 @@
 package org.httprpc.helios;
 
 import org.httprpc.sierra.ColumnPanel;
-import org.httprpc.sierra.Outlet;
-import org.httprpc.sierra.UILoader;
 
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 import javax.swing.border.EmptyBorder;
 import java.awt.Color;
 import java.awt.Component;
-import java.util.ResourceBundle;
 
 public abstract class CollectionCellRenderer<T> extends ColumnPanel implements ListCellRenderer<T> {
     private JLabel nameLabel = new JLabel();
