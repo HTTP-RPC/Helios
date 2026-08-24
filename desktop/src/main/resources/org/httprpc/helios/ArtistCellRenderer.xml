@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-
-<!DOCTYPE column-panel SYSTEM "sierra.dtd">
-
-<column-panel padding="4, 8, 4, 8" opaque="true">
-    <label name="nameLabel"/>
-    <label name="countLabel" styleClass="mini"/>
-</column-panel>
