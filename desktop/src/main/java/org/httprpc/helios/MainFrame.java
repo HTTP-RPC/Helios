@@ -6,6 +6,7 @@ import com.formdev.flatlaf.extras.FlatSVGIcon;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.io.TextDecoder;
 import org.httprpc.kilo.sql.QueryBuilder;
+import org.httprpc.sierra.BasicListModel;
 import org.httprpc.sierra.Outlet;
 import org.httprpc.sierra.UILoader;
 
@@ -138,14 +139,14 @@ public class MainFrame extends JFrame implements Runnable {
             throw new RuntimeException(exception);
         }
 
-        artistList.setModel(new ArtistListModel(artists));
+        artistList.setModel(new BasicListModel<>(artists));
 
         if (!artists.isEmpty()) {
             artistList.setSelectedIndex(0);
         }
 
         // TODO
-        playlistList.setModel(new PlaylistListModel(listOf(mapAll(listOf(
+        playlistList.setModel(new BasicListModel<>(listOf(mapAll(listOf(
             mapOf(
                 entry("name", "Playlist 1"),
                 entry("artistCount", 1),
@@ -156,9 +157,8 @@ public class MainFrame extends JFrame implements Runnable {
         pack();
         setLocationRelativeTo(null);
 
-        // TODO
-//        setLocation(preferences.getInt(LOCATION_X_KEY, getX()), preferences.getInt(LOCATION_Y_KEY, getY()));
-//        setSize(preferences.getInt(SIZE_WIDTH_KEY, getWidth()), preferences.getInt(SIZE_HEIGHT_KEY, getHeight()));
+        setLocation(preferences.getInt(LOCATION_X_KEY, getX()), preferences.getInt(LOCATION_Y_KEY, getY()));
+        setSize(preferences.getInt(SIZE_WIDTH_KEY, getWidth()), preferences.getInt(SIZE_HEIGHT_KEY, getHeight()));
 
         setVisible(true);
 
