@@ -55,6 +55,8 @@ public class MainFrame extends JFrame implements Runnable {
     private @Outlet JTextField searchTextField = null;
 
     private @Outlet JList<ExpandedArtist> artistList = null;
+    private @Outlet JList<ExpandedPlaylist> playlistList = null; // TODO
+
     private @Outlet JScrollPane albumScrollPane = null;
 
     private FlatSVGIcon playIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/play_arrow_24dp.svg"));
@@ -123,6 +125,7 @@ public class MainFrame extends JFrame implements Runnable {
         remainingTimeLabel.setText("-00:00");
 
         artistList.setCellRenderer(new ArtistCellRenderer());
+        playlistList.setCellRenderer(new PlaylistCellRenderer());
 
         var queryBuilder = QueryBuilder.select(ExpandedArtist.class).ordered(true);
 
@@ -141,11 +144,21 @@ public class MainFrame extends JFrame implements Runnable {
             artistList.setSelectedIndex(0);
         }
 
+        // TODO
+        playlistList.setModel(new PlaylistListModel(listOf(mapAll(listOf(
+            mapOf(
+                entry("name", "Playlist 1"),
+                entry("artistCount", 1),
+                entry("songCount", 10)
+            )
+        ), BeanAdapter.toType(ExpandedPlaylist.class)))));
+
         pack();
         setLocationRelativeTo(null);
 
-        setLocation(preferences.getInt(LOCATION_X_KEY, getX()), preferences.getInt(LOCATION_Y_KEY, getY()));
-        setSize(preferences.getInt(SIZE_WIDTH_KEY, getWidth()), preferences.getInt(SIZE_HEIGHT_KEY, getHeight()));
+        // TODO
+//        setLocation(preferences.getInt(LOCATION_X_KEY, getX()), preferences.getInt(LOCATION_Y_KEY, getY()));
+//        setSize(preferences.getInt(SIZE_WIDTH_KEY, getWidth()), preferences.getInt(SIZE_HEIGHT_KEY, getHeight()));
 
         setVisible(true);
 

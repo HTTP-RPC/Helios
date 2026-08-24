@@ -4,7 +4,7 @@
 
 <column-panel spacing="4" padding="8" opaque="true">
     <row-panel spacing="32">
-        <row-panel weight="3">
+        <row-panel weight="1.25">
             <column-panel>
                 <spacer weight="1"/>
                 <button name="playButton" focusable="false" style="buttonType: borderless"/>
@@ -34,7 +34,7 @@
                 <spacer weight="1"/>
             </column-panel>
 
-            <spacer weight="1"/>
+            <spacer size="32"/>
 
             <column-panel>
                 <spacer weight="1"/>
@@ -46,18 +46,18 @@
             </column-panel>
         </row-panel>
 
-        <row-panel weight="5">
+        <row-panel weight="3">
             <label name="elapsedTimeLabel" styleClass="small"/>
             <slider name="positionSlider" focusable="false" weight="1"/>
             <label name="remainingTimeLabel" styleClass="small"/>
         </row-panel>
 
-        <row-panel weight="3">
-            <spacer weight="1"/>
+        <row-panel weight="1.25">
+            <spacer weight="0.5"/>
 
-            <column-panel>
+            <column-panel weight="4">
                 <spacer weight="1"/>
-                <text-field name="searchTextField" columns="18" leadingIcon="icons/search_24dp.svg; 18"/>
+                <text-field name="searchTextField" leadingIcon="icons/search_24dp.svg; 18"/>
                 <spacer weight="1"/>
             </column-panel>
         </row-panel>
@@ -65,7 +65,7 @@
 
     <row-panel spacing="4" weight="1">
         <column-panel spacing="4" weight="1">
-            <stack-panel weight="3">
+            <stack-panel weight="2">
                 <column-panel padding="4">
                     <spacer weight="1"/>
                     <row-panel>
@@ -75,7 +75,7 @@
                 </column-panel>
 
                 <scroll-pane weight="3">
-                    <list name="artistList" selectionMode="single-selection" visibleRowCount="8"/>
+                    <list name="artistList" selectionMode="single-selection" visibleRowCount="10"/>
                 </scroll-pane>
             </stack-panel>
 
@@ -89,7 +89,7 @@
                 </column-panel>
 
                 <scroll-pane>
-                    <list name="playlistList" selectionMode="single-selection" visibleRowCount="4"/>
+                    <list name="playlistList" selectionMode="single-selection" visibleRowCount="5"/>
                 </scroll-pane>
             </stack-panel>
         </column-panel>
