@@ -1,20 +1,47 @@
+drop table if exists Song;
+
 create table Song (
-    artist varchar(128) not null,
-    album varchar(128) not null,
-    title varchar(256) not null,
-    time int not null,
-    genre varchar(64),
-    year int,
-    trackNumber int,
-    trackCount int,
-    discNumber int,
-    discCount int
+    id integer primary key,
+    artist text not null,
+    album text not null,
+    title text not null,
+    time integer not null,
+    genre text,
+    year integer,
+    trackNumber integer,
+    trackCount integer,
+    discNumber integer,
+    discCount integer,
+    unique (artist, album, title)
 );
 
-create index idx_song_artist_album on Song(artist, album);
+drop table if exists Playlist;
+
+create table Playlist (
+    id integer primary key,
+    name text not null,
+    unique (name)
+);
+
+drop table if exists PlaylistSong;
+
+create table PlaylistSong (
+    playlistID integer not null,
+    songID integer not null,
+    primary key (playlistID, songID),
+    foreign key (playlistID) references Playlist (id),
+    foreign key (songID) references Song (id)
+);
+
+drop view if exists Artist;
 
 create view Artist as select distinct artist as name from Song;
+
+drop view if exists Album;
+
 create view Album as select distinct artist, album as name from Song;
+
+drop view if exists ExpandedArtist;
 
 create view ExpandedArtist as select name,
     (select count(*) from Album where artist = Artist.name) as albumCount,

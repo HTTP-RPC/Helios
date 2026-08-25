@@ -1,17 +1,10 @@
 package org.httprpc.helios;
 
 import org.httprpc.kilo.sql.Column;
-import org.httprpc.kilo.sql.Index;
-import org.httprpc.kilo.sql.PrimaryKey;
 import org.httprpc.kilo.sql.Table;
 
 @Table("ExpandedArtist")
-public interface ExpandedArtist {
-    @Column("name")
-    @PrimaryKey
-    @Index
-    String getName();
-
+public interface ExpandedArtist extends Artist {
     @Column("albumCount")
     Integer getAlbumCount();
 
