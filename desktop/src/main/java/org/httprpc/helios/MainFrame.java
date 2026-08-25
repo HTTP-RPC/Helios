@@ -128,41 +128,22 @@ public class MainFrame extends JFrame implements Runnable {
         artistList.setCellRenderer(new ArtistCellRenderer());
         playlistList.setCellRenderer(new PlaylistCellRenderer());
 
-        var queryBuilder = QueryBuilder.select(ExpandedArtist.class).ordered(true);
+        loadArtists();
+        loadPlaylists();
 
-        List<ExpandedArtist> artists;
-        try (var connection = openConnection();
-            var statement = queryBuilder.prepare(connection);
-            var results = queryBuilder.executeQuery(statement)) {
-            artists = listOf(mapAll(results, BeanAdapter.toType(ExpandedArtist.class)));
-        } catch (SQLException exception) {
-            throw new RuntimeException(exception);
-        }
-
-        artistList.setModel(new BasicListModel<>(artists));
-
-        if (!artists.isEmpty()) {
+        if (artistList.getModel().getSize() > 0) {
             artistList.setSelectedIndex(0);
         }
 
-        // TODO
-        playlistList.setModel(new BasicListModel<>(listOf(mapAll(listOf(
-            mapOf(
-                entry("name", "Playlist 1"),
-                entry("artistCount", 1),
-                entry("songCount", 10)
-            )
-        ), BeanAdapter.toType(ExpandedPlaylist.class)))));
-
         pack();
+        setMinimumSize(getSize());
+
         setLocationRelativeTo(null);
 
         setLocation(preferences.getInt(LOCATION_X_KEY, getX()), preferences.getInt(LOCATION_Y_KEY, getY()));
         setSize(preferences.getInt(SIZE_WIDTH_KEY, getWidth()), preferences.getInt(SIZE_HEIGHT_KEY, getHeight()));
 
         setVisible(true);
-
-        setMinimumSize(getPreferredSize());
 
         artistList.requestFocus();
 
@@ -186,6 +167,36 @@ public class MainFrame extends JFrame implements Runnable {
                 }
             }
         });
+    }
+
+    private void loadArtists() {
+        var queryBuilder = QueryBuilder.select(ExpandedArtist.class).ordered(true);
+
+        List<ExpandedArtist> artists;
+        try (var connection = openConnection();
+            var statement = queryBuilder.prepare(connection);
+            var results = queryBuilder.executeQuery(statement)) {
+            artists = listOf(mapAll(results, BeanAdapter.toType(ExpandedArtist.class)));
+        } catch (SQLException exception) {
+            throw new RuntimeException(exception);
+        }
+
+        artistList.setModel(new BasicListModel<>(artists));
+    }
+
+    private void loadPlaylists() {
+        var queryBuilder = QueryBuilder.select(ExpandedPlaylist.class).ordered(true);
+
+        List<ExpandedPlaylist> playlists;
+        try (var connection = openConnection();
+            var statement = queryBuilder.prepare(connection);
+            var results = queryBuilder.executeQuery(statement)) {
+            playlists = listOf(mapAll(results, BeanAdapter.toType(ExpandedPlaylist.class)));
+        } catch (SQLException exception) {
+            throw new RuntimeException(exception);
+        }
+
+        playlistList.setModel(new BasicListModel<>(playlists));
     }
 
     public static void main(String[] args) throws Exception {
