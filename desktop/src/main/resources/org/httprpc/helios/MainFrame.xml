@@ -65,33 +65,13 @@
 
     <row-panel spacing="4" weight="1">
         <column-panel spacing="4" weight="1">
-            <stack-panel weight="2">
-                <column-panel padding="4">
-                    <spacer weight="1"/>
-                    <row-panel>
-                        <spacer weight="1"/>
-                        <button icon="icons/add_circle_outline_24dp.svg; 18" focusable="false"/>
-                    </row-panel>
-                </column-panel>
+            <scroll-pane weight="2">
+                <list name="artistList" selectionMode="single-selection" visibleRowCount="10"/>
+            </scroll-pane>
 
-                <scroll-pane weight="3">
-                    <list name="artistList" selectionMode="single-selection" visibleRowCount="10"/>
-                </scroll-pane>
-            </stack-panel>
-
-            <stack-panel weight="1">
-                <column-panel padding="4">
-                    <spacer weight="1"/>
-                    <row-panel>
-                        <spacer weight="1"/>
-                        <button icon="icons/add_circle_outline_24dp.svg; 18" focusable="false"/>
-                    </row-panel>
-                </column-panel>
-
-                <scroll-pane>
-                    <list name="playlistList" selectionMode="single-selection" visibleRowCount="5"/>
-                </scroll-pane>
-            </stack-panel>
+            <scroll-pane weight="1">
+                <list name="playlistList" selectionMode="single-selection" visibleRowCount="5"/>
+            </scroll-pane>
         </column-panel>
 
         <scroll-pane weight="3"/>
