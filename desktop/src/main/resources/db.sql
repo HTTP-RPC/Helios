@@ -47,3 +47,11 @@ create view ExpandedArtist as select name,
     (select count(*) from Album where artist = Artist.name) as albumCount,
     (select count(*) from Song where artist = Artist.name) as songCount
 from Artist;
+
+create view ExpandedPlaylist as select name,
+    (select count(*) from (
+        select distinct artist from Song
+        join PlaylistSong on songID = Song.id and playlistID = Playlist.id
+    )) as artistCount,
+    (select count(*) from PlaylistSong where playlistID = Playlist.id) as songCount
+from Playlist;
