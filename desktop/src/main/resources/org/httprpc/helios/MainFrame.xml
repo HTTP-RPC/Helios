@@ -3,8 +3,8 @@
 <!DOCTYPE column-panel SYSTEM "sierra.dtd">
 
 <column-panel spacing="4" padding="8" opaque="true">
-    <row-panel spacing="32">
-        <row-panel weight="1.25">
+    <row-panel spacing="8">
+        <row-panel spacing="2" weight="1.25">
             <column-panel>
                 <spacer weight="1"/>
                 <button name="playButton" focusable="false" style="buttonType: borderless"/>
@@ -13,47 +13,64 @@
 
             <column-panel>
                 <spacer weight="1"/>
-                <row-panel>
-                    <button name="previousButton" icon="icons/skip_previous_24dp.svg; 20"
+                <row-panel spacing="2">
+                    <button name="previousButton" icon="icons/skip_previous_24dp.svg; 18"
                         focusable="false"
                         style="buttonType: borderless"
                         toolTipText="previous"/>
 
-                    <button name="nextButton" icon="icons/skip_next_24dp.svg; 20"
+                    <button name="nextButton" icon="icons/skip_next_24dp.svg; 18"
                         focusable="false"
                         style="buttonType: borderless"
                         toolTipText="next"/>
-
-                    <spacer width="8"/>
-
-                    <toggle-button name="upNextButton" icon="icons/queue_music_24dp.svg; 20"
-                        focusable="false"
-                        style="buttonType: borderless"
-                        toolTipText="upNext"/>
                 </row-panel>
                 <spacer weight="1"/>
             </column-panel>
 
-            <spacer size="32"/>
+            <spacer width="8"/>
 
             <column-panel>
                 <spacer weight="1"/>
-                <row-panel spacing="4">
+                <button name="upNextButton" icon="icons/queue_music_24dp.svg; 18"
+                    focusable="false"
+                    style="buttonType: borderless"
+                    toolTipText="upNext"/>
+                <spacer weight="1"/>
+            </column-panel>
+
+            <spacer width="8"/>
+
+            <column-panel>
+                <spacer weight="1"/>
+                <row-panel spacing="2">
                     <toggle-button name="shuffleButton" focusable="false" style="buttonType: borderless" toolTipText="shuffle"/>
                     <toggle-button name="repeatButton" focusable="false" style="buttonType: borderless" toolTipText="repeat"/>
                 </row-panel>
                 <spacer weight="1"/>
             </column-panel>
+
+            <spacer width="8"/>
+
+            <spacer weight="1"/>
+
+            <column-panel>
+                <spacer weight="1"/>
+                <menu-button icon="icons/add_24dp.svg; 18" focusable="false" style="buttonType: borderless" toolTipText="add">
+                    <menu-item text="songs" icon="icons/folder_24dp.svg; 18"/>
+                    <menu-item text="playlist" icon="icons/playlist_add_24dp.svg; 18"/>
+                </menu-button>
+                <spacer weight="1"/>
+            </column-panel>
         </row-panel>
 
-        <row-panel weight="3">
+        <row-panel weight="2.75">
             <label name="elapsedTimeLabel" styleClass="small"/>
             <slider name="positionSlider" focusable="false" weight="1"/>
             <label name="remainingTimeLabel" styleClass="small"/>
         </row-panel>
 
         <row-panel weight="1.25">
-            <spacer weight="0.5"/>
+            <spacer weight="1"/>
 
             <column-panel weight="4">
                 <spacer weight="1"/>

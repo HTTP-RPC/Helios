@@ -42,7 +42,7 @@ public class MainFrame extends JFrame implements Runnable {
     private @Outlet JButton previousButton = null;
     private @Outlet JButton nextButton = null;
 
-    private @Outlet JToggleButton upNextButton = null;
+    private @Outlet JButton upNextButton = null;
 
     private @Outlet JToggleButton shuffleButton = null;
     private @Outlet JToggleButton repeatButton = null;
@@ -50,8 +50,6 @@ public class MainFrame extends JFrame implements Runnable {
     private @Outlet JLabel elapsedTimeLabel = null;
     private @Outlet JSlider positionSlider = null;
     private @Outlet JLabel remainingTimeLabel = null;
-
-    private @Outlet JToggleButton playlistsButton = null;
 
     private @Outlet JTextField searchTextField = null;
 
@@ -89,7 +87,7 @@ public class MainFrame extends JFrame implements Runnable {
         playIcon.setColorFilter(playButtonColorFilter);
         pauseIcon.setColorFilter(playButtonColorFilter);
 
-        shuffleIcon = shuffleIcon.derive(16, 16);
+        shuffleIcon = shuffleIcon.derive(18, 18);
 
         shuffleIcon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> {
             if (shuffleButton.isSelected() || shuffleButton.getModel().isPressed()) {
@@ -99,7 +97,7 @@ public class MainFrame extends JFrame implements Runnable {
             }
         }));
 
-        repeatIcon = repeatIcon.derive(16, 16);
+        repeatIcon = repeatIcon.derive(18, 18);
 
         repeatIcon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> {
             if (repeatButton.isSelected() || repeatButton.getModel().isPressed()) {
