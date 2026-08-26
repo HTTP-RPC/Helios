@@ -16,7 +16,7 @@ public class PlaylistCellRenderer extends CollectionCellRenderer<ExpandedPlaylis
         var songCount = value.getSongCount();
 
         return String.format(resourceBundle.getString("countFormat"),
-            String.format(resourceBundle.getString(artistCount == 1 ? "singleArtist" : "multipleArtists"), artistCount),
-            String.format(resourceBundle.getString(songCount == 1 ? "singleSong" : "multipleSongs"), songCount));
+            String.format(resourceBundle.getString(artistCount == 1 ? "singleArtistFormat" : "multipleArtistFormat"), artistCount),
+            String.format(resourceBundle.getString(songCount == 1 ? "singleSongFormat" : "multipleSongFormat"), songCount));
     }
 }

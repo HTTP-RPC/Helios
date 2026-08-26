@@ -16,7 +16,7 @@ public class ArtistCellRenderer extends CollectionCellRenderer<ExpandedArtist> {
         var songCount = value.getSongCount();
 
         return String.format(resourceBundle.getString("countFormat"),
-            String.format(resourceBundle.getString(albumCount == 1 ? "singleAlbum" : "multipleAlbums"), albumCount),
-            String.format(resourceBundle.getString(songCount == 1 ? "singleSong" : "multipleSongs"), songCount));
+            String.format(resourceBundle.getString(albumCount == 1 ? "singleAlbumFormat" : "multipleAlbumFormat"), albumCount),
+            String.format(resourceBundle.getString(songCount == 1 ? "singleSongFormat" : "multipleSongFormat"), songCount));
     }
 }
