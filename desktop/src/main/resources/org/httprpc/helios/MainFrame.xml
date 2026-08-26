@@ -4,30 +4,30 @@
 
 <column-panel spacing="4" padding="8" opaque="true">
     <row-panel spacing="8">
-        <row-panel spacing="2" weight="1.25">
-            <column-panel>
-                <spacer weight="1"/>
-                <button name="playButton" focusable="false" style="buttonType: borderless"/>
-                <spacer weight="1"/>
-            </column-panel>
+        <row-panel spacing="8" weight="1.25">
+            <row-panel spacing="2">
+                <column-panel>
+                    <spacer weight="1"/>
+                    <button name="playButton" focusable="false" style="buttonType: borderless"/>
+                    <spacer weight="1"/>
+                </column-panel>
 
-            <column-panel>
-                <spacer weight="1"/>
-                <row-panel spacing="2">
-                    <button name="previousButton" icon="icons/skip_previous_24dp.svg; 18"
-                        focusable="false"
-                        style="buttonType: borderless"
-                        toolTipText="previous"/>
+                <column-panel>
+                    <spacer weight="1"/>
+                    <row-panel spacing="2">
+                        <button name="previousButton" icon="icons/skip_previous_24dp.svg; 18"
+                            focusable="false"
+                            style="buttonType: borderless"
+                            toolTipText="previous"/>
 
-                    <button name="nextButton" icon="icons/skip_next_24dp.svg; 18"
-                        focusable="false"
-                        style="buttonType: borderless"
-                        toolTipText="next"/>
-                </row-panel>
-                <spacer weight="1"/>
-            </column-panel>
-
-            <spacer width="8"/>
+                        <button name="nextButton" icon="icons/skip_next_24dp.svg; 18"
+                            focusable="false"
+                            style="buttonType: borderless"
+                            toolTipText="next"/>
+                    </row-panel>
+                    <spacer weight="1"/>
+                </column-panel>
+            </row-panel>
 
             <column-panel>
                 <spacer weight="1"/>
@@ -38,8 +38,6 @@
                 <spacer weight="1"/>
             </column-panel>
 
-            <spacer width="8"/>
-
             <column-panel>
                 <spacer weight="1"/>
                 <row-panel spacing="2">
@@ -48,8 +46,6 @@
                 </row-panel>
                 <spacer weight="1"/>
             </column-panel>
-
-            <spacer width="8"/>
 
             <spacer weight="1"/>
 
