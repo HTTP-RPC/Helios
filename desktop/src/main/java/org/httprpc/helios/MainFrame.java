@@ -8,6 +8,7 @@ import org.httprpc.kilo.io.TextDecoder;
 import org.httprpc.kilo.sql.QueryBuilder;
 import org.httprpc.sierra.BasicListModel;
 import org.httprpc.sierra.Outlet;
+import org.httprpc.sierra.TaskExecutor;
 import org.httprpc.sierra.UILoader;
 
 import javax.swing.JButton;
@@ -20,6 +21,8 @@ import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
@@ -28,8 +31,10 @@ import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.Executors;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
@@ -77,6 +82,14 @@ public class MainFrame extends JFrame implements Runnable {
 
     private static final Preferences preferences = Preferences.userRoot().node(MainFrame.class.getName());
 
+    private static final TaskExecutor taskExecutor = new TaskExecutor(Executors.newCachedThreadPool(runnable -> {
+        var thread = new Thread(runnable);
+
+        thread.setDaemon(true);
+
+        return thread;
+    }));
+
     private MainFrame() {
         super(resourceBundle.getString("title"));
 
@@ -122,6 +135,23 @@ public class MainFrame extends JFrame implements Runnable {
         // TODO
         elapsedTimeLabel.setText("00:00");
         remainingTimeLabel.setText("-00:00");
+
+        searchTextField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent event) {
+                search();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent event) {
+                search();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent event) {
+                // No-op
+            }
+        });
 
         artistList.setCellRenderer(new ArtistCellRenderer());
         playlistList.setCellRenderer(new PlaylistCellRenderer());
@@ -195,6 +225,28 @@ public class MainFrame extends JFrame implements Runnable {
         }
 
         playlistList.setModel(new BasicListModel<>(playlists));
+    }
+
+    private void search() {
+        var text = searchTextField.getText();
+
+        taskExecutor.execute(() -> {
+            var queryBuilder = QueryBuilder.select(Song.class).filterByIndexLike("artist", "album", "song");
+
+            try (var connection = openConnection();
+                var statement = queryBuilder.prepare(connection);
+                var results = queryBuilder.executeQuery(statement, mapOf(
+                    entry("artist", "%"),
+                    entry("album", "%"),
+                    entry("song", String.format("%s%%", text))
+                ))) {
+                return listOf(sortBy(mapAll(results, BeanAdapter.toType(Song.class)), Comparator.comparing(Song::getTitle)
+                    .thenComparing(Song::getAlbum)
+                    .thenComparing(Song::getArtist)));
+            }
+        }, (songs, exception) -> {
+            // TODO
+        });
     }
 
     public static void main(String[] args) throws Exception {

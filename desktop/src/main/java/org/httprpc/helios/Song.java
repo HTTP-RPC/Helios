@@ -17,19 +17,19 @@ public interface Song {
 
     @Column("artist")
     @ForeignKey(Artist.class)
-    @Index
+    @Index(1)
     @Required
     String getArtist();
     void setArtist(String artist);
 
     @Column("album")
-    @Index
+    @Index(2)
     @Required
     String getAlbum();
     void setAlbum(String album);
 
     @Column("title")
-    @Index
+    @Index(3)
     @Required
     String getTitle();
     void setTitle(String title);
