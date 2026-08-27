@@ -7,6 +7,7 @@ import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.io.TextDecoder;
 import org.httprpc.kilo.sql.QueryBuilder;
 import org.httprpc.sierra.BasicListModel;
+import org.httprpc.sierra.ColumnPanel;
 import org.httprpc.sierra.Outlet;
 import org.httprpc.sierra.TaskExecutor;
 import org.httprpc.sierra.UILoader;
@@ -19,10 +20,14 @@ import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
+import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
@@ -42,6 +47,84 @@ import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
 
 public class MainFrame extends JFrame implements Runnable {
+    private abstract static class CollectionCellRenderer<T> extends ColumnPanel implements ListCellRenderer<T> {
+        JLabel nameLabel = new JLabel();
+        JLabel countLabel = new JLabel();
+
+        CollectionCellRenderer() {
+            setOpaque(true);
+
+            setBorder(new EmptyBorder(4, 8, 4, 8));
+
+            add(nameLabel);
+            add(countLabel);
+
+            countLabel.putClientProperty("FlatLaf.styleClass", "mini");
+        }
+
+        @Override
+        public Component getListCellRendererComponent(JList<? extends T> list,
+            T value, int index,
+            boolean selected, boolean cellHasFocus) {
+            nameLabel.setText(getName(value));
+            countLabel.setText(getCountText(value));
+
+            Color background;
+            Color foreground;
+            if (selected) {
+                background = list.getSelectionBackground();
+                foreground = list.getSelectionForeground();
+            } else {
+                background = list.getBackground();
+                foreground = list.getForeground();
+            }
+
+            setBackground(background);
+
+            nameLabel.setForeground(foreground);
+            countLabel.setForeground(foreground);
+
+            return this;
+        }
+
+        protected abstract String getName(T value);
+        protected abstract String getCountText(T value);
+    }
+
+    private static class ArtistCellRenderer extends CollectionCellRenderer<ExpandedArtist> {
+        @Override
+        protected String getName(ExpandedArtist value) {
+            return value.getName();
+        }
+
+        @Override
+        protected String getCountText(ExpandedArtist value) {
+            var albumCount = value.getAlbumCount();
+            var songCount = value.getSongCount();
+
+            return String.format(resourceBundle.getString("countFormat"),
+                String.format(resourceBundle.getString(albumCount == 1 ? "singleAlbumFormat" : "multipleAlbumFormat"), albumCount),
+                String.format(resourceBundle.getString(songCount == 1 ? "singleSongFormat" : "multipleSongFormat"), songCount));
+        }
+    }
+
+    private static class PlaylistCellRenderer extends CollectionCellRenderer<ExpandedPlaylist> {
+        @Override
+        protected String getName(ExpandedPlaylist value) {
+            return value.getName();
+        }
+
+        @Override
+        protected String getCountText(ExpandedPlaylist value) {
+            var artistCount = value.getArtistCount();
+            var songCount = value.getSongCount();
+
+            return String.format(resourceBundle.getString("countFormat"),
+                String.format(resourceBundle.getString(artistCount == 1 ? "singleArtistFormat" : "multipleArtistFormat"), artistCount),
+                String.format(resourceBundle.getString(songCount == 1 ? "singleSongFormat" : "multipleSongFormat"), songCount));
+        }
+    }
+
     private @Outlet JButton playButton = null;
 
     private @Outlet JButton previousButton = null;
