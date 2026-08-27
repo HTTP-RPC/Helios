@@ -142,7 +142,7 @@ public class MainFrame extends JFrame implements Runnable {
     private @Outlet JTextField searchTextField = null;
 
     private @Outlet JList<ExpandedArtist> artistList = null;
-    private @Outlet JList<ExpandedPlaylist> playlistList = null; // TODO
+    private @Outlet JList<ExpandedPlaylist> playlistList = null;
 
     private @Outlet JScrollPane albumScrollPane = null;
 
