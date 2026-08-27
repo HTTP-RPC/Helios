@@ -32,8 +32,14 @@
             <column-panel>
                 <spacer weight="1"/>
                 <row-panel spacing="2">
-                    <toggle-button name="shuffleButton" focusable="false" style="buttonType: borderless" toolTipText="shuffle"/>
-                    <toggle-button name="repeatButton" focusable="false" style="buttonType: borderless" toolTipText="repeat"/>
+                    <toggle-button name="shuffleButton" icon="icons/shuffle_24dp.svg; 18"
+                        focusable="false"
+                        style="buttonType: borderless"
+                        toolTipText="shuffle"/>
+                    <toggle-button name="repeatButton" icon="icons/repeat_24dp.svg; 18"
+                        focusable="false"
+                        style="buttonType: borderless"
+                        toolTipText="repeat"/>
                 </row-panel>
                 <spacer weight="1"/>
             </column-panel>

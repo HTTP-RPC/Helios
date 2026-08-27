@@ -149,9 +149,6 @@ public class MainFrame extends JFrame implements Runnable {
     private FlatSVGIcon playIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/play_arrow_24dp.svg"));
     private FlatSVGIcon pauseIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/pause_24dp.svg"));
 
-    private FlatSVGIcon shuffleIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/shuffle_24dp.svg"));
-    private FlatSVGIcon repeatIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/repeat_24dp.svg"));
-
     private static final String DARK_MODE_KEY = "darkMode";
     private static final String LOCATION_X_KEY = "locationX";
     private static final String LOCATION_Y_KEY = "locationY";
@@ -182,26 +179,6 @@ public class MainFrame extends JFrame implements Runnable {
 
         playIcon.setColorFilter(playButtonColorFilter);
         pauseIcon.setColorFilter(playButtonColorFilter);
-
-        shuffleIcon = shuffleIcon.derive(18, 18);
-
-        shuffleIcon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> {
-            if (shuffleButton.isSelected() || shuffleButton.getModel().isPressed()) {
-                return UIManager.getColor("Slider.thumbColor");
-            } else {
-                return UILoader.getColor("Button.foreground");
-            }
-        }));
-
-        repeatIcon = repeatIcon.derive(18, 18);
-
-        repeatIcon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> {
-            if (repeatButton.isSelected() || repeatButton.getModel().isPressed()) {
-                return UIManager.getColor("Slider.thumbColor");
-            } else {
-                return UILoader.getColor("Button.foreground");
-            }
-        }));
     }
 
     @Override
@@ -212,8 +189,25 @@ public class MainFrame extends JFrame implements Runnable {
         playButton.setIcon(playIcon);
         playButton.setToolTipText(resourceBundle.getString("play"));
 
-        shuffleButton.setIcon(shuffleIcon);
-        repeatButton.setIcon(repeatIcon);
+        var shuffleIcon = (FlatSVGIcon)shuffleButton.getIcon();
+
+        shuffleIcon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> {
+            if (shuffleButton.isSelected() || shuffleButton.getModel().isPressed()) {
+                return UIManager.getColor("Slider.thumbColor");
+            } else {
+                return UILoader.getColor("Button.foreground");
+            }
+        }));
+
+        var repeatIcon = (FlatSVGIcon)repeatButton.getIcon();
+
+        repeatIcon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> {
+            if (repeatButton.isSelected() || repeatButton.getModel().isPressed()) {
+                return UIManager.getColor("Slider.thumbColor");
+            } else {
+                return UILoader.getColor("Button.foreground");
+            }
+        }));
 
         // TODO
         elapsedTimeLabel.setText("00:00");
