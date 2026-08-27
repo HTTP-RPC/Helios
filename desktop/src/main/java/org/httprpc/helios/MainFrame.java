@@ -82,7 +82,7 @@ public class MainFrame extends JFrame implements Runnable {
 
     private static final Preferences preferences = Preferences.userRoot().node(MainFrame.class.getName());
 
-    private static final TaskExecutor taskExecutor = new TaskExecutor(Executors.newCachedThreadPool(runnable -> {
+    private static final TaskExecutor taskExecutor = new TaskExecutor(Executors.newSingleThreadExecutor(runnable -> {
         var thread = new Thread(runnable);
 
         thread.setDaemon(true);
@@ -230,6 +230,11 @@ public class MainFrame extends JFrame implements Runnable {
     private void search() {
         var text = searchTextField.getText();
 
+        if (text.isEmpty()) {
+            // TODO Hide popup
+            return;
+        }
+
         taskExecutor.execute(() -> {
             var queryBuilder = QueryBuilder.select(Song.class).filterByIndexLike("artist", "album", "song");
 
@@ -240,12 +245,20 @@ public class MainFrame extends JFrame implements Runnable {
                     entry("album", "%"),
                     entry("song", String.format("%s%%", text))
                 ))) {
-                return listOf(sortBy(mapAll(results, BeanAdapter.toType(Song.class)), Comparator.comparing(Song::getTitle)
+                return sortBy(mapAll(results, BeanAdapter.toType(Song.class)), Comparator.comparing(Song::getTitle)
                     .thenComparing(Song::getAlbum)
-                    .thenComparing(Song::getArtist)));
+                    .thenComparing(Song::getArtist));
             }
         }, (songs, exception) -> {
+            if (songs.isEmpty()) {
+                // TODO Hide popup
+                return;
+            }
+
             // TODO
+            for (var song : songs) {
+                System.out.println(song.getTitle());
+            }
         });
     }
 
