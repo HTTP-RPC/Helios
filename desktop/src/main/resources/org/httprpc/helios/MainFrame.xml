@@ -105,6 +105,6 @@
             </scroll-pane>
         </column-panel>
 
-        <scroll-pane weight="3"/>
+        <scroll-pane name="albumScrollPane" weight="3"/>
     </row-panel>
 </column-panel>
