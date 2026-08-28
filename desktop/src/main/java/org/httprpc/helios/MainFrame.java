@@ -7,23 +7,29 @@ import org.httprpc.kilo.io.TextDecoder;
 import org.httprpc.kilo.sql.QueryBuilder;
 import org.httprpc.sierra.BasicListModel;
 import org.httprpc.sierra.ColumnPanel;
+import org.httprpc.sierra.MenuButton;
 import org.httprpc.sierra.Outlet;
-import org.httprpc.sierra.TaskExecutor;
 import org.httprpc.sierra.UILoader;
 
+import javax.swing.AbstractAction;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JToggleButton;
+import javax.swing.KeyStroke;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
@@ -34,7 +40,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.concurrent.Executors;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
@@ -130,6 +135,11 @@ public class MainFrame extends JFrame implements Runnable {
 
     private @Outlet JButton queueButton = null;
 
+    private @Outlet MenuButton addButton = null;
+
+    private @Outlet JButton searchButton = null;
+    private @Outlet JButton settingsButton = null;
+
     private @Outlet JLabel elapsedTimeLabel = null;
     private @Outlet JSlider positionSlider = null;
     private @Outlet JLabel remainingTimeLabel = null;
@@ -141,6 +151,16 @@ public class MainFrame extends JFrame implements Runnable {
 
     private FlatSVGIcon playIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/play_arrow_24dp.svg"));
     private FlatSVGIcon pauseIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/pause_24dp.svg"));
+
+    private static final String PLAY_KEY = "play";
+    private static final String PREVIOUS_KEY = "previous";
+    private static final String NEXT_KEY = "next";
+    private static final String SHUFFLE_KEY = "shuffle";
+    private static final String REPEAT_KEY = "repeat";
+    private static final String QUEUE_KEY = "queue";
+    private static final String ADD_KEY = "add";
+    private static final String SEARCH_KEY = "search";
+    private static final String SETTINGS_KEY = "settings";
 
     private static final String LOCATION_X_KEY = "locationX";
     private static final String LOCATION_Y_KEY = "locationY";
@@ -154,14 +174,6 @@ public class MainFrame extends JFrame implements Runnable {
 
     private static final Preferences preferences = Preferences.userRoot().node(MainFrame.class.getName());
 
-    private static final TaskExecutor taskExecutor = new TaskExecutor(Executors.newSingleThreadExecutor(runnable -> {
-        var thread = new Thread(runnable);
-
-        thread.setDaemon(true);
-
-        return thread;
-    }));
-
     private MainFrame() {
         super(resourceBundle.getString("title"));
 
@@ -171,6 +183,83 @@ public class MainFrame extends JFrame implements Runnable {
 
         playIcon.setColorFilter(playButtonColorFilter);
         pauseIcon.setColorFilter(playButtonColorFilter);
+
+        var inputMap = rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        var actionMap = rootPane.getActionMap();
+
+        var shortcutModifier = Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx();
+
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0, false), PLAY_KEY);
+        actionMap.put(PLAY_KEY, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                playButton.doClick();
+            }
+        });
+
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_COMMA, shortcutModifier, false), PREVIOUS_KEY);
+        actionMap.put(PREVIOUS_KEY, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                previousButton.doClick();
+            }
+        });
+
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_PERIOD, shortcutModifier, false), NEXT_KEY);
+        actionMap.put(NEXT_KEY, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                nextButton.doClick();
+            }
+        });
+
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_S, shortcutModifier, false), SHUFFLE_KEY);
+        actionMap.put(SHUFFLE_KEY, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                shuffleButton.doClick();
+            }
+        });
+
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_R, shortcutModifier, false), REPEAT_KEY);
+        actionMap.put(REPEAT_KEY, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                repeatButton.doClick();
+            }
+        });
+
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_L, shortcutModifier, false), QUEUE_KEY);
+        actionMap.put(QUEUE_KEY, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                queueButton.doClick();
+            }
+        });
+
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, shortcutModifier, false), ADD_KEY);
+        actionMap.put(ADD_KEY, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                addButton.doClick();
+            }
+        });
+
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F, shortcutModifier, false), SEARCH_KEY);
+        actionMap.put(SEARCH_KEY, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                searchButton.doClick();
+            }
+        });
+
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_P, shortcutModifier, false), SETTINGS_KEY);
+        actionMap.put(SETTINGS_KEY, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                settingsButton.doClick();
+            }
+        });
     }
 
     @Override

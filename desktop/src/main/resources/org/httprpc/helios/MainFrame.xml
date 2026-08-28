@@ -58,9 +58,12 @@
             <column-panel>
                 <spacer weight="1"/>
                 <row-panel spacing="8">
-                    <menu-button icon="icons/add_24dp.svg; 18" focusable="false" style="buttonType: borderless" toolTipText="add">
-                        <menu-item text="songs" icon="icons/folder_24dp.svg; 18"/>
-                        <menu-item text="playlist" icon="icons/playlist_add_24dp.svg; 18"/>
+                    <menu-button name="addButton" icon="icons/add_24dp.svg; 18"
+                        focusable="false"
+                        style="buttonType: borderless"
+                        toolTipText="add">
+                        <menu-item name="songsMenuItem" text="songs" icon="icons/folder_24dp.svg; 18"/>
+                        <menu-item name="playlistMenuItem" text="playlist" icon="icons/playlist_add_24dp.svg; 18"/>
                     </menu-button>
                 </row-panel>
                 <spacer weight="1"/>
