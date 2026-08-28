@@ -57,10 +57,12 @@
 
             <column-panel>
                 <spacer weight="1"/>
-                <menu-button icon="icons/add_24dp.svg; 18" focusable="false" style="buttonType: borderless" toolTipText="add">
-                    <menu-item text="songs" icon="icons/folder_24dp.svg; 18"/>
-                    <menu-item text="playlist" icon="icons/playlist_add_24dp.svg; 18"/>
-                </menu-button>
+                <row-panel spacing="8">
+                    <menu-button icon="icons/add_24dp.svg; 18" focusable="false" style="buttonType: borderless" toolTipText="add">
+                        <menu-item text="songs" icon="icons/folder_24dp.svg; 18"/>
+                        <menu-item text="playlist" icon="icons/playlist_add_24dp.svg; 18"/>
+                    </menu-button>
+                </row-panel>
                 <spacer weight="1"/>
             </column-panel>
         </row-panel>
@@ -74,9 +76,19 @@
         <row-panel weight="1.25">
             <spacer weight="1"/>
 
-            <column-panel weight="4">
+            <column-panel>
                 <spacer weight="1"/>
-                <text-field name="searchTextField" leadingIcon="icons/search_24dp.svg; 18"/>
+                <row-panel spacing="2">
+                    <button name="searchButton" icon="icons/search_24dp.svg; 18"
+                        focusable="false"
+                        style="buttonType: borderless"
+                        toolTipText="search"/>
+
+                    <button name="settingsButton" icon="icons/settings_24dp.svg; 18"
+                        focusable="false"
+                        style="buttonType: borderless"
+                        toolTipText="settings"/>
+                </row-panel>
                 <spacer weight="1"/>
             </column-panel>
         </row-panel>

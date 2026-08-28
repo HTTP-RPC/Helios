@@ -18,14 +18,11 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
-import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.WindowAdapter;
@@ -36,7 +33,6 @@ import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
@@ -139,8 +135,6 @@ public class MainFrame extends JFrame implements Runnable {
     private @Outlet JSlider positionSlider = null;
     private @Outlet JLabel remainingTimeLabel = null;
 
-    private @Outlet JTextField searchTextField = null;
-
     private @Outlet JList<ExpandedArtist> artistList = null;
     private @Outlet JList<ExpandedPlaylist> playlistList = null;
 
@@ -212,23 +206,6 @@ public class MainFrame extends JFrame implements Runnable {
         // TODO
         elapsedTimeLabel.setText("00:00");
         remainingTimeLabel.setText("-00:00");
-
-        searchTextField.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent event) {
-                search();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent event) {
-                search();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent event) {
-                // No-op
-            }
-        });
 
         artistList.setCellRenderer(new ArtistCellRenderer());
         playlistList.setCellRenderer(new PlaylistCellRenderer());
@@ -302,41 +279,6 @@ public class MainFrame extends JFrame implements Runnable {
         }
 
         playlistList.setModel(new BasicListModel<>(playlists));
-    }
-
-    private void search() {
-        var text = searchTextField.getText();
-
-        if (text.isEmpty()) {
-            // TODO Hide popup
-            return;
-        }
-
-        taskExecutor.execute(() -> {
-            var queryBuilder = QueryBuilder.select(Song.class).filterByIndexLike("artist", "album", "song");
-
-            try (var connection = openConnection();
-                var statement = queryBuilder.prepare(connection);
-                var results = queryBuilder.executeQuery(statement, mapOf(
-                    entry("artist", "%"),
-                    entry("album", "%"),
-                    entry("song", String.format("%s%%", text))
-                ))) {
-                return sortBy(mapAll(results, BeanAdapter.toType(Song.class)), Comparator.comparing(Song::getTitle)
-                    .thenComparing(Song::getAlbum)
-                    .thenComparing(Song::getArtist));
-            }
-        }, (songs, exception) -> {
-            if (songs.isEmpty()) {
-                // TODO Hide popup
-                return;
-            }
-
-            // TODO
-            for (var song : songs) {
-                System.out.println(song.getTitle());
-            }
-        });
     }
 
     public static void main(String[] args) throws Exception {
