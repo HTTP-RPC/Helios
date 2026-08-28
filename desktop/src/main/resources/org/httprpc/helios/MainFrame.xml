@@ -46,10 +46,10 @@
 
             <column-panel>
                 <spacer weight="1"/>
-                <button name="showQueueButton" icon="icons/queue_music_24dp.svg; 18"
+                <button name="queueButton" icon="icons/queue_music_24dp.svg; 18"
                     focusable="false"
                     style="buttonType: borderless"
-                    toolTipText="showQueue"/>
+                    toolTipText="queue"/>
                 <spacer weight="1"/>
             </column-panel>
 

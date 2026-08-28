@@ -129,7 +129,7 @@ public class MainFrame extends JFrame implements Runnable {
     private @Outlet JToggleButton shuffleButton = null;
     private @Outlet JToggleButton repeatButton = null;
 
-    private @Outlet JButton showQueueButton = null;
+    private @Outlet JButton queueButton = null;
 
     private @Outlet JLabel elapsedTimeLabel = null;
     private @Outlet JSlider positionSlider = null;
