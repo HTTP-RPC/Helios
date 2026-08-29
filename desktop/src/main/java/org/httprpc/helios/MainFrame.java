@@ -47,6 +47,7 @@ import java.util.prefs.Preferences;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
+import static org.httprpc.kilo.util.Optionals.*;
 
 public class MainFrame extends JFrame implements Runnable {
     private abstract static class CollectionCellRenderer<T> extends ColumnPanel implements ListCellRenderer<T> {
@@ -407,23 +408,9 @@ public class MainFrame extends JFrame implements Runnable {
 
     private void showSelectedCollection() {
         if (artistList.isFocusOwner()) {
-            var artist = artistList.getSelectedValue();
-
-            if (artist != null) {
-                // TODO
-                System.out.println("Showing " + artist.getName());
-            } else {
-                collectionScrollPane.setViewportView(null);
-            }
+            collectionScrollPane.setViewportView(map(artistList.getSelectedValue(), ArtistDetailPanel::new));
         } else if (playlistList.isFocusOwner()) {
-            var playlist = playlistList.getSelectedValue();
-
-            if (playlist != null) {
-                // TODO
-                System.out.println("Showing " + playlist.getName());
-            } else {
-                collectionScrollPane.setViewportView(null);
-            }
+            collectionScrollPane.setViewportView(map(playlistList.getSelectedValue(), PlaylistDetailPanel::new));
         } else {
             collectionScrollPane.setViewportView(null);
         }
