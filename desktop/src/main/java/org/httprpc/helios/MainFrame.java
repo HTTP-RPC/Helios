@@ -406,7 +406,27 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     private void showSelectedCollection() {
-        // TODO
+        if (artistList.isFocusOwner()) {
+            var artist = artistList.getSelectedValue();
+
+            if (artist != null) {
+                // TODO
+                System.out.println("Showing " + artist.getName());
+            } else {
+                collectionScrollPane.setViewportView(null);
+            }
+        } else if (playlistList.isFocusOwner()) {
+            var playlist = playlistList.getSelectedValue();
+
+            if (playlist != null) {
+                // TODO
+                System.out.println("Showing " + playlist.getName());
+            } else {
+                collectionScrollPane.setViewportView(null);
+            }
+        } else {
+            collectionScrollPane.setViewportView(null);
+        }
     }
 
     public static void main(String[] args) throws Exception {
