@@ -2,6 +2,7 @@ package org.httprpc.helios;
 
 import org.httprpc.sierra.ColumnPanel;
 
+import java.sql.Connection;
 import java.util.ResourceBundle;
 
 public class ArtistDetailPanel extends ColumnPanel {
@@ -13,5 +14,7 @@ public class ArtistDetailPanel extends ColumnPanel {
         this.artist = artist;
     }
 
-    // TODO
+    public void load(Connection connection) {
+        // TODO
+    }
 }

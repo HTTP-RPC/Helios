@@ -47,7 +47,6 @@ import java.util.prefs.Preferences;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
-import static org.httprpc.kilo.util.Optionals.*;
 
 public class MainFrame extends JFrame implements Runnable {
     private abstract static class CollectionCellRenderer<T> extends ColumnPanel implements ListCellRenderer<T> {
@@ -408,9 +407,37 @@ public class MainFrame extends JFrame implements Runnable {
 
     private void showSelectedCollection() {
         if (artistList.isFocusOwner()) {
-            collectionScrollPane.setViewportView(map(artistList.getSelectedValue(), ArtistDetailPanel::new));
+            var artist = artistList.getSelectedValue();
+
+            if (artist != null) {
+                var artistDetailPanel = new ArtistDetailPanel(artist);
+
+                try (var connection = openConnection()) {
+                    artistDetailPanel.load(connection);
+                } catch (SQLException exception) {
+                    // TODO
+                }
+
+                collectionScrollPane.setViewportView(artistDetailPanel);
+            } else {
+                collectionScrollPane.setViewportView(null);
+            }
         } else if (playlistList.isFocusOwner()) {
-            collectionScrollPane.setViewportView(map(playlistList.getSelectedValue(), PlaylistDetailPanel::new));
+            var playlist = playlistList.getSelectedValue();
+
+            if (playlist != null) {
+                var playlistDetailPanel = new PlaylistDetailPanel(playlist);
+
+                try (var connection = openConnection()) {
+                    playlistDetailPanel.load(connection);
+                } catch (SQLException exception) {
+                    // TODO
+                }
+
+                collectionScrollPane.setViewportView(playlistDetailPanel);
+            } else {
+                collectionScrollPane.setViewportView(null);
+            }
         } else {
             collectionScrollPane.setViewportView(null);
         }
