@@ -12,7 +12,9 @@ import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 import javax.swing.border.EmptyBorder;
 import java.awt.Component;
+import java.time.Duration;
 import java.util.List;
+import java.util.ResourceBundle;
 
 public class AlbumDetailPanel extends StackPanel {
     private static class SongCellRenderer extends RowPanel implements ListCellRenderer<Song> {
@@ -20,6 +22,8 @@ public class AlbumDetailPanel extends StackPanel {
         JLabel timeLabel = new JLabel();
 
         SongCellRenderer() {
+            setAlignToBaseline(true);
+
             setBorder(new EmptyBorder(4, 0, 4, 0));
 
             add(titleLabel, 1.0);
@@ -31,7 +35,12 @@ public class AlbumDetailPanel extends StackPanel {
             Song song, int index,
             boolean selected, boolean cellHasFocus) {
             titleLabel.setText(song.getTitle());
-            timeLabel.setText(Integer.toString(song.getTime())); // TODO
+
+            var duration = Duration.ofSeconds(song.getTime());
+
+            timeLabel.setText(String.format(resourceBundle.getString("timeFormat"),
+                duration.toMinutesPart(),
+                duration.toSecondsPart()));
 
             return this;
         }
@@ -41,6 +50,8 @@ public class AlbumDetailPanel extends StackPanel {
 
     private @Outlet JLabel nameLabel = null;
     private @Outlet JList<Song> songList = null;
+
+    private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(AlbumDetailPanel.class.getName());
 
     public AlbumDetailPanel(Artist artist, String name, List<Song> songs) {
         add(UILoader.load(this, "AlbumDetailPanel.xml"));

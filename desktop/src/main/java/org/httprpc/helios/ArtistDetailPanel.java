@@ -5,15 +5,12 @@ import org.httprpc.kilo.sql.QueryBuilder;
 
 import javax.swing.JLabel;
 import java.sql.SQLException;
-import java.util.ResourceBundle;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
 
 public class ArtistDetailPanel extends CollectionDetailPanel {
     private Artist artist;
-
-    private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(ArtistDetailPanel.class.getName());
 
     public ArtistDetailPanel(Artist artist) {
         this.artist = artist;
@@ -37,7 +34,10 @@ public class ArtistDetailPanel extends CollectionDetailPanel {
             var albums = groupBy(mapAll(results, BeanAdapter.toType(Song.class)), Song::getAlbum);
 
             for (var entry : albums.entrySet()) {
-                add(new AlbumDetailPanel(artist, entry.getKey(), entry.getValue()));
+                var name = entry.getKey();
+                var songs = entry.getValue();
+
+                add(new AlbumDetailPanel(artist, name, songs));
             }
         } catch (SQLException exception) {
             // TODO
