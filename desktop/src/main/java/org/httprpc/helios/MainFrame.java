@@ -231,7 +231,7 @@ public class MainFrame extends JFrame implements Runnable {
             }
         });
 
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_L, shortcutModifier, false), QUEUE_KEY);
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_U, shortcutModifier, false), QUEUE_KEY);
         actionMap.put(QUEUE_KEY, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent event) {
@@ -303,13 +303,13 @@ public class MainFrame extends JFrame implements Runnable {
                 return;
             }
 
-            showSelectedArtist();
+            showSelectedCollection();
         });
 
         artistList.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent event) {
-                showSelectedArtist();
+                showSelectedCollection();
             }
         });
 
@@ -320,22 +320,18 @@ public class MainFrame extends JFrame implements Runnable {
                 return;
             }
 
-            showSelectedPlaylist();
+            showSelectedCollection();
         });
 
         playlistList.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent event) {
-                showSelectedPlaylist();
+                showSelectedCollection();
             }
         });
 
         loadArtists();
         loadPlaylists();
-
-        if (artistList.getModel().getSize() > 0) {
-            artistList.setSelectedIndex(0);
-        }
 
         pack();
         setMinimumSize(getSize());
@@ -384,6 +380,10 @@ public class MainFrame extends JFrame implements Runnable {
         }
 
         artistList.setModel(new BasicListModel<>(artists));
+
+        if (!artists.isEmpty()) {
+            artistList.setSelectedIndex(0);
+        }
     }
 
     private void loadPlaylists() {
@@ -399,32 +399,14 @@ public class MainFrame extends JFrame implements Runnable {
         }
 
         playlistList.setModel(new BasicListModel<>(playlists));
+
+        if (!playlists.isEmpty()) {
+            playlistList.setSelectedIndex(0);
+        }
     }
 
-    private void showSelectedArtist() {
-        collectionScrollPane.setViewportView(null);
-
-        var artist = artistList.getSelectedValue();
-
-        if (artist == null) {
-            return;
-        }
-
+    private void showSelectedCollection() {
         // TODO
-        System.out.println("Showing " + artist.getName());
-    }
-
-    private void showSelectedPlaylist() {
-        collectionScrollPane.setViewportView(null);
-
-        var playlist = playlistList.getSelectedValue();
-
-        if (playlist == null) {
-            return;
-        }
-
-        // TODO
-        System.out.println("Showing " + playlist.getName());
     }
 
     public static void main(String[] args) throws Exception {
