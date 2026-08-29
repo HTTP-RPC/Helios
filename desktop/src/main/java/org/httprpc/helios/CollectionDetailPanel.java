@@ -6,7 +6,7 @@ import javax.swing.border.EmptyBorder;
 
 public abstract class CollectionDetailPanel extends ColumnPanel {
     public CollectionDetailPanel() {
-        setSpacing(4);
+        setSpacing(16);
 
         setBorder(new EmptyBorder(8, 8, 8, 8));
     }

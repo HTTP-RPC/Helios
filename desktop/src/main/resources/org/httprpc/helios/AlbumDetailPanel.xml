@@ -2,14 +2,15 @@
 
 <!DOCTYPE row-panel SYSTEM "sierra.dtd">
 
-<row-panel spacing="8">
+<row-panel spacing="16">
     <column-panel>
-        <image-pane name="imagePane" width="180" scaleMode="fill-width" border="Component.borderColor"/>
+        <image-pane name="imagePane" size="180" scaleMode="fill-width" border="Component.borderColor"/>
         <spacer weight="1"/>
     </column-panel>
 
     <column-panel spacing="4" weight="1">
         <label name="nameLabel" styleClass="h2"/>
+        <separator/>
         <list name="songList" selectionMode="single-selection"/>
     </column-panel>
 </row-panel>

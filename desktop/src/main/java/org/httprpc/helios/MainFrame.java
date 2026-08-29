@@ -454,7 +454,10 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     public static Image getAlbumArtwork(Artist artist, String name) {
-        var path = rootDirectory.resolve(artist.getName()).resolve(name);
+        var path = rootDirectory.resolve("media")
+            .resolve(artist.getName())
+            .resolve(name)
+            .resolve("artwork.jpg");
 
         try (var inputStream = Files.newInputStream(path)) {
             return ImageIO.read(inputStream);
