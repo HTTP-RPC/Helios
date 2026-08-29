@@ -9,6 +9,8 @@ public abstract class CollectionDetailPanel extends ColumnPanel {
         setSpacing(16);
 
         setBorder(new EmptyBorder(8, 8, 8, 8));
+
+        setScrollableTracksViewportWidth(true);
     }
 
     public abstract void load();

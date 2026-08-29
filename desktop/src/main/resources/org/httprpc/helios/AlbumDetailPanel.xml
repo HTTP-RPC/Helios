@@ -4,6 +4,7 @@
 
 <row-panel spacing="16">
     <column-panel>
+        <spacer height="4"/>
         <image-pane name="imagePane" size="180" scaleMode="fill-width" border="Component.borderColor"/>
         <spacer weight="1"/>
     </column-panel>
@@ -11,6 +12,6 @@
     <column-panel spacing="4" weight="1">
         <label name="nameLabel" styleClass="h2"/>
         <separator/>
-        <list name="songList" selectionMode="single-selection"/>
+        <list name="songList" selectionMode="single-selection" opaque="false"/>
     </column-panel>
 </row-panel>
