@@ -11,6 +11,7 @@ import org.httprpc.sierra.MenuButton;
 import org.httprpc.sierra.Outlet;
 import org.httprpc.sierra.UILoader;
 
+import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -27,6 +28,7 @@ import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
@@ -47,6 +49,7 @@ import java.util.prefs.Preferences;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
+import static org.httprpc.kilo.util.Optionals.*;
 
 public class MainFrame extends JFrame implements Runnable {
     private abstract static class CollectionCellRenderer<T> extends ColumnPanel implements ListCellRenderer<T> {
@@ -406,41 +409,20 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     private void showSelectedCollection() {
+        CollectionDetailPanel collectionDetailPanel;
         if (artistList.isFocusOwner()) {
-            var artist = artistList.getSelectedValue();
-
-            if (artist != null) {
-                var artistDetailPanel = new ArtistDetailPanel(artist);
-
-                try (var connection = openConnection()) {
-                    artistDetailPanel.load(connection);
-                } catch (SQLException exception) {
-                    // TODO
-                }
-
-                collectionScrollPane.setViewportView(artistDetailPanel);
-            } else {
-                collectionScrollPane.setViewportView(null);
-            }
+            collectionDetailPanel = map(artistList.getSelectedValue(), ArtistDetailPanel::new);
         } else if (playlistList.isFocusOwner()) {
-            var playlist = playlistList.getSelectedValue();
-
-            if (playlist != null) {
-                var playlistDetailPanel = new PlaylistDetailPanel(playlist);
-
-                try (var connection = openConnection()) {
-                    playlistDetailPanel.load(connection);
-                } catch (SQLException exception) {
-                    // TODO
-                }
-
-                collectionScrollPane.setViewportView(playlistDetailPanel);
-            } else {
-                collectionScrollPane.setViewportView(null);
-            }
+            collectionDetailPanel = map(playlistList.getSelectedValue(), PlaylistDetailPanel::new);
         } else {
-            collectionScrollPane.setViewportView(null);
+            collectionDetailPanel = null;
         }
+
+        if (collectionDetailPanel != null) {
+            collectionDetailPanel.load();
+        }
+
+        collectionScrollPane.setViewportView(collectionDetailPanel);
     }
 
     public static void main(String[] args) throws Exception {
@@ -467,7 +449,17 @@ public class MainFrame extends JFrame implements Runnable {
         SwingUtilities.invokeLater(new MainFrame());
     }
 
-    private static Connection openConnection() throws SQLException {
+    public static Connection openConnection() throws SQLException {
         return DriverManager.getConnection(String.format("jdbc:sqlite:%s", dbFile.toAbsolutePath()));
+    }
+
+    public static Image getAlbumArtwork(Artist artist, String name) {
+        var path = rootDirectory.resolve(artist.getName()).resolve(name);
+
+        try (var inputStream = Files.newInputStream(path)) {
+            return ImageIO.read(inputStream);
+        } catch (IOException exception) {
+            return null;
+        }
     }
 }

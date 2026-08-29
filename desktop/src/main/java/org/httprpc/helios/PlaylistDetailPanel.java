@@ -1,11 +1,9 @@
 package org.httprpc.helios;
 
-import org.httprpc.sierra.ColumnPanel;
-
-import java.sql.Connection;
+import javax.swing.JLabel;
 import java.util.ResourceBundle;
 
-public class PlaylistDetailPanel extends ColumnPanel {
+public class PlaylistDetailPanel extends CollectionDetailPanel {
     private Playlist playlist;
 
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(PlaylistDetailPanel.class.getName());
@@ -14,7 +12,14 @@ public class PlaylistDetailPanel extends ColumnPanel {
         this.playlist = playlist;
     }
 
-    public void load(Connection connection) {
+    @Override
+    public void load() {
+        var playlistLabel = new JLabel(playlist.getName());
+
+        playlistLabel.putClientProperty("FlatLaf.styleClass", "h1");
+
+        add(playlistLabel);
+
         // TODO
     }
 }
