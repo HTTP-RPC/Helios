@@ -29,6 +29,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -71,7 +73,7 @@ public class MainFrame extends JFrame implements Runnable {
 
             Color background;
             Color foreground;
-            if (selected) {
+            if (selected && cellHasFocus) {
                 background = list.getSelectionBackground();
                 foreground = list.getSelectionForeground();
             } else {
@@ -147,7 +149,7 @@ public class MainFrame extends JFrame implements Runnable {
     private @Outlet JList<ExpandedArtist> artistList = null;
     private @Outlet JList<ExpandedPlaylist> playlistList = null;
 
-    private @Outlet JScrollPane albumScrollPane = null;
+    private @Outlet JScrollPane collectionScrollPane = null;
 
     private FlatSVGIcon playIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/play_arrow_24dp.svg"));
     private FlatSVGIcon pauseIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/pause_24dp.svg"));
@@ -295,7 +297,38 @@ public class MainFrame extends JFrame implements Runnable {
         remainingTimeLabel.setText("-00:00");
 
         artistList.setCellRenderer(new ArtistCellRenderer());
+
+        artistList.addListSelectionListener(event -> {
+            if (event.getValueIsAdjusting()) {
+                return;
+            }
+
+            showSelectedArtist();
+        });
+
+        artistList.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent event) {
+                showSelectedArtist();
+            }
+        });
+
         playlistList.setCellRenderer(new PlaylistCellRenderer());
+
+        playlistList.addListSelectionListener(event -> {
+            if (event.getValueIsAdjusting()) {
+                return;
+            }
+
+            showSelectedPlaylist();
+        });
+
+        playlistList.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent event) {
+                showSelectedPlaylist();
+            }
+        });
 
         loadArtists();
         loadPlaylists();
@@ -366,6 +399,32 @@ public class MainFrame extends JFrame implements Runnable {
         }
 
         playlistList.setModel(new BasicListModel<>(playlists));
+    }
+
+    private void showSelectedArtist() {
+        collectionScrollPane.setViewportView(null);
+
+        var artist = artistList.getSelectedValue();
+
+        if (artist == null) {
+            return;
+        }
+
+        // TODO
+        System.out.println("Showing " + artist.getName());
+    }
+
+    private void showSelectedPlaylist() {
+        collectionScrollPane.setViewportView(null);
+
+        var playlist = playlistList.getSelectedValue();
+
+        if (playlist == null) {
+            return;
+        }
+
+        // TODO
+        System.out.println("Showing " + playlist.getName());
     }
 
     public static void main(String[] args) throws Exception {
