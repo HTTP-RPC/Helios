@@ -10,7 +10,10 @@ import org.httprpc.sierra.UILoader;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
+import javax.swing.UIManager;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.MatteBorder;
 import java.awt.Component;
 import java.time.Duration;
 import java.util.List;
@@ -62,5 +65,10 @@ public class AlbumDetailPanel extends StackPanel {
 
         songList.setCellRenderer(new SongCellRenderer());
         songList.setModel(new BasicListModel<>(songs));
+
+        songList.setBorder(new CompoundBorder(
+            new MatteBorder(1, 0, 0, 0, UIManager.getColor("Component.borderColor")),
+            new EmptyBorder(2, 0, 0, 0)
+        ));
     }
 }
