@@ -414,7 +414,17 @@ public class MainFrame extends JFrame implements Runnable {
     private void showSelectedCollection() {
         CollectionDetailPanel collectionDetailPanel;
         if (artistList.isFocusOwner()) {
-            collectionDetailPanel = new ArtistDetailPanel(artistList.getSelectedValue());
+            var artistDetailPanel = new ArtistDetailPanel(artistList.getSelectedValue());
+
+            if (selectedSong != null) {
+                SwingUtilities.invokeLater(() -> {
+                    artistDetailPanel.scrollToSong(selectedSong);
+
+                    selectedSong = null;
+                });
+            }
+
+            collectionDetailPanel = artistDetailPanel;
         } else if (playlistList.isFocusOwner()) {
             collectionDetailPanel = new PlaylistDetailPanel(playlistList.getSelectedValue());
         } else {
@@ -426,16 +436,6 @@ public class MainFrame extends JFrame implements Runnable {
         }
 
         collectionScrollPane.setViewportView(collectionDetailPanel);
-
-        if (selectedSong != null) {
-            SwingUtilities.invokeLater(() -> {
-                var artistDetailPanel = (ArtistDetailPanel)collectionScrollPane.getViewport().getView();
-
-                artistDetailPanel.scrollToSong(selectedSong);
-
-                selectedSong = null;
-            });
-        }
     }
 
     private void showSearchDialog() {
@@ -458,7 +458,6 @@ public class MainFrame extends JFrame implements Runnable {
             for (var i = 0; i < n; i++) {
                 if (artistListModel.getElementAt(i).getName().equals(artist)) {
                     artistList.setSelectedIndex(i);
-
                     artistList.requestFocus();
 
                     break;
