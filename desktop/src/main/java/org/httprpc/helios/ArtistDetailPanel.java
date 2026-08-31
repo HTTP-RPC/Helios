@@ -17,6 +17,8 @@ import static org.httprpc.kilo.util.Iterables.*;
 public class ArtistDetailPanel extends CollectionDetailPanel {
     private Artist artist;
 
+    private JLabel nameLabel = new JLabel();
+
     private JButton playAllButton = new JButton();
 
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(ArtistDetailPanel.class.getName());
@@ -32,11 +34,11 @@ public class ArtistDetailPanel extends CollectionDetailPanel {
         artistNamePanel.setSpacing(4);
         artistNamePanel.setAlignToBaseline(true);
 
-        var artistLabel = new JLabel(artist.getName());
+        nameLabel.setText(artist.getName());
 
-        artistLabel.putClientProperty("FlatLaf.styleClass", "h1");
+        nameLabel.putClientProperty("FlatLaf.styleClass", "h1");
 
-        artistNamePanel.add(artistLabel);
+        artistNamePanel.add(nameLabel);
 
         var playIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/play_arrow_24dp.svg")).derive(20, 20);
 
