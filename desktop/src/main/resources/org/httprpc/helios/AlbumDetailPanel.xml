@@ -11,6 +11,6 @@
             <spacer weight="1"/>
         </column-panel>
 
-        <list name="songList" selectionMode="single-selection" opaque="false" weight="1"/>
+        <column-panel name="songListPanel" weight="1"/>
     </row-panel>
 </column-panel>
