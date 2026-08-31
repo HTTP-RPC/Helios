@@ -85,7 +85,7 @@ public class ArtistDetailPanel extends CollectionDetailPanel {
         }
     }
 
-    public void showSong(Song song) {
+    public void scrollToSong(Song song) {
         var album = song.getAlbum();
 
         for (var albumDetailPanel : albumDetailPanels) {

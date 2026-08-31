@@ -431,7 +431,7 @@ public class MainFrame extends JFrame implements Runnable {
             SwingUtilities.invokeLater(() -> {
                 var artistDetailPanel = (ArtistDetailPanel)collectionScrollPane.getViewport().getView();
 
-                artistDetailPanel.showSong(selectedSong);
+                artistDetailPanel.scrollToSong(selectedSong);
 
                 selectedSong = null;
             });
