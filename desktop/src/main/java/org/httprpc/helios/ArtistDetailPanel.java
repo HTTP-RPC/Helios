@@ -9,10 +9,12 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.UIManager;
 import java.sql.SQLException;
+import java.util.Comparator;
 import java.util.ResourceBundle;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
+import static org.httprpc.kilo.util.Optionals.*;
 
 public class ArtistDetailPanel extends CollectionDetailPanel {
     private Artist artist;
@@ -65,6 +67,8 @@ public class ArtistDetailPanel extends CollectionDetailPanel {
             for (var entry : albums.entrySet()) {
                 var name = entry.getKey();
                 var songs = entry.getValue();
+
+                songs.sort(Comparator.comparing(song -> coalesce(song.getTrackNumber(), () -> 0)));
 
                 add(new AlbumDetailPanel(artist, name, songs));
             }

@@ -29,6 +29,7 @@ public interface Song {
     void setAlbum(String album);
 
     @Column("title")
+    @Index(3)
     @Required
     String getTitle();
     void setTitle(String title);
@@ -47,7 +48,6 @@ public interface Song {
     void setYear(Integer year);
 
     @Column("trackNumber")
-    @Index(3)
     Integer getTrackNumber();
     void setTrackNumber(Integer trackNumber);
 
