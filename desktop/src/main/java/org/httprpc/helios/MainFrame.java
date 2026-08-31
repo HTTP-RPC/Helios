@@ -299,6 +299,8 @@ public class MainFrame extends JFrame implements Runnable {
         elapsedTimeLabel.setText("00:00");
         remainingTimeLabel.setText("-00:00");
 
+        searchButton.addActionListener(event -> showSearchDialog());
+
         artistList.setCellRenderer(new ArtistCellRenderer());
 
         artistList.addListSelectionListener(event -> {
@@ -423,6 +425,15 @@ public class MainFrame extends JFrame implements Runnable {
         }
 
         collectionScrollPane.setViewportView(collectionDetailPanel);
+    }
+
+    private void showSearchDialog() {
+        var searchDialog = new SearchDialog(this);
+
+        searchDialog.pack();
+        searchDialog.setLocationRelativeTo(this);
+
+        searchDialog.setVisible(true);
     }
 
     public static void main(String[] args) throws Exception {

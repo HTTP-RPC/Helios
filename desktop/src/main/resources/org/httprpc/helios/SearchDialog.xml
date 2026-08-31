@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE column-panel SYSTEM "sierra.dtd">
+
+<column-panel spacing="8" padding="8" opaque="true">
+    <text-field name="titleTextField" columns="18"
+        leadingIcon="icons/search_24dp.svg; 18"
+        showClearButton="true"/>
+
+    <scroll-pane size="320, 240">
+        <list name="resultList" selectionMode="single-selection"/>
+    </scroll-pane>
+</column-panel>
