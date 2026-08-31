@@ -18,6 +18,7 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JToggleButton;
@@ -129,7 +130,7 @@ public class MainFrame extends JFrame implements Runnable {
         }
     }
 
-    private @Outlet JButton playButton = null;
+    private @Outlet JButton playPauseButton = null;
 
     private @Outlet JButton previousButton = null;
     private @Outlet JButton nextButton = null;
@@ -140,6 +141,8 @@ public class MainFrame extends JFrame implements Runnable {
     private @Outlet JButton queueButton = null;
 
     private @Outlet MenuButton addButton = null;
+    private @Outlet JMenuItem addSongsMenuItem = null;
+    private @Outlet JMenuItem addPlaylistMenuItem = null;
 
     private @Outlet JButton searchButton = null;
     private @Outlet JButton settingsButton = null;
@@ -153,12 +156,14 @@ public class MainFrame extends JFrame implements Runnable {
 
     private @Outlet JScrollPane collectionScrollPane = null;
 
+    private boolean playing = false;
+
     private Song selectedSong = null;
 
     private FlatSVGIcon playIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/play_arrow_24dp.svg"));
     private FlatSVGIcon pauseIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/pause_24dp.svg"));
 
-    private static final String PLAY_KEY = "play";
+    private static final String PLAY_PAUSE_KEY = "playPause";
     private static final String PREVIOUS_KEY = "previous";
     private static final String NEXT_KEY = "next";
     private static final String SHUFFLE_KEY = "shuffle";
@@ -195,11 +200,11 @@ public class MainFrame extends JFrame implements Runnable {
 
         var shortcutModifier = Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx();
 
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0, false), PLAY_KEY);
-        actionMap.put(PLAY_KEY, new AbstractAction() {
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0, false), PLAY_PAUSE_KEY);
+        actionMap.put(PLAY_PAUSE_KEY, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent event) {
-                playButton.doClick();
+                playPauseButton.doClick();
             }
         });
 
@@ -272,9 +277,18 @@ public class MainFrame extends JFrame implements Runnable {
     public void run() {
         setContentPane(UILoader.load(this, "MainFrame.xml", resourceBundle));
 
-        // TODO
-        playButton.setIcon(playIcon);
-        playButton.setToolTipText(resourceBundle.getString("play"));
+        playPauseButton.addActionListener(event -> {
+            if (!playing) {
+                play();
+            } else {
+                pause();
+            }
+        });
+
+        pause();
+
+        previousButton.addActionListener(event -> movePrevious());
+        nextButton.addActionListener(event -> moveNext());
 
         var shuffleIcon = (FlatSVGIcon)shuffleButton.getIcon();
 
@@ -286,6 +300,8 @@ public class MainFrame extends JFrame implements Runnable {
             }
         }));
 
+        shuffleButton.addChangeListener(event -> toggleShuffle());
+
         var repeatIcon = (FlatSVGIcon)repeatButton.getIcon();
 
         repeatIcon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> {
@@ -296,11 +312,20 @@ public class MainFrame extends JFrame implements Runnable {
             }
         }));
 
+        repeatButton.addChangeListener(event -> toggleRepeat());
+
+        queueButton.addActionListener(event -> showQueue());
+
+        addSongsMenuItem.addActionListener(event -> addSongs());
+        addPlaylistMenuItem.addActionListener(event -> addPlaylist());
+
         // TODO
         elapsedTimeLabel.setText("00:00");
         remainingTimeLabel.setText("-00:00");
 
         searchButton.addActionListener(event -> showSearchDialog());
+
+        settingsButton.addActionListener(event -> showSettingsDialog());
 
         artistList.setCellRenderer(new ArtistCellRenderer());
 
@@ -411,31 +436,54 @@ public class MainFrame extends JFrame implements Runnable {
         }
     }
 
-    private void showSelectedCollection() {
-        CollectionDetailPanel collectionDetailPanel;
-        if (artistList.isFocusOwner()) {
-            var artistDetailPanel = new ArtistDetailPanel(artistList.getSelectedValue());
+    private void play() {
+        playPauseButton.setIcon(pauseIcon);
+        playPauseButton.setToolTipText(resourceBundle.getString("pause"));
 
-            if (selectedSong != null) {
-                SwingUtilities.invokeLater(() -> {
-                    artistDetailPanel.scrollToSong(selectedSong);
+        // TODO
 
-                    selectedSong = null;
-                });
-            }
+        playing = true;
+    }
 
-            collectionDetailPanel = artistDetailPanel;
-        } else if (playlistList.isFocusOwner()) {
-            collectionDetailPanel = new PlaylistDetailPanel(playlistList.getSelectedValue());
-        } else {
-            collectionDetailPanel = null;
-        }
+    private void pause() {
+        playPauseButton.setIcon(playIcon);
+        playPauseButton.setToolTipText(resourceBundle.getString("play"));
 
-        if (collectionDetailPanel != null) {
-            collectionDetailPanel.load();
-        }
+        // TODO
 
-        collectionScrollPane.setViewportView(collectionDetailPanel);
+        playing = false;
+    }
+
+    private void movePrevious() {
+        // TODO
+    }
+
+    private void moveNext() {
+        // TODO
+    }
+
+    private void toggleShuffle() {
+        // TODO
+    }
+
+    private void toggleRepeat() {
+        // TODO
+    }
+
+    private void showQueue() {
+        // TODO
+    }
+
+    private void addSongs() {
+        // TODO
+    }
+
+    private void addPlaylist() {
+        // TODO
+    }
+
+    private void skipToPosition() {
+        // TODO
     }
 
     private void showSearchDialog() {
@@ -464,6 +512,37 @@ public class MainFrame extends JFrame implements Runnable {
                 }
             }
         }
+    }
+
+    private void showSettingsDialog() {
+        // TODO
+    }
+
+    private void showSelectedCollection() {
+        CollectionDetailPanel collectionDetailPanel;
+        if (artistList.isFocusOwner()) {
+            var artistDetailPanel = new ArtistDetailPanel(artistList.getSelectedValue());
+
+            if (selectedSong != null) {
+                SwingUtilities.invokeLater(() -> {
+                    artistDetailPanel.scrollToSong(selectedSong);
+
+                    selectedSong = null;
+                });
+            }
+
+            collectionDetailPanel = artistDetailPanel;
+        } else if (playlistList.isFocusOwner()) {
+            collectionDetailPanel = new PlaylistDetailPanel(playlistList.getSelectedValue());
+        } else {
+            collectionDetailPanel = null;
+        }
+
+        if (collectionDetailPanel != null) {
+            collectionDetailPanel.load();
+        }
+
+        collectionScrollPane.setViewportView(collectionDetailPanel);
     }
 
     public static void main(String[] args) throws Exception {

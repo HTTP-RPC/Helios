@@ -159,7 +159,7 @@ public class SearchDialog extends JDialog {
                 var results = queryBuilder.executeQuery(statement, mapOf(
                     entry("artist", "%"),
                     entry("album", "%"),
-                    entry("song", String.format("%s%%", text))
+                    entry("song", String.format("%%%s%%", text))
                 ))) {
                 return sortBy(mapAll(results, BeanAdapter.toType(Song.class)), Comparator.comparing(Song::getTitle)
                     .thenComparing(Song::getAlbum)

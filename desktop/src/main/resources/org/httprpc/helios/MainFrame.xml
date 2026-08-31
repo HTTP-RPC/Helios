@@ -8,7 +8,7 @@
             <row-panel spacing="2">
                 <column-panel>
                     <spacer weight="1"/>
-                    <button name="playButton" focusable="false" style="buttonType: borderless"/>
+                    <button name="playPauseButton" focusable="false" style="buttonType: borderless"/>
                     <spacer weight="1"/>
                 </column-panel>
 
@@ -62,8 +62,8 @@
                         focusable="false"
                         style="buttonType: borderless"
                         toolTipText="add">
-                        <menu-item name="songsMenuItem" text="songs" icon="icons/folder_24dp.svg; 18"/>
-                        <menu-item name="playlistMenuItem" text="playlist" icon="icons/playlist_add_24dp.svg; 18"/>
+                        <menu-item name="addSongsMenuItem" text="songs" icon="icons/folder_24dp.svg; 18"/>
+                        <menu-item name="addPlaylistMenuItem" text="playlist" icon="icons/playlist_add_24dp.svg; 18"/>
                     </menu-button>
                 </row-panel>
                 <spacer weight="1"/>
