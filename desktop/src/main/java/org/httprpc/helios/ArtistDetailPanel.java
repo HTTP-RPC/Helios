@@ -17,7 +17,7 @@ import static org.httprpc.kilo.util.Iterables.*;
 public class ArtistDetailPanel extends CollectionDetailPanel {
     private Artist artist;
 
-    private JButton playArtistButton = new JButton();
+    private JButton playAllButton = new JButton();
 
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(ArtistDetailPanel.class.getName());
 
@@ -42,11 +42,12 @@ public class ArtistDetailPanel extends CollectionDetailPanel {
 
         playIcon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> UIManager.getColor("Button.foreground")));
 
-        playArtistButton.setIcon(playIcon);
-        playArtistButton.putClientProperty("FlatLaf.style", "buttonType: borderless");
-        playArtistButton.setToolTipText(resourceBundle.getString("playAll"));
+        playAllButton.setIcon(playIcon);
+        playAllButton.setFocusable(false);
+        playAllButton.setToolTipText(resourceBundle.getString("playAll"));
+        playAllButton.putClientProperty("FlatLaf.style", "buttonType: borderless");
 
-        artistNamePanel.add(playArtistButton);
+        artistNamePanel.add(playAllButton);
 
         add(artistNamePanel);
 

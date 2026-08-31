@@ -13,7 +13,6 @@ import javax.swing.UIManager;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
-import java.time.Duration;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -41,21 +40,7 @@ public class AlbumDetailPanel extends StackPanel {
         ));
 
         for (var song : songs) {
-            var songPanel = new RowPanel();
-
-            songPanel.setAlignToBaseline(true);
-
-            songPanel.add(new JLabel(song.getTitle()), 1.0);
-
-            var duration = Duration.ofSeconds(song.getTime());
-
-            songPanel.add(new JLabel(String.format(resourceBundle.getString("timeFormat"),
-                duration.toMinutesPart(),
-                duration.toSecondsPart())));
-
-            songPanel.setBorder(new EmptyBorder(4, 0, 4, 0));
-
-            songListPanel.add(songPanel);
+            songListPanel.add(new SongDetailPanel(song));
         }
     }
 }
