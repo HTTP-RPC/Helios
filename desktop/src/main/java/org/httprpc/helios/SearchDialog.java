@@ -78,6 +78,8 @@ public class SearchDialog extends JDialog {
 
     private @Outlet JList<Song> resultList = null;
 
+    private Song selectedSong = null;
+
     private static final String ESCAPE_ACTION_KEY = "escape";
 
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(SearchDialog.class.getName());
@@ -116,16 +118,26 @@ public class SearchDialog extends JDialog {
 
         resultList.setCellRenderer(new ResultCellRenderer());
 
+        resultList.addListSelectionListener(event -> {
+            selectedSong = resultList.getSelectedValue();
+
+            dispose();
+        });
+
         rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false), ESCAPE_ACTION_KEY);
 
         rootPane.getActionMap().put(ESCAPE_ACTION_KEY, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent event) {
-                setVisible(false);
+                dispose();
             }
         });
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+    }
+
+    public Song getSelectedSong() {
+        return selectedSong;
     }
 
     private void search() {

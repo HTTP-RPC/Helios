@@ -434,6 +434,12 @@ public class MainFrame extends JFrame implements Runnable {
         searchDialog.setLocationRelativeTo(this);
 
         searchDialog.setVisible(true);
+
+        var selectedSong = searchDialog.getSelectedSong();
+
+        if (selectedSong != null) {
+            // TODO
+        }
     }
 
     public static void main(String[] args) throws Exception {
