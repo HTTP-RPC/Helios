@@ -134,6 +134,8 @@ public class SearchDialog extends JDialog {
         });
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+
+        setResizable(false);
     }
 
     public Song getSelectedSong() {

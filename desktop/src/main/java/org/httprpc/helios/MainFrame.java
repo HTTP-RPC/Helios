@@ -49,7 +49,6 @@ import java.util.prefs.Preferences;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
-import static org.httprpc.kilo.util.Optionals.*;
 
 public class MainFrame extends JFrame implements Runnable {
     private abstract static class CollectionCellRenderer<T> extends ColumnPanel implements ListCellRenderer<T> {
@@ -153,6 +152,8 @@ public class MainFrame extends JFrame implements Runnable {
     private @Outlet JList<ExpandedPlaylist> playlistList = null;
 
     private @Outlet JScrollPane collectionScrollPane = null;
+
+    private Song selectedSong = null;
 
     private FlatSVGIcon playIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/play_arrow_24dp.svg"));
     private FlatSVGIcon pauseIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/pause_24dp.svg"));
@@ -304,7 +305,7 @@ public class MainFrame extends JFrame implements Runnable {
         artistList.setCellRenderer(new ArtistCellRenderer());
 
         artistList.addListSelectionListener(event -> {
-            if (event.getValueIsAdjusting()) {
+            if (event.getValueIsAdjusting() || !artistList.isFocusOwner()) {
                 return;
             }
 
@@ -321,7 +322,7 @@ public class MainFrame extends JFrame implements Runnable {
         playlistList.setCellRenderer(new PlaylistCellRenderer());
 
         playlistList.addListSelectionListener(event -> {
-            if (event.getValueIsAdjusting()) {
+            if (event.getValueIsAdjusting() || !playlistList.isFocusOwner()) {
                 return;
             }
 
@@ -413,9 +414,9 @@ public class MainFrame extends JFrame implements Runnable {
     private void showSelectedCollection() {
         CollectionDetailPanel collectionDetailPanel;
         if (artistList.isFocusOwner()) {
-            collectionDetailPanel = map(artistList.getSelectedValue(), ArtistDetailPanel::new);
+            collectionDetailPanel = new ArtistDetailPanel(artistList.getSelectedValue());
         } else if (playlistList.isFocusOwner()) {
-            collectionDetailPanel = map(playlistList.getSelectedValue(), PlaylistDetailPanel::new);
+            collectionDetailPanel = new PlaylistDetailPanel(playlistList.getSelectedValue());
         } else {
             collectionDetailPanel = null;
         }
@@ -425,6 +426,14 @@ public class MainFrame extends JFrame implements Runnable {
         }
 
         collectionScrollPane.setViewportView(collectionDetailPanel);
+
+        if (selectedSong != null) {
+            var artistDetailPanel = (ArtistDetailPanel)collectionScrollPane.getViewport().getView();
+
+            artistDetailPanel.showSong(selectedSong);
+
+            selectedSong = null;
+        }
     }
 
     private void showSearchDialog() {
@@ -435,10 +444,24 @@ public class MainFrame extends JFrame implements Runnable {
 
         searchDialog.setVisible(true);
 
-        var selectedSong = searchDialog.getSelectedSong();
+        selectedSong = searchDialog.getSelectedSong();
 
         if (selectedSong != null) {
-            // TODO
+            var artist = selectedSong.getArtist();
+
+            var artistListModel = artistList.getModel();
+
+            var n = artistListModel.getSize();
+
+            for (var i = 0; i < n; i++) {
+                if (artistListModel.getElementAt(i).getName().equals(artist)) {
+                    artistList.setSelectedIndex(i);
+
+                    artistList.requestFocus();
+
+                    break;
+                }
+            }
         }
     }
 

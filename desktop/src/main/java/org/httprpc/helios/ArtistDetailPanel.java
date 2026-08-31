@@ -7,9 +7,11 @@ import org.httprpc.sierra.RowPanel;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import java.sql.SQLException;
 import java.util.Comparator;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import static org.httprpc.kilo.util.Collections.*;
@@ -22,6 +24,8 @@ public class ArtistDetailPanel extends CollectionDetailPanel {
     private JLabel nameLabel = new JLabel();
 
     private JButton playAllButton = new JButton();
+
+    private List<AlbumDetailPanel> albumDetailPanels = listOf();
 
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(ArtistDetailPanel.class.getName());
 
@@ -70,10 +74,26 @@ public class ArtistDetailPanel extends CollectionDetailPanel {
 
                 songs.sort(Comparator.comparing(song -> coalesce(song.getTrackNumber(), () -> 0)));
 
-                add(new AlbumDetailPanel(artist, name, songs));
+                var albumDetailPanel = new AlbumDetailPanel(artist, name, songs);
+
+                add(albumDetailPanel);
+
+                albumDetailPanels.add(albumDetailPanel);
             }
         } catch (SQLException exception) {
             // TODO
+        }
+    }
+
+    public void showSong(Song song) {
+        var album = song.getAlbum();
+
+        for (var albumDetailPanel : albumDetailPanels) {
+            if (albumDetailPanel.matches(album)) {
+                scrollRectToVisible(SwingUtilities.convertRectangle(this, albumDetailPanel.getBounds(), this));
+
+                break;
+            }
         }
     }
 }
