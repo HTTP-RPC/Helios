@@ -5,6 +5,8 @@ import java.awt.Dimension;
 import java.util.ResourceBundle;
 
 public class QueueDialog extends ModalDialog {
+    // TODO Song cell renderer
+
     private static ResourceBundle resourceBundle = ResourceBundle.getBundle(QueueDialog.class.getName());
 
     public QueueDialog(MainFrame owner) {
@@ -14,7 +16,7 @@ public class QueueDialog extends ModalDialog {
 
         var scrollPane = new JScrollPane();
 
-        scrollPane.setPreferredSize(new Dimension(320, 480));
+        scrollPane.setPreferredSize(new Dimension(360, 480));
 
         setContentPane(scrollPane);
 
