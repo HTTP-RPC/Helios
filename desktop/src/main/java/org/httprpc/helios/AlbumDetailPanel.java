@@ -7,6 +7,7 @@ import org.httprpc.sierra.RowPanel;
 import org.httprpc.sierra.StackPanel;
 import org.httprpc.sierra.UILoader;
 
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.UIManager;
 import javax.swing.border.CompoundBorder;
@@ -17,7 +18,10 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class AlbumDetailPanel extends StackPanel {
+    private @Outlet RowPanel albumNamePanel = null;
+
     private @Outlet JLabel nameLabel = null;
+    private @Outlet JButton playAlbumButton = null;
 
     private @Outlet ImagePane imagePane = null;
     private @Outlet ColumnPanel songListPanel = null;
@@ -25,7 +29,7 @@ public class AlbumDetailPanel extends StackPanel {
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(AlbumDetailPanel.class.getName());
 
     public AlbumDetailPanel(Artist artist, String name, List<Song> songs) {
-        add(UILoader.load(this, "AlbumDetailPanel.xml"));
+        add(UILoader.load(this, "AlbumDetailPanel.xml", resourceBundle));
 
         nameLabel.setText(name);
 

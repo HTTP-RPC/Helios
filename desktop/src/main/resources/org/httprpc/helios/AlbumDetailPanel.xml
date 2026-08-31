@@ -3,7 +3,13 @@
 <!DOCTYPE column-panel SYSTEM "sierra.dtd">
 
 <column-panel spacing="8">
-    <label name="nameLabel" styleClass="h2"/>
+    <row-panel spacing="4" alignToBaseline="true">
+        <label name="nameLabel" styleClass="h2"/>
+        <button name="playAlbumButton" icon="icons/play_arrow_24dp.svg; 18"
+            focusable="false"
+            toolTipText="playAlbum"
+            style="buttonType: borderless"/>
+    </row-panel>
 
     <row-panel spacing="16">
         <column-panel>
