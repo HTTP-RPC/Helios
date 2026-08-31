@@ -314,7 +314,7 @@ public class MainFrame extends JFrame implements Runnable {
 
         repeatButton.addChangeListener(event -> toggleRepeat());
 
-        queueButton.addActionListener(event -> showQueue());
+        queueButton.addActionListener(event -> showQueueDialog());
 
         addSongsMenuItem.addActionListener(event -> addSongs());
         addPlaylistMenuItem.addActionListener(event -> addPlaylist());
@@ -470,8 +470,13 @@ public class MainFrame extends JFrame implements Runnable {
         // TODO
     }
 
-    private void showQueue() {
-        // TODO
+    private void showQueueDialog() {
+        var queueDialog = new QueueDialog(this);
+
+        queueDialog.pack();
+        queueDialog.setLocationRelativeTo(this);
+
+        queueDialog.setVisible(true);
     }
 
     private void addSongs() {

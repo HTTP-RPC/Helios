@@ -8,21 +8,15 @@ import org.httprpc.sierra.Outlet;
 import org.httprpc.sierra.TaskExecutor;
 import org.httprpc.sierra.UILoader;
 
-import javax.swing.AbstractAction;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JTextField;
-import javax.swing.KeyStroke;
 import javax.swing.ListCellRenderer;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
 import java.util.Comparator;
 import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
@@ -30,7 +24,7 @@ import java.util.concurrent.Executors;
 import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
 
-public class SearchDialog extends JDialog {
+public class SearchDialog extends ModalDialog {
     private static class ResultCellRenderer extends ColumnPanel implements ListCellRenderer<Song> {
         JLabel titleLabel = new JLabel();
         JLabel albumArtistLabel = new JLabel();
@@ -80,8 +74,6 @@ public class SearchDialog extends JDialog {
 
     private Song selectedSong = null;
 
-    private static final String ESCAPE_ACTION_KEY = "escape";
-
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(SearchDialog.class.getName());
 
     private static final TaskExecutor taskExecutor = new TaskExecutor(Executors.newSingleThreadExecutor(runnable -> {
@@ -93,7 +85,7 @@ public class SearchDialog extends JDialog {
     }));
 
     public SearchDialog(MainFrame owner) {
-        super(owner, true);
+        super(owner);
 
         setTitle(resourceBundle.getString("title"));
 
@@ -123,17 +115,6 @@ public class SearchDialog extends JDialog {
 
             dispose();
         });
-
-        rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false), ESCAPE_ACTION_KEY);
-
-        rootPane.getActionMap().put(ESCAPE_ACTION_KEY, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                dispose();
-            }
-        });
-
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         setResizable(false);
     }
