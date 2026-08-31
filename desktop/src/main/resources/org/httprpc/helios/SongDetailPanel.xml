@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE row-panel SYSTEM "sierra.dtd">
+
+<row-panel spacing="4" alignToBaseline="true" padding="4, 0, 4, 0">
+    <label name="titleLabel"/>
+    <button name="playSongButton" icon="icons/play_arrow_24dp.svg; 16"
+        focusable="false"
+        toolTipText="playSong"
+        style="buttonType: borderless"/>
+
+    <spacer weight="1"/>
+
+    <label name="timeLabel"/>
+</row-panel>
