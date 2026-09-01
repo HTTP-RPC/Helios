@@ -13,14 +13,14 @@
     <spacer weight="1"/>
 
     <row-panel spacing="2">
-        <button name="deleteButton" icon="icons/delete_24dp.svg; 18"
-            focusable="false"
-            toolTipText="deleteSong"
-            style="buttonType: borderless"/>
-
         <button name="editButton" icon="icons/edit_24dp.svg; 16"
             focusable="false"
             toolTipText="editSong"
+            style="buttonType: borderless"/>
+
+        <button name="deleteButton" icon="icons/delete_24dp.svg; 18"
+            focusable="false"
+            toolTipText="deleteSong"
             style="buttonType: borderless"/>
     </row-panel>
 

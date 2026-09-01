@@ -22,8 +22,8 @@ public class SongDetailPanel extends StackPanel {
 
     private @Outlet JButton playSongButton = null;
 
-    private @Outlet JButton deleteButton = null;
     private @Outlet JButton editButton = null;
+    private @Outlet JButton deleteButton = null;
 
     private @Outlet JLabel timeLabel  = null;
 
@@ -41,11 +41,11 @@ public class SongDetailPanel extends StackPanel {
         playSongButton.addActionListener(event -> playSong());
         playSongButton.setVisible(false);
 
-        deleteButton.addActionListener(event -> confirmDeleteSong());
-        deleteButton.setVisible(false);
-
         editButton.addActionListener(event -> showEditSongDialog());
         editButton.setVisible(false);
+
+        deleteButton.addActionListener(event -> confirmDeleteSong());
+        deleteButton.setVisible(false);
 
         var duration = Duration.ofSeconds(song.getTime());
 
@@ -74,14 +74,14 @@ public class SongDetailPanel extends StackPanel {
             }
         });
 
-        deleteButton.addMouseListener(new MouseAdapter() {
+        editButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseExited(MouseEvent event) {
                 hideButtons();
             }
         });
 
-        editButton.addMouseListener(new MouseAdapter() {
+        deleteButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseExited(MouseEvent event) {
                 hideButtons();
@@ -123,8 +123,8 @@ public class SongDetailPanel extends StackPanel {
     private void showButtons() {
         playSongButton.setVisible(true);
 
-        deleteButton.setVisible(true);
         editButton.setVisible(true);
+        deleteButton.setVisible(true);
 
         setOpaque(true);
     }
@@ -132,8 +132,8 @@ public class SongDetailPanel extends StackPanel {
     private void hideButtons() {
         playSongButton.setVisible(false);
 
-        deleteButton.setVisible(false);
         editButton.setVisible(false);
+        deleteButton.setVisible(false);
 
         setOpaque(false);
     }

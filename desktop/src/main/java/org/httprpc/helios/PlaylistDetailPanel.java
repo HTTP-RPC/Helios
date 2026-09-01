@@ -95,6 +95,8 @@ public class PlaylistDetailPanel extends CollectionDetailPanel {
 
             var songTable = new JTable();
 
+            songTable.setFocusable(false);
+
             songTable.setModel(new BasicTableModel<>(Song.class, songs,
                 listOf("title", "time", "artist", "album"),
                 resourceBundle));
