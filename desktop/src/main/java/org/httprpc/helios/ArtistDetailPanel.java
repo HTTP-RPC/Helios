@@ -12,6 +12,7 @@ import javax.swing.UIManager;
 import java.sql.SQLException;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import static org.httprpc.kilo.util.Collections.*;
@@ -24,6 +25,8 @@ public class ArtistDetailPanel extends CollectionDetailPanel {
     private JLabel nameLabel = new JLabel();
 
     private JButton playAllButton = new JButton();
+
+    private Map<String, List<Song>> albums = null;
 
     private List<AlbumDetailPanel> albumDetailPanels = listOf();
 
@@ -55,6 +58,8 @@ public class ArtistDetailPanel extends CollectionDetailPanel {
         playAllButton.setToolTipText(resourceBundle.getString("playAll"));
         playAllButton.putClientProperty("FlatLaf.style", "buttonType: borderless");
 
+        playAllButton.addActionListener(event -> MainFrame.getInstance().playAll(flatten(albums.entrySet(), Map.Entry::getValue)));
+
         artistNamePanel.add(playAllButton);
 
         add(artistNamePanel);
@@ -66,7 +71,7 @@ public class ArtistDetailPanel extends CollectionDetailPanel {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("artist", artist.getName())
             ))) {
-            var albums = groupBy(mapAll(results, BeanAdapter.toType(Song.class)), Song::getAlbum);
+            albums = groupBy(mapAll(results, BeanAdapter.toType(Song.class)), Song::getAlbum);
 
             for (var entry : albums.entrySet()) {
                 var name = entry.getKey();
