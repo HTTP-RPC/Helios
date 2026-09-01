@@ -32,6 +32,8 @@ import java.awt.Component;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -155,8 +157,6 @@ public class MainFrame extends JFrame implements Runnable {
     private @Outlet JScrollPane collectionScrollPane = null;
 
     private boolean playing = false;
-
-    private Song selectedSong = null;
 
     private FlatSVGIcon playIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/play_arrow_24dp.svg"));
     private FlatSVGIcon pauseIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/pause_24dp.svg"));
@@ -340,6 +340,15 @@ public class MainFrame extends JFrame implements Runnable {
             }
         });
 
+        artistList.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent event) {
+                if (artistList.getSelectedIndex() == -1 && artistList.getModel().getSize() > 0) {
+                    artistList.setSelectedIndex(0);
+                }
+            }
+        });
+
         playlistList.setCellRenderer(new PlaylistCellRenderer());
 
         playlistList.addListSelectionListener(event -> {
@@ -349,6 +358,15 @@ public class MainFrame extends JFrame implements Runnable {
 
             if (!event.getValueIsAdjusting()) {
                 showSelectedCollection();
+            }
+        });
+
+        playlistList.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent event) {
+                if (playlistList.getSelectedIndex() == -1 && playlistList.getModel().getSize() > 0) {
+                    playlistList.setSelectedIndex(0);
+                }
             }
         });
 
@@ -480,7 +498,7 @@ public class MainFrame extends JFrame implements Runnable {
 
         searchDialog.setVisible(true);
 
-        selectedSong = searchDialog.getSelectedSong();
+        var selectedSong = searchDialog.getSelectedSong();
 
         if (selectedSong != null) {
             var artist = selectedSong.getArtist();
@@ -492,6 +510,12 @@ public class MainFrame extends JFrame implements Runnable {
             for (var i = 0; i < n; i++) {
                 if (artistListModel.getElementAt(i).getName().equals(artist)) {
                     artistList.setSelectedIndex(i);
+
+                    SwingUtilities.invokeLater(() -> {
+                        if (collectionScrollPane.getViewport().getView() instanceof ArtistDetailPanel artistDetailPanel) {
+                            artistDetailPanel.scrollToSong(selectedSong);
+                        }
+                    });
 
                     break;
                 }
@@ -506,17 +530,7 @@ public class MainFrame extends JFrame implements Runnable {
     private void showSelectedCollection() {
         CollectionDetailPanel collectionDetailPanel;
         if (artistList.getSelectedIndex() != -1) {
-            var artistDetailPanel = new ArtistDetailPanel(artistList.getSelectedValue());
-
-            if (selectedSong != null) {
-                SwingUtilities.invokeLater(() -> {
-                    artistDetailPanel.scrollToSong(selectedSong);
-
-                    selectedSong = null;
-                });
-            }
-
-            collectionDetailPanel = artistDetailPanel;
+            collectionDetailPanel = new ArtistDetailPanel(artistList.getSelectedValue());
         } else if (playlistList.getSelectedIndex() != -1) {
             collectionDetailPanel = new PlaylistDetailPanel(playlistList.getSelectedValue());
         } else {
