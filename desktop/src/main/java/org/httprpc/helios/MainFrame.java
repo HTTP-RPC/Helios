@@ -323,8 +323,9 @@ public class MainFrame extends JFrame implements Runnable {
         elapsedTimeLabel.setText("00:00");
         remainingTimeLabel.setText("-00:00");
 
-        searchButton.addActionListener(event -> showSearchDialog());
+        positionSlider.addChangeListener(event -> updatePosition());
 
+        searchButton.addActionListener(event -> showSearchDialog());
         settingsButton.addActionListener(event -> showSettingsDialog());
 
         artistList.setCellRenderer(new ArtistCellRenderer());
@@ -487,7 +488,7 @@ public class MainFrame extends JFrame implements Runnable {
         // TODO
     }
 
-    private void skipToPosition() {
+    private void updatePosition() {
         // TODO
     }
 
