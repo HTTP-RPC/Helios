@@ -173,6 +173,8 @@ public class EditSongDialog extends ModalDialog {
             return;
         }
 
+        MainFrame.getInstance().refresh();
+
         dispose();
     }
 

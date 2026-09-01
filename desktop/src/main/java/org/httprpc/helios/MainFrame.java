@@ -370,8 +370,7 @@ public class MainFrame extends JFrame implements Runnable {
             }
         });
 
-        loadArtists();
-        loadPlaylists();
+        refresh();
 
         pack();
         setMinimumSize(getSize());
@@ -403,6 +402,11 @@ public class MainFrame extends JFrame implements Runnable {
                 }
             }
         });
+    }
+
+    public void refresh() {
+        loadArtists();
+        loadPlaylists();
     }
 
     private void loadArtists() {
