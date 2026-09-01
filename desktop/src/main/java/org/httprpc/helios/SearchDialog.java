@@ -149,8 +149,6 @@ public class SearchDialog extends ModalDialog {
         }, (results, exception) -> {
             if (exception == null) {
                 resultList.setModel(new BasicListModel<>(results));
-            } else {
-                // TODO
             }
         });
     }

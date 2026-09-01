@@ -98,7 +98,7 @@ public class PlaylistDetailPanel extends CollectionDetailPanel {
 
             add(new JScrollPane(songTable), 1.0);
         } catch (SQLException exception) {
-            // TODO
+            throw new RuntimeException(exception);
         }
     }
 }

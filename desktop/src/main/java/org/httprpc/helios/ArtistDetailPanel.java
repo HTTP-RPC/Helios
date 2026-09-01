@@ -81,7 +81,7 @@ public class ArtistDetailPanel extends CollectionDetailPanel {
                 albumDetailPanels.add(albumDetailPanel);
             }
         } catch (SQLException exception) {
-            // TODO
+            throw new RuntimeException(exception);
         }
     }
 
