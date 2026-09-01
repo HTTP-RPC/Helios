@@ -331,29 +331,25 @@ public class MainFrame extends JFrame implements Runnable {
         artistList.setCellRenderer(new ArtistCellRenderer());
 
         artistList.addListSelectionListener(event -> {
-            if (event.getValueIsAdjusting()) {
-                return;
-            }
-
             if (artistList.getSelectedIndex() != -1) {
                 playlistList.clearSelection();
             }
 
-            showSelectedCollection();
+            if (!event.getValueIsAdjusting()) {
+                showSelectedCollection();
+            }
         });
 
         playlistList.setCellRenderer(new PlaylistCellRenderer());
 
         playlistList.addListSelectionListener(event -> {
-            if (event.getValueIsAdjusting()) {
-                return;
-            }
-
             if (playlistList.getSelectedIndex() != -1) {
                 artistList.clearSelection();
             }
 
-            showSelectedCollection();
+            if (!event.getValueIsAdjusting()) {
+                showSelectedCollection();
+            }
         });
 
         loadArtists();
