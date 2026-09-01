@@ -12,8 +12,14 @@
     </row-panel>
 
     <row-panel spacing="16">
-        <column-panel>
+        <column-panel spacing="2">
             <image-pane name="imagePane" size="180" scaleMode="fill-width" border="Component.borderColor"/>
+
+            <spacer height="4"/>
+
+            <label name="genreLabel" horizontalAlignment="center" styleClass="medium" enabled="false"/>
+            <label name="yearLabel" horizontalAlignment="center" styleClass="small" enabled="false"/>
+
             <spacer weight="1"/>
         </column-panel>
 

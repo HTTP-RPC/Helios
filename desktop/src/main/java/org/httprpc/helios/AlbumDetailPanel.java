@@ -22,6 +22,9 @@ public class AlbumDetailPanel extends StackPanel {
     private @Outlet JButton playAlbumButton = null;
 
     private @Outlet ImagePane imagePane = null;
+    private @Outlet JLabel genreLabel = null;
+    private @Outlet JLabel yearLabel = null;
+
     private @Outlet ColumnPanel songListPanel = null;
 
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(AlbumDetailPanel.class.getName());
@@ -36,6 +39,24 @@ public class AlbumDetailPanel extends StackPanel {
         playAlbumButton.addActionListener(event -> MainFrame.getInstance().playAll(songs));
 
         imagePane.setImage(MainFrame.getAlbumArtwork(artist, name));
+
+        for (var song : songs) {
+            var genre = song.getGenre();
+
+            if (genre != null) {
+                genreLabel.setText(genre);
+                break;
+            }
+        }
+
+        for (var song : songs) {
+            var year = song.getYear();
+
+            if (year != null) {
+                yearLabel.setText(String.valueOf(year));
+                break;
+            }
+        }
 
         songListPanel.setBorder(new CompoundBorder(
             new MatteBorder(1, 0, 0, 0, UIManager.getColor("Component.borderColor")),
