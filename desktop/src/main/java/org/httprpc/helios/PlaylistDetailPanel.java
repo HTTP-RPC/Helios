@@ -96,10 +96,10 @@ public class PlaylistDetailPanel extends CollectionDetailPanel {
             var songTable = new JTable();
 
             songTable.setModel(new BasicTableModel<>(Song.class, songs,
-                listOf("artist", "album", "title", "time"),
+                listOf("title", "time", "artist", "album"),
                 resourceBundle));
 
-            songTable.getColumnModel().getColumn(3).setCellRenderer(new TimeCellRenderer());
+            songTable.getColumnModel().getColumn(1).setCellRenderer(new TimeCellRenderer());
 
             add(new JScrollPane(songTable), 1.0);
         } catch (SQLException exception) {

@@ -12,30 +12,39 @@ import javax.swing.border.EmptyBorder;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.time.Duration;
 import java.util.List;
 import java.util.ResourceBundle;
 
 public class QueueDialog extends ModalDialog {
     private static class SongCellRenderer extends RowPanel implements ListCellRenderer<Song> {
-        JLabel titleLabel = new JLabel();
-        JLabel artistLabel = new JLabel();
+        JLabel titleTimeLabel = new JLabel();
+        JLabel artistAlbumLabel = new JLabel();
 
         SongCellRenderer() {
             setOpaque(true);
 
-            setBorder(new EmptyBorder(4, 4, 4, 4));
+            setBorder(new EmptyBorder(4, 8, 4, 8));
 
-            add(titleLabel);
+            add(titleTimeLabel);
             add(new Spacer(), 1.0);
-            add(artistLabel);
+            add(artistAlbumLabel);
         }
 
         @Override
         public Component getListCellRendererComponent(JList<? extends Song> list,
             Song song, int index,
             boolean selected, boolean cellHasFocus) {
-            titleLabel.setText(song.getTitle());
-            artistLabel.setText(song.getArtist());
+            var duration = Duration.ofSeconds(song.getTime());
+
+            titleTimeLabel.setText(String.format(resourceBundle.getString("titleTimeFormat"),
+                song.getTitle(),
+                duration.toMinutesPart(),
+                duration.toSecondsPart()));
+
+            artistAlbumLabel.setText(String.format(resourceBundle.getString("artistAlbumFormat"),
+                song.getArtist(),
+                song.getAlbum()));
 
             Color background;
             Color foreground;
@@ -49,8 +58,8 @@ public class QueueDialog extends ModalDialog {
 
             setBackground(background);
 
-            titleLabel.setForeground(foreground);
-            artistLabel.setForeground(foreground);
+            titleTimeLabel.setForeground(foreground);
+            artistAlbumLabel.setForeground(foreground);
 
             return this;
         }
@@ -69,7 +78,7 @@ public class QueueDialog extends ModalDialog {
 
         var scrollPane = new JScrollPane(queueList);
 
-        scrollPane.setPreferredSize(new Dimension(360, 480));
+        scrollPane.setPreferredSize(new Dimension(480, 360));
         scrollPane.setBorder(null);
 
         setContentPane(scrollPane);

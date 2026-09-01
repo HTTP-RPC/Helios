@@ -27,7 +27,7 @@ import static org.httprpc.kilo.util.Iterables.*;
 public class SearchDialog extends ModalDialog {
     private static class ResultCellRenderer extends ColumnPanel implements ListCellRenderer<Song> {
         JLabel titleLabel = new JLabel();
-        JLabel albumArtistLabel = new JLabel();
+        JLabel artistAlbumLabel = new JLabel();
 
         ResultCellRenderer() {
             setOpaque(true);
@@ -35,9 +35,9 @@ public class SearchDialog extends ModalDialog {
             setBorder(new EmptyBorder(4, 4, 4, 4));
 
             add(titleLabel);
-            add(albumArtistLabel);
+            add(artistAlbumLabel);
 
-            albumArtistLabel.putClientProperty("FlatLaf.styleClass", "small");
+            artistAlbumLabel.putClientProperty("FlatLaf.styleClass", "small");
         }
 
         @Override
@@ -45,9 +45,9 @@ public class SearchDialog extends ModalDialog {
             Song song, int index,
             boolean selected, boolean cellHasFocus) {
             titleLabel.setText(song.getTitle());
-            albumArtistLabel.setText(String.format(resourceBundle.getString("albumArtistFormat"),
-                song.getAlbum(),
-                song.getArtist()));
+            artistAlbumLabel.setText(String.format(resourceBundle.getString("artistAlbumFormat"),
+                song.getArtist(),
+                song.getAlbum()));
 
             Color background;
             Color foreground;
@@ -62,7 +62,7 @@ public class SearchDialog extends ModalDialog {
             setBackground(background);
 
             titleLabel.setForeground(foreground);
-            albumArtistLabel.setForeground(foreground);
+            artistAlbumLabel.setForeground(foreground);
 
             return this;
         }
