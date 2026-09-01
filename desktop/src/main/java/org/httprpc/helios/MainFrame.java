@@ -158,6 +158,9 @@ public class MainFrame extends JFrame implements Runnable {
 
     private boolean playing = false;
 
+    private int artistIndex = -1;
+    private int playlistIndex = -1;
+
     private FlatSVGIcon playIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/play_arrow_24dp.svg"));
     private FlatSVGIcon pauseIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/pause_24dp.svg"));
 
@@ -331,7 +334,11 @@ public class MainFrame extends JFrame implements Runnable {
         artistList.setCellRenderer(new ArtistCellRenderer());
 
         artistList.addListSelectionListener(event -> {
-            if (artistList.getSelectedIndex() != -1) {
+            var artistIndex = artistList.getSelectedIndex();
+
+            if (artistIndex != -1) {
+                this.artistIndex = artistIndex;
+
                 playlistList.clearSelection();
             }
 
@@ -343,8 +350,8 @@ public class MainFrame extends JFrame implements Runnable {
         artistList.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent event) {
-                if (artistList.getSelectedIndex() == -1 && artistList.getModel().getSize() > 0) {
-                    artistList.setSelectedIndex(0);
+                if (artistIndex != -1) {
+                    artistList.setSelectedIndex(artistIndex);
                 }
             }
         });
@@ -352,7 +359,11 @@ public class MainFrame extends JFrame implements Runnable {
         playlistList.setCellRenderer(new PlaylistCellRenderer());
 
         playlistList.addListSelectionListener(event -> {
-            if (playlistList.getSelectedIndex() != -1) {
+            var playlistIndex = playlistList.getSelectedIndex();
+
+            if (playlistIndex != -1) {
+                this.playlistIndex = playlistIndex;
+
                 artistList.clearSelection();
             }
 
@@ -364,8 +375,8 @@ public class MainFrame extends JFrame implements Runnable {
         playlistList.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent event) {
-                if (playlistList.getSelectedIndex() == -1 && playlistList.getModel().getSize() > 0) {
-                    playlistList.setSelectedIndex(0);
+                if (playlistIndex != -1) {
+                    playlistList.setSelectedIndex(playlistIndex);
                 }
             }
         });
@@ -422,6 +433,8 @@ public class MainFrame extends JFrame implements Runnable {
         }
 
         artistList.setModel(new BasicListModel<>(artists));
+
+        artistIndex = artists.isEmpty() ? -1 : 0;
     }
 
     private void loadPlaylists() {
@@ -437,6 +450,8 @@ public class MainFrame extends JFrame implements Runnable {
         }
 
         playlistList.setModel(new BasicListModel<>(playlists));
+
+        playlistIndex = playlists.isEmpty() ? -1 : 0;
     }
 
     private void play() {
