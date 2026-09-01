@@ -84,6 +84,10 @@ public class SongDetailPanel extends StackPanel {
         editSongDialog.setLocationRelativeTo(editSongDialog.getOwner());
 
         editSongDialog.setVisible(true);
+
+        // TODO Update title label
+
+        // TODO Update song instance
     }
 
     private void showButtons() {

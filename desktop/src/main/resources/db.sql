@@ -15,6 +15,8 @@ create table Song (
     unique (artist, album, title)
 );
 
+create index idx_genre on Song(genre);
+
 drop table if exists Playlist;
 
 create table Playlist (
