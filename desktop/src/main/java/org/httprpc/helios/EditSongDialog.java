@@ -179,7 +179,7 @@ public class EditSongDialog extends ModalDialog {
     }
 
     private void alertRequired(String key, JComponent component) {
-        var message = String.format(resourceBundle.getString("fieldIsRequired"),
+        var message = String.format(resourceBundle.getString("requiredFieldFormat"),
             ResourceBundle.getBundle(getClass().getName()).getString(key));
 
         JOptionPane.showMessageDialog(this, message,
