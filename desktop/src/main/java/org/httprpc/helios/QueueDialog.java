@@ -12,7 +12,7 @@ public class QueueDialog extends ModalDialog {
     public QueueDialog(MainFrame owner) {
         super(owner);
 
-        setTitle(resourceBundle.getString("title"));
+        setTitle(resourceBundle.getString("windowTitle"));
 
         var scrollPane = new JScrollPane();
 

@@ -163,6 +163,8 @@ public class MainFrame extends JFrame implements Runnable {
     private FlatSVGIcon playIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/play_arrow_24dp.svg"));
     private FlatSVGIcon pauseIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/pause_24dp.svg"));
 
+    private static MainFrame instance = null;
+
     private static final String PLAY_PAUSE_KEY = "playPause";
     private static final String PREVIOUS_KEY = "previous";
     private static final String NEXT_KEY = "next";
@@ -572,7 +574,13 @@ public class MainFrame extends JFrame implements Runnable {
             }
         }
 
-        SwingUtilities.invokeLater(new MainFrame());
+        instance = new MainFrame();
+
+        SwingUtilities.invokeLater(instance);
+    }
+
+    public static MainFrame getInstance() {
+        return instance;
     }
 
     public static Connection openConnection() throws SQLException {

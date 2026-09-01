@@ -87,7 +87,7 @@ public class SearchDialog extends ModalDialog {
     public SearchDialog(MainFrame owner) {
         super(owner);
 
-        setTitle(resourceBundle.getString("title"));
+        setTitle(resourceBundle.getString("windowTitle"));
 
         setContentPane(UILoader.load(this, "SearchDialog.xml", resourceBundle));
 

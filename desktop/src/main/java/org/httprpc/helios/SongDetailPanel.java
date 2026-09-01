@@ -15,7 +15,9 @@ public class SongDetailPanel extends StackPanel {
     private Song song;
 
     private @Outlet JLabel titleLabel = null;
+
     private @Outlet JButton playSongButton = null;
+    private @Outlet JButton editButton = null;
 
     private @Outlet JLabel timeLabel  = null;
 
@@ -30,7 +32,11 @@ public class SongDetailPanel extends StackPanel {
 
         titleLabel.setText(song.getTitle());
 
+        playSongButton.addActionListener(event -> playSong());
         playSongButton.setVisible(false);
+
+        editButton.addActionListener(event -> showEditSongDialog());
+        editButton.setVisible(false);
 
         var duration = Duration.ofSeconds(song.getTime());
 
@@ -41,13 +47,13 @@ public class SongDetailPanel extends StackPanel {
         content.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent event) {
-                playSongButton.setVisible(true);
+                showButtons();
             }
 
             @Override
             public void mouseExited(MouseEvent event) {
-                if (content.getComponentAt(event.getX(), event.getY()) != playSongButton) {
-                    playSongButton.setVisible(false);
+                if (content.getComponentAt(event.getX(), event.getY()) == null) {
+                    hideButtons();
                 }
             }
         });
@@ -55,8 +61,38 @@ public class SongDetailPanel extends StackPanel {
         playSongButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseExited(MouseEvent event) {
-                playSongButton.setVisible(false);
+                hideButtons();
             }
         });
+
+        editButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseExited(MouseEvent event) {
+                hideButtons();
+            }
+        });
+    }
+
+    private void playSong() {
+        // TODO
+    }
+
+    private void showEditSongDialog() {
+        var editSongDialog = new EditSongDialog(MainFrame.getInstance(), song);
+
+        editSongDialog.pack();
+        editSongDialog.setLocationRelativeTo(editSongDialog.getOwner());
+
+        editSongDialog.setVisible(true);
+    }
+
+    private void showButtons() {
+        playSongButton.setVisible(true);
+        editButton.setVisible(true);
+    }
+
+    private void hideButtons() {
+        playSongButton.setVisible(false);
+        editButton.setVisible(false);
     }
 }

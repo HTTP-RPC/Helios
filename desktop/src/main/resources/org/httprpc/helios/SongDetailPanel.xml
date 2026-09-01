@@ -4,12 +4,18 @@
 
 <row-panel spacing="4" alignToBaseline="true" padding="4, 0, 4, 0">
     <label name="titleLabel"/>
-    <button name="playSongButton" icon="icons/play_arrow_24dp.svg; 16"
+
+    <button name="playSongButton" icon="icons/play_arrow_24dp.svg; 18"
         focusable="false"
         toolTipText="playSong"
         style="buttonType: borderless"/>
 
     <spacer weight="1"/>
+
+    <button name="editButton" icon="icons/edit_24dp.svg; 16"
+        focusable="false"
+        toolTipText="editSong"
+        style="buttonType: borderless"/>
 
     <label name="timeLabel"/>
 </row-panel>
