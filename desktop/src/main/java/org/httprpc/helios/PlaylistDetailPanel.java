@@ -15,6 +15,7 @@ import javax.swing.UIManager;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.sql.SQLException;
 import java.time.Duration;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import static org.httprpc.kilo.util.Collections.*;
@@ -41,6 +42,8 @@ public class PlaylistDetailPanel extends CollectionDetailPanel {
     private JLabel nameLabel = new JLabel();
 
     private JButton playAllButton = new JButton();
+
+    private List<Song> songs = null;
 
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(PlaylistDetailPanel.class.getName());
 
@@ -72,6 +75,8 @@ public class PlaylistDetailPanel extends CollectionDetailPanel {
         playAllButton.setToolTipText(resourceBundle.getString("playAll"));
         playAllButton.putClientProperty("FlatLaf.style", "buttonType: borderless");
 
+        playAllButton.addActionListener(event -> MainFrame.getInstance().playAll(songs));
+
         playlistNamePanel.add(playAllButton);
 
         add(playlistNamePanel);
@@ -86,7 +91,7 @@ public class PlaylistDetailPanel extends CollectionDetailPanel {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("playlistID", playlist.getID())
             ))) {
-            var songs = listOf(mapAll(results, BeanAdapter.toType(Song.class)));
+            songs = listOf(mapAll(results, BeanAdapter.toType(Song.class)));
 
             var songTable = new JTable();
 
