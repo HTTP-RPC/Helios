@@ -32,8 +32,6 @@ import java.awt.Component;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -76,7 +74,7 @@ public class MainFrame extends JFrame implements Runnable {
 
             Color background;
             Color foreground;
-            if (selected && cellHasFocus) {
+            if (selected) {
                 background = list.getSelectionBackground();
                 foreground = list.getSelectionForeground();
             } else {
@@ -333,8 +331,12 @@ public class MainFrame extends JFrame implements Runnable {
         artistList.setCellRenderer(new ArtistCellRenderer());
 
         artistList.addListSelectionListener(event -> {
-            if (event.getValueIsAdjusting() || !artistList.isFocusOwner()) {
+            if (event.getValueIsAdjusting()) {
                 return;
+            }
+
+            if (artistList.getSelectedIndex() != -1) {
+                playlistList.clearSelection();
             }
 
             showSelectedCollection();
@@ -343,33 +345,16 @@ public class MainFrame extends JFrame implements Runnable {
         playlistList.setCellRenderer(new PlaylistCellRenderer());
 
         playlistList.addListSelectionListener(event -> {
-            if (event.getValueIsAdjusting() || !playlistList.isFocusOwner()) {
+            if (event.getValueIsAdjusting()) {
                 return;
+            }
+
+            if (playlistList.getSelectedIndex() != -1) {
+                artistList.clearSelection();
             }
 
             showSelectedCollection();
         });
-
-        var collectionFocusListener = new FocusAdapter() {
-            boolean temporary;
-
-            @Override
-            public void focusLost(FocusEvent event) {
-                temporary = event.isTemporary();
-            }
-
-            @Override
-            public void focusGained(FocusEvent event) {
-                if (temporary) {
-                    return;
-                }
-
-                showSelectedCollection();
-            }
-        };
-
-        artistList.addFocusListener(collectionFocusListener);
-        playlistList.addFocusListener(collectionFocusListener);
 
         loadArtists();
         loadPlaylists();
@@ -383,8 +368,6 @@ public class MainFrame extends JFrame implements Runnable {
         setSize(preferences.getInt(SIZE_WIDTH_KEY, getWidth()), preferences.getInt(SIZE_HEIGHT_KEY, getHeight()));
 
         setVisible(true);
-
-        artistList.requestFocus();
 
         addWindowListener(new WindowAdapter() {
             @Override
@@ -421,10 +404,6 @@ public class MainFrame extends JFrame implements Runnable {
         }
 
         artistList.setModel(new BasicListModel<>(artists));
-
-        if (!artists.isEmpty()) {
-            artistList.setSelectedIndex(0);
-        }
     }
 
     private void loadPlaylists() {
@@ -440,10 +419,6 @@ public class MainFrame extends JFrame implements Runnable {
         }
 
         playlistList.setModel(new BasicListModel<>(playlists));
-
-        if (!playlists.isEmpty()) {
-            playlistList.setSelectedIndex(0);
-        }
     }
 
     private void play() {
@@ -521,7 +496,6 @@ public class MainFrame extends JFrame implements Runnable {
             for (var i = 0; i < n; i++) {
                 if (artistListModel.getElementAt(i).getName().equals(artist)) {
                     artistList.setSelectedIndex(i);
-                    artistList.requestFocus();
 
                     break;
                 }
@@ -535,7 +509,7 @@ public class MainFrame extends JFrame implements Runnable {
 
     private void showSelectedCollection() {
         CollectionDetailPanel collectionDetailPanel;
-        if (artistList.isFocusOwner()) {
+        if (artistList.getSelectedIndex() != -1) {
             var artistDetailPanel = new ArtistDetailPanel(artistList.getSelectedValue());
 
             if (selectedSong != null) {
@@ -547,7 +521,7 @@ public class MainFrame extends JFrame implements Runnable {
             }
 
             collectionDetailPanel = artistDetailPanel;
-        } else if (playlistList.isFocusOwner()) {
+        } else if (playlistList.getSelectedIndex() != -1) {
             collectionDetailPanel = new PlaylistDetailPanel(playlistList.getSelectedValue());
         } else {
             collectionDetailPanel = null;
