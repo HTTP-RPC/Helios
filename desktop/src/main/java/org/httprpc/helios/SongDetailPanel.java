@@ -84,8 +84,6 @@ public class SongDetailPanel extends StackPanel {
         editSongDialog.setLocationRelativeTo(editSongDialog.getOwner());
 
         editSongDialog.setVisible(true);
-
-        // TODO Reload artists
     }
 
     private void showButtons() {

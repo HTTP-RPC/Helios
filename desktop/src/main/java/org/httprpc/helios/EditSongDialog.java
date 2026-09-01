@@ -70,10 +70,6 @@ public class EditSongDialog extends ModalDialog {
         setResizable(false);
     }
 
-    public Song getSong() {
-        return song;
-    }
-
     @Override
     public void setVisible(boolean visible) {
         if (visible) {
@@ -176,8 +172,6 @@ public class EditSongDialog extends ModalDialog {
 
             return;
         }
-
-        this.song = song;
 
         dispose();
     }
