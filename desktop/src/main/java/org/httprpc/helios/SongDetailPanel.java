@@ -7,6 +7,7 @@ import org.httprpc.sierra.UILoader;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.time.Duration;
@@ -84,6 +85,8 @@ public class SongDetailPanel extends StackPanel {
                 hideButtons();
             }
         });
+
+        setBackground(UIManager.getColor("Component.borderColor"));
     }
 
     private void playSong() {
@@ -120,6 +123,8 @@ public class SongDetailPanel extends StackPanel {
 
         deleteButton.setVisible(true);
         editButton.setVisible(true);
+
+        setOpaque(true);
     }
 
     private void hideButtons() {
@@ -127,5 +132,7 @@ public class SongDetailPanel extends StackPanel {
 
         deleteButton.setVisible(false);
         editButton.setVisible(false);
+
+        setOpaque(false);
     }
 }

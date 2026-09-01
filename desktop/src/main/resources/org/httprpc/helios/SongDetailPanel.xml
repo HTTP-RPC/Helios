@@ -2,7 +2,7 @@
 
 <!DOCTYPE row-panel SYSTEM "sierra.dtd">
 
-<row-panel spacing="4" alignToBaseline="true" padding="4, 0, 4, 0">
+<row-panel spacing="4" padding="2, 4, 2, 4">
     <label name="titleLabel"/>
 
     <button name="playSongButton" icon="icons/play_arrow_24dp.svg; 18"
