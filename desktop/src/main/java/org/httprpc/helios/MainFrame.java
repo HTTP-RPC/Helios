@@ -43,6 +43,7 @@ import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.prefs.BackingStoreException;
@@ -160,6 +161,8 @@ public class MainFrame extends JFrame implements Runnable {
 
     private int artistIndex = -1;
     private int playlistIndex = -1;
+
+    private List<Song> queue = new ArrayList<>();
 
     private FlatSVGIcon playIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/play_arrow_24dp.svg"));
     private FlatSVGIcon pauseIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/pause_24dp.svg"));
@@ -303,8 +306,6 @@ public class MainFrame extends JFrame implements Runnable {
             }
         }));
 
-        shuffleButton.addChangeListener(event -> toggleShuffle());
-
         var repeatIcon = (FlatSVGIcon)repeatButton.getIcon();
 
         repeatIcon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> {
@@ -314,8 +315,6 @@ public class MainFrame extends JFrame implements Runnable {
                 return UILoader.getColor("Button.foreground");
             }
         }));
-
-        repeatButton.addChangeListener(event -> toggleRepeat());
 
         queueButton.addActionListener(event -> showQueueDialog());
 
@@ -480,16 +479,8 @@ public class MainFrame extends JFrame implements Runnable {
         // TODO
     }
 
-    private void toggleShuffle() {
-        // TODO
-    }
-
-    private void toggleRepeat() {
-        // TODO
-    }
-
     private void showQueueDialog() {
-        var queueDialog = new QueueDialog(this);
+        var queueDialog = new QueueDialog(this, queue);
 
         queueDialog.pack();
         queueDialog.setLocationRelativeTo(this);
@@ -561,6 +552,16 @@ public class MainFrame extends JFrame implements Runnable {
         }
 
         collectionScrollPane.setViewportView(collectionDetailPanel);
+    }
+
+    public void playAll(Iterable<Song> songs) {
+        queue.clear();
+
+        for (var song : songs) {
+            queue.add(song);
+        }
+
+        play();
     }
 
     public static void main(String[] args) throws Exception {

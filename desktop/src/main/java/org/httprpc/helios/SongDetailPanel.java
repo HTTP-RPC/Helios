@@ -13,6 +13,8 @@ import java.awt.event.MouseEvent;
 import java.time.Duration;
 import java.util.ResourceBundle;
 
+import static org.httprpc.kilo.util.Collections.*;
+
 public class SongDetailPanel extends StackPanel {
     private Song song;
 
@@ -90,7 +92,7 @@ public class SongDetailPanel extends StackPanel {
     }
 
     private void playSong() {
-        // TODO
+        MainFrame.getInstance().playAll(listOf(song));
     }
 
     private void confirmDeleteSong() {

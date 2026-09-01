@@ -3,7 +3,6 @@ package org.httprpc.helios;
 import org.httprpc.sierra.ColumnPanel;
 import org.httprpc.sierra.ImagePane;
 import org.httprpc.sierra.Outlet;
-import org.httprpc.sierra.RowPanel;
 import org.httprpc.sierra.StackPanel;
 import org.httprpc.sierra.UILoader;
 
@@ -19,8 +18,6 @@ import java.util.ResourceBundle;
 public class AlbumDetailPanel extends StackPanel {
     private String name;
 
-    private @Outlet RowPanel albumNamePanel = null;
-
     private @Outlet JLabel nameLabel = null;
     private @Outlet JButton playAlbumButton = null;
 
@@ -35,6 +32,8 @@ public class AlbumDetailPanel extends StackPanel {
         add(UILoader.load(this, "AlbumDetailPanel.xml", resourceBundle));
 
         nameLabel.setText(name);
+
+        playAlbumButton.addActionListener(event -> MainFrame.getInstance().playAll(songs));
 
         imagePane.setImage(MainFrame.getAlbumArtwork(artist, name));
 
