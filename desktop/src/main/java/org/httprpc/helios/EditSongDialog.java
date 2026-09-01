@@ -40,6 +40,24 @@ public class EditSongDialog extends ModalDialog {
 
         setContentPane(UILoader.load(this, "EditSongDialog.xml", resourceBundle));
 
+        cancelButton.addActionListener(event -> dispose());
+        okButton.addActionListener(event -> save());
+
+        rootPane.setDefaultButton(okButton);
+
+        setResizable(false);
+    }
+
+    @Override
+    public void setVisible(boolean visible) {
+        if (visible) {
+            load();
+        }
+
+        super.setVisible(visible);
+    }
+
+    private void load() {
         artistTextField.setText(song.getArtist());
         albumTextField.setText(song.getAlbum());
         titleTextField.setText(song.getTitle());
@@ -55,13 +73,6 @@ public class EditSongDialog extends ModalDialog {
 
         discNumberTextField.setText(map(song.getDiscNumber(), String::valueOf));
         discCountTextField.setText(map(song.getDiscCount(), String::valueOf));
-
-        cancelButton.addActionListener(event -> dispose());
-        okButton.addActionListener(event -> save());
-
-        rootPane.setDefaultButton(okButton);
-
-        setResizable(false);
     }
 
     private void save() {
