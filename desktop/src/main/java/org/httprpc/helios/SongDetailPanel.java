@@ -85,9 +85,7 @@ public class SongDetailPanel extends StackPanel {
 
         editSongDialog.setVisible(true);
 
-        // TODO Update title label
-
-        // TODO Update song instance
+        // TODO Reload artists
     }
 
     private void showButtons() {

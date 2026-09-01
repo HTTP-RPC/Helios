@@ -70,6 +70,10 @@ public class EditSongDialog extends ModalDialog {
         setResizable(false);
     }
 
+    public Song getSong() {
+        return song;
+    }
+
     @Override
     public void setVisible(boolean visible) {
         if (visible) {
@@ -144,6 +148,8 @@ public class EditSongDialog extends ModalDialog {
 
         var song = BeanAdapter.coerce(mapOf(), Song.class);
 
+        song.setID(this.song.getID());
+
         song.setArtist(artist);
         song.setAlbum(album);
         song.setTitle(title);
@@ -170,6 +176,8 @@ public class EditSongDialog extends ModalDialog {
 
             return;
         }
+
+        this.song = song;
 
         dispose();
     }

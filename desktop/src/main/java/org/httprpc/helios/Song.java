@@ -14,6 +14,7 @@ public interface Song {
     @Column("id")
     @PrimaryKey
     Integer getID();
+    void setID(Integer id);
 
     @Column("artist")
     @ForeignKey(Artist.class)
