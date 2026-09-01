@@ -340,13 +340,6 @@ public class MainFrame extends JFrame implements Runnable {
             showSelectedCollection();
         });
 
-        artistList.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusGained(FocusEvent event) {
-                showSelectedCollection();
-            }
-        });
-
         playlistList.setCellRenderer(new PlaylistCellRenderer());
 
         playlistList.addListSelectionListener(event -> {
@@ -357,12 +350,26 @@ public class MainFrame extends JFrame implements Runnable {
             showSelectedCollection();
         });
 
-        playlistList.addFocusListener(new FocusAdapter() {
+        var collectionFocusListener = new FocusAdapter() {
+            boolean temporary;
+
+            @Override
+            public void focusLost(FocusEvent event) {
+                temporary = event.isTemporary();
+            }
+
             @Override
             public void focusGained(FocusEvent event) {
+                if (temporary) {
+                    return;
+                }
+
                 showSelectedCollection();
             }
-        });
+        };
+
+        artistList.addFocusListener(collectionFocusListener);
+        playlistList.addFocusListener(collectionFocusListener);
 
         loadArtists();
         loadPlaylists();
