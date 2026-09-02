@@ -1,5 +1,6 @@
 package org.httprpc.helios;
 
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.sql.QueryBuilder;
 import org.httprpc.sierra.MenuButton;
@@ -12,6 +13,8 @@ import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
@@ -47,16 +50,36 @@ public class SongDetailPanel extends StackPanel {
         playSongButton.addActionListener(event -> playSong());
         playSongButton.setVisible(false);
 
-        addToPlaylistButton.addActionListener(event -> addToPlaylist());
         addToPlaylistButton.setVisible(false);
 
         var playlists = MainFrame.getInstance().getPlaylists();
 
         if (!playlists.isEmpty()) {
-            // TODO Hide buttons when popup menu is dismissed
+            var popupMenu = addToPlaylistButton.getComponentPopupMenu();
+
+            popupMenu.addPopupMenuListener(new PopupMenuListener() {
+                @Override
+                public void popupMenuWillBecomeVisible(PopupMenuEvent event) {
+                    // No-op
+                }
+
+                @Override
+                public void popupMenuWillBecomeInvisible(PopupMenuEvent event) {
+                    hideButtons();
+                }
+
+                @Override
+                public void popupMenuCanceled(PopupMenuEvent event) {
+                    // No-op
+                }
+            });
+
+            var playlistIcon = new FlatSVGIcon(SongDetailPanel.class.getResource("icons/music_note_24dp.svg")).derive(18, 18);
+
+            playlistIcon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> UIManager.getColor("Button.foreground")));
 
             for (var playlist : playlists) {
-                var menuItem = new JMenuItem(playlist.getName());
+                var menuItem = new JMenuItem(playlist.getName(), playlistIcon);
 
                 menuItem.addActionListener(event -> addToPlaylist(playlist));
 
@@ -127,10 +150,6 @@ public class SongDetailPanel extends StackPanel {
 
     private void playSong() {
         MainFrame.getInstance().playAll(listOf(song));
-    }
-
-    private void addToPlaylist() {
-        // TODO
     }
 
     private void addToPlaylist(Playlist playlist) {
