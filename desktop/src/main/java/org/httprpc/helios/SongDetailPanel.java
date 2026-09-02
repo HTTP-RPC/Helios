@@ -1,5 +1,8 @@
 package org.httprpc.helios;
 
+import org.httprpc.kilo.beans.BeanAdapter;
+import org.httprpc.kilo.sql.QueryBuilder;
+import org.httprpc.sierra.MenuButton;
 import org.httprpc.sierra.Outlet;
 import org.httprpc.sierra.StackPanel;
 import org.httprpc.sierra.UILoader;
@@ -10,6 +13,7 @@ import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.SQLException;
 import java.time.Duration;
 import java.util.ResourceBundle;
 
@@ -22,6 +26,7 @@ public class SongDetailPanel extends StackPanel {
 
     private @Outlet JButton playSongButton = null;
 
+    private @Outlet MenuButton addToPlaylistButton = null;
     private @Outlet JButton editButton = null;
     private @Outlet JButton deleteButton = null;
 
@@ -41,7 +46,10 @@ public class SongDetailPanel extends StackPanel {
         playSongButton.addActionListener(event -> playSong());
         playSongButton.setVisible(false);
 
-        editButton.addActionListener(event -> showEditSongDialog());
+        addToPlaylistButton.addActionListener(event -> addToPlaylist());
+        addToPlaylistButton.setVisible(false);
+
+        editButton.addActionListener(event -> editSong());
         editButton.setVisible(false);
 
         deleteButton.addActionListener(event -> confirmDeleteSong());
@@ -68,6 +76,13 @@ public class SongDetailPanel extends StackPanel {
         });
 
         playSongButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseExited(MouseEvent event) {
+                hideButtons();
+            }
+        });
+
+        addToPlaylistButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseExited(MouseEvent event) {
                 hideButtons();
@@ -107,11 +122,11 @@ public class SongDetailPanel extends StackPanel {
         }
     }
 
-    private void deleteSong() {
+    private void addToPlaylist() {
         // TODO
     }
 
-    private void showEditSongDialog() {
+    private void editSong() {
         var editSongDialog = new EditSongDialog(MainFrame.getInstance(), song);
 
         editSongDialog.pack();
@@ -120,9 +135,21 @@ public class SongDetailPanel extends StackPanel {
         editSongDialog.setVisible(true);
     }
 
+    private void deleteSong() {
+        var queryBuilder = QueryBuilder.delete(Song.class).filterByPrimaryKey("id");
+
+        try (var connection = MainFrame.openConnection();
+            var statement = queryBuilder.prepare(connection)) {
+            queryBuilder.executeUpdate(statement, new BeanAdapter(song));
+        } catch (SQLException exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+
     private void showButtons() {
         playSongButton.setVisible(true);
 
+        addToPlaylistButton.setVisible(true);
         editButton.setVisible(true);
         deleteButton.setVisible(true);
 
@@ -132,6 +159,7 @@ public class SongDetailPanel extends StackPanel {
     private void hideButtons() {
         playSongButton.setVisible(false);
 
+        addToPlaylistButton.setVisible(false);
         editButton.setVisible(false);
         deleteButton.setVisible(false);
 

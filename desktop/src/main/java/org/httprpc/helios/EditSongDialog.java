@@ -166,11 +166,7 @@ public class EditSongDialog extends ModalDialog {
             var statement = queryBuilder.prepare(connection)) {
             queryBuilder.executeUpdate(statement, new BeanAdapter(song));
         } catch (SQLException exception) {
-            JOptionPane.showMessageDialog(this, resourceBundle.getString("unableToUpdateSong"),
-                resourceBundle.getString("error"),
-                JOptionPane.ERROR_MESSAGE);
-
-            return;
+            throw new RuntimeException(exception);
         }
 
         MainFrame.getInstance().refresh();

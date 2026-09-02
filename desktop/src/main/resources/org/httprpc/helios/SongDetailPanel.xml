@@ -13,6 +13,11 @@
     <spacer weight="1"/>
 
     <row-panel spacing="2">
+        <menu-button name="addToPlaylistButton" icon="icons/add_24dp.svg; 18"
+            focusable="false"
+            toolTipText="addToPlaylist"
+            style="buttonType: borderless"/>
+
         <button name="editButton" icon="icons/edit_24dp.svg; 16"
             focusable="false"
             toolTipText="editSong"
