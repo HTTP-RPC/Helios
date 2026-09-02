@@ -458,6 +458,9 @@ public class MainFrame extends JFrame implements Runnable {
         playPauseButton.setToolTipText(resourceBundle.getString("pause"));
 
         // TODO
+        if (!queue.isEmpty()) {
+            setTitle(queue.removeFirst().getTitle());
+        }
 
         playing = true;
     }
