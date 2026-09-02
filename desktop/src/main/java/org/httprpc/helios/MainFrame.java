@@ -495,7 +495,7 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     private void addPlaylist() {
-        // TODO Show new playlist dialog
+        // TODO
     }
 
     private void updatePosition() {
