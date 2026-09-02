@@ -91,7 +91,7 @@ public class PlaylistDetailPanel extends CollectionDetailPanel {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("playlistID", playlist.getID())
             ))) {
-            songs = listOf(mapAll(results, BeanAdapter.toType(Song.class)));
+            songs = sortBy(mapAll(results, BeanAdapter.toType(Song.class)), Song::getTitle);
 
             var songTable = new JTable();
 
