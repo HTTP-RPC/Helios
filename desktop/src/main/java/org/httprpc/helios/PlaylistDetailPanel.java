@@ -10,11 +10,9 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.SwingConstants;
 import javax.swing.UIManager;
-import javax.swing.table.DefaultTableCellRenderer;
+import java.awt.KeyboardFocusManager;
 import java.sql.SQLException;
-import java.time.Duration;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -22,21 +20,6 @@ import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
 
 public class PlaylistDetailPanel extends CollectionDetailPanel {
-    private static class TimeCellRenderer extends DefaultTableCellRenderer {
-        TimeCellRenderer() {
-            setHorizontalAlignment(SwingConstants.TRAILING);
-        }
-
-        @Override
-        public void setValue(Object value) {
-            var duration = Duration.ofSeconds((Integer)value);
-
-            setText(String.format(resourceBundle.getString("timeFormat"),
-                duration.toMinutesPart(),
-                duration.toSecondsPart()));
-        }
-    }
-
     private Playlist playlist;
 
     private JLabel nameLabel = new JLabel();
@@ -79,6 +62,8 @@ public class PlaylistDetailPanel extends CollectionDetailPanel {
 
         playlistNamePanel.add(playAllButton);
 
+        // TODO Add buttons
+
         add(playlistNamePanel);
 
         var queryBuilder = QueryBuilder.select(Song.class)
@@ -95,7 +80,13 @@ public class PlaylistDetailPanel extends CollectionDetailPanel {
 
             var songTable = new JTable();
 
-            songTable.setFocusable(false);
+            var songTableHeader = songTable.getTableHeader();
+
+            songTableHeader.setReorderingAllowed(false);
+            songTableHeader.setResizingAllowed(false);
+
+            songTable.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, null);
+            songTable.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, null);
 
             songTable.setModel(new BasicTableModel<>(Song.class, songs,
                 listOf("title", "artist", "album"),
