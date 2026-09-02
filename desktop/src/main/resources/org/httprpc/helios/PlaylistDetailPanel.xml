@@ -9,6 +9,27 @@
             focusable="false"
             toolTipText="playAll"
             style="buttonType: borderless"/>
+
+        <spacer weight="1"/>
+
+        <row-panel spacing="2">
+            <menu-button name="removeFromPlaylistButton" icon="icons/remove_24dp.svg; 18"
+                focusable="false"
+                toolTipText="removeFromPlaylist"
+                style="buttonType: borderless"/>
+
+            <spacer width="8"/>
+
+            <button name="editPlaylistNameButton" icon="icons/edit_24dp.svg; 16"
+                focusable="false"
+                toolTipText="editPlaylistName"
+                style="buttonType: borderless"/>
+
+            <button name="deletePlaylistButton" icon="icons/delete_24dp.svg; 18"
+                focusable="false"
+                toolTipText="deletePlaylist"
+                style="buttonType: borderless"/>
+        </row-panel>
     </row-panel>
 
     <scroll-pane weight="1">

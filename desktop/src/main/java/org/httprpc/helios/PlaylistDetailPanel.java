@@ -19,6 +19,10 @@ public class PlaylistDetailPanel extends StackPanel {
     private @Outlet JLabel nameLabel = null;
     private @Outlet JButton playAllButton = null;
 
+    private @Outlet JButton removeFromPlaylistButton = null;
+    private @Outlet JButton editPlaylistNameButton = null;
+    private @Outlet JButton deletePlaylistButton = null;
+
     private @Outlet JTable songTable = null;
 
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(PlaylistDetailPanel.class.getName());
@@ -29,6 +33,13 @@ public class PlaylistDetailPanel extends StackPanel {
         nameLabel.setText(playlist.getName());
 
         playAllButton.addActionListener(event -> MainFrame.getInstance().playAll(songs));
+
+        removeFromPlaylistButton.addActionListener(event -> removeFromPlaylist());
+        removeFromPlaylistButton.setEnabled(false);
+
+        editPlaylistNameButton.addActionListener(event -> editPlaylistName());
+
+        deletePlaylistButton.addActionListener(event -> deletePlaylist());
 
         var songTableHeader = songTable.getTableHeader();
 
@@ -42,9 +53,27 @@ public class PlaylistDetailPanel extends StackPanel {
             listOf("title", "artist", "album"),
             resourceBundle));
 
+        songTable.getSelectionModel().addListSelectionListener(event -> {
+            var i = songTable.getSelectionModel().getAnchorSelectionIndex();
+
+            removeFromPlaylistButton.setEnabled(i != -1);
+        });
+
         setBorder(new EmptyBorder(8, 8, 8, 8));
 
         setScrollableTracksViewportWidth(true);
         setScrollableTracksViewportHeight(true);
+    }
+
+    private void removeFromPlaylist() {
+        // TODO Confirm remove
+    }
+
+    private void editPlaylistName() {
+        // TODO
+    }
+
+    private void deletePlaylist() {
+        // TODO Confirm delete
     }
 }

@@ -18,12 +18,12 @@
             toolTipText="addToPlaylist"
             style="buttonType: borderless"/>
 
-        <button name="editButton" icon="icons/edit_24dp.svg; 16"
+        <button name="editSongButton" icon="icons/edit_24dp.svg; 16"
             focusable="false"
             toolTipText="editSong"
             style="buttonType: borderless"/>
 
-        <button name="deleteButton" icon="icons/delete_24dp.svg; 18"
+        <button name="deleteSongButton" icon="icons/delete_24dp.svg; 18"
             focusable="false"
             toolTipText="deleteSong"
             style="buttonType: borderless"/>

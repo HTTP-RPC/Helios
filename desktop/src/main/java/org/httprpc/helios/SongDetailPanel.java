@@ -31,8 +31,8 @@ public class SongDetailPanel extends StackPanel {
     private @Outlet JButton playSongButton = null;
 
     private @Outlet MenuButton addToPlaylistButton = null;
-    private @Outlet JButton editButton = null;
-    private @Outlet JButton deleteButton = null;
+    private @Outlet JButton editSongButton = null;
+    private @Outlet JButton deleteSongButton = null;
 
     private @Outlet JLabel timeLabel  = null;
 
@@ -89,11 +89,11 @@ public class SongDetailPanel extends StackPanel {
             addToPlaylistButton.setEnabled(false);
         }
 
-        editButton.addActionListener(event -> editSong());
-        editButton.setVisible(false);
+        editSongButton.addActionListener(event -> editSong());
+        editSongButton.setVisible(false);
 
-        deleteButton.addActionListener(event -> deleteSong());
-        deleteButton.setVisible(false);
+        deleteSongButton.addActionListener(event -> deleteSong());
+        deleteSongButton.setVisible(false);
 
         var duration = Duration.ofSeconds(song.getTime());
 
@@ -131,14 +131,14 @@ public class SongDetailPanel extends StackPanel {
             }
         });
 
-        editButton.addMouseListener(new MouseAdapter() {
+        editSongButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseExited(MouseEvent event) {
                 hideButtons();
             }
         });
 
-        deleteButton.addMouseListener(new MouseAdapter() {
+        deleteSongButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseExited(MouseEvent event) {
                 hideButtons();
@@ -202,8 +202,8 @@ public class SongDetailPanel extends StackPanel {
         playSongButton.setVisible(true);
 
         addToPlaylistButton.setVisible(true);
-        editButton.setVisible(true);
-        deleteButton.setVisible(true);
+        editSongButton.setVisible(true);
+        deleteSongButton.setVisible(true);
 
         setOpaque(true);
     }
@@ -212,8 +212,8 @@ public class SongDetailPanel extends StackPanel {
         playSongButton.setVisible(false);
 
         addToPlaylistButton.setVisible(false);
-        editButton.setVisible(false);
-        deleteButton.setVisible(false);
+        editSongButton.setVisible(false);
+        deleteSongButton.setVisible(false);
 
         setOpaque(false);
     }
