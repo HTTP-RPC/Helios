@@ -169,7 +169,10 @@ public class EditSongDialog extends ModalDialog {
             throw new RuntimeException(exception);
         }
 
-        MainFrame.getInstance().refresh();
+        var mainFrame = MainFrame.getInstance();
+
+        mainFrame.loadArtists();
+        mainFrame.loadPlaylists();
 
         dispose();
     }

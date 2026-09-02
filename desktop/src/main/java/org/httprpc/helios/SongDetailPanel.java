@@ -167,7 +167,7 @@ public class SongDetailPanel extends StackPanel {
             }
         }
 
-        MainFrame.getInstance().refresh();
+        MainFrame.getInstance().loadPlaylists();
     }
 
     private void editSong() {

@@ -383,7 +383,8 @@ public class MainFrame extends JFrame implements Runnable {
             }
         });
 
-        refresh();
+        loadArtists();
+        loadPlaylists();
 
         pack();
         setMinimumSize(getSize());
@@ -417,12 +418,7 @@ public class MainFrame extends JFrame implements Runnable {
         });
     }
 
-    public void refresh() {
-        loadArtists();
-        loadPlaylists();
-    }
-
-    private void loadArtists() {
+    public void loadArtists() {
         var queryBuilder = QueryBuilder.select(ExpandedArtist.class).ordered(true);
 
         try (var connection = openConnection();
@@ -438,7 +434,7 @@ public class MainFrame extends JFrame implements Runnable {
         artistIndex = artists.isEmpty() ? -1 : 0;
     }
 
-    private void loadPlaylists() {
+    public void loadPlaylists() {
         var queryBuilder = QueryBuilder.select(ExpandedPlaylist.class).ordered(true);
 
         try (var connection = openConnection();
