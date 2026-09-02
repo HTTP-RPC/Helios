@@ -185,7 +185,7 @@ public class MainFrame extends JFrame implements Runnable {
     private static final String SIZE_HEIGHT_KEY = "sizeHeight";
 
     private static final Path rootDirectory = Path.of(System.getProperty("user.home"), ".helios");
-    private static final Path dbFile = rootDirectory.resolve("media.db");
+    private static final Path dbFile = rootDirectory.resolve("music.db");
 
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(MainFrame.class.getName());
 
@@ -599,7 +599,7 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     public static Image getAlbumArtwork(Artist artist, String name) {
-        var path = rootDirectory.resolve("media")
+        var path = rootDirectory.resolve("music")
             .resolve(artist.getName())
             .resolve(name)
             .resolve("artwork.jpg");
