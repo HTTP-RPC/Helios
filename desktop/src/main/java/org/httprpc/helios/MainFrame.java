@@ -159,7 +159,10 @@ public class MainFrame extends JFrame implements Runnable {
 
     private boolean playing = false;
 
+    private List<ExpandedArtist> artists = listOf();
     private int artistIndex = -1;
+
+    private List<ExpandedPlaylist> playlists = listOf();
     private int playlistIndex = -1;
 
     private List<Song> queue = new ArrayList<>();
@@ -422,7 +425,6 @@ public class MainFrame extends JFrame implements Runnable {
     private void loadArtists() {
         var queryBuilder = QueryBuilder.select(ExpandedArtist.class).ordered(true);
 
-        List<ExpandedArtist> artists;
         try (var connection = openConnection();
             var statement = queryBuilder.prepare(connection);
             var results = queryBuilder.executeQuery(statement)) {
@@ -439,7 +441,6 @@ public class MainFrame extends JFrame implements Runnable {
     private void loadPlaylists() {
         var queryBuilder = QueryBuilder.select(ExpandedPlaylist.class).ordered(true);
 
-        List<ExpandedPlaylist> playlists;
         try (var connection = openConnection();
             var statement = queryBuilder.prepare(connection);
             var results = queryBuilder.executeQuery(statement)) {
@@ -496,7 +497,7 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     private void addPlaylist() {
-        // TODO
+        // TODO Show new playlist dialog
     }
 
     private void updatePosition() {
@@ -565,6 +566,14 @@ public class MainFrame extends JFrame implements Runnable {
         }
 
         play();
+    }
+
+    public List<ExpandedArtist> getArtists() {
+        return artists;
+    }
+
+    public List<ExpandedPlaylist> getPlaylists() {
+        return playlists;
     }
 
     public static void main(String[] args) throws Exception {

@@ -9,6 +9,7 @@ import org.httprpc.sierra.UILoader;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import java.awt.event.MouseAdapter;
@@ -49,10 +50,26 @@ public class SongDetailPanel extends StackPanel {
         addToPlaylistButton.addActionListener(event -> addToPlaylist());
         addToPlaylistButton.setVisible(false);
 
+        var playlists = MainFrame.getInstance().getPlaylists();
+
+        if (!playlists.isEmpty()) {
+            // TODO Hide buttons when popup menu is dismissed
+
+            for (var playlist : playlists) {
+                var menuItem = new JMenuItem(playlist.getName());
+
+                menuItem.addActionListener(event -> addToPlaylist(playlist));
+
+                addToPlaylistButton.add(menuItem);
+            }
+        } else {
+            addToPlaylistButton.setEnabled(false);
+        }
+
         editButton.addActionListener(event -> editSong());
         editButton.setVisible(false);
 
-        deleteButton.addActionListener(event -> confirmDeleteSong());
+        deleteButton.addActionListener(event -> deleteSong());
         deleteButton.setVisible(false);
 
         var duration = Duration.ofSeconds(song.getTime());
@@ -85,7 +102,9 @@ public class SongDetailPanel extends StackPanel {
         addToPlaylistButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseExited(MouseEvent event) {
-                hideButtons();
+                if (!addToPlaylistButton.getComponentPopupMenu().isVisible()) {
+                    hideButtons();
+                }
             }
         });
 
@@ -110,19 +129,11 @@ public class SongDetailPanel extends StackPanel {
         MainFrame.getInstance().playAll(listOf(song));
     }
 
-    private void confirmDeleteSong() {
-        var result = JOptionPane.showConfirmDialog(getTopLevelAncestor(),
-            String.format(resourceBundle.getString("confirmDeleteMessageFormat"), song.getTitle()),
-            resourceBundle.getString("deleteSong"),
-            JOptionPane.YES_NO_OPTION,
-            JOptionPane.WARNING_MESSAGE);
-
-        if (result == JOptionPane.YES_OPTION) {
-            deleteSong();
-        }
+    private void addToPlaylist() {
+        // TODO
     }
 
-    private void addToPlaylist() {
+    private void addToPlaylist(Playlist playlist) {
         // TODO
     }
 
@@ -136,13 +147,21 @@ public class SongDetailPanel extends StackPanel {
     }
 
     private void deleteSong() {
-        var queryBuilder = QueryBuilder.delete(Song.class).filterByPrimaryKey("id");
+        var result = JOptionPane.showConfirmDialog(getTopLevelAncestor(),
+            String.format(resourceBundle.getString("confirmDeleteMessageFormat"), song.getTitle()),
+            resourceBundle.getString("deleteSong"),
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.WARNING_MESSAGE);
 
-        try (var connection = MainFrame.openConnection();
-            var statement = queryBuilder.prepare(connection)) {
-            queryBuilder.executeUpdate(statement, new BeanAdapter(song));
-        } catch (SQLException exception) {
-            throw new RuntimeException(exception);
+        if (result == JOptionPane.YES_OPTION) {
+            var queryBuilder = QueryBuilder.delete(Song.class).filterByPrimaryKey("id");
+
+            try (var connection = MainFrame.openConnection();
+                var statement = queryBuilder.prepare(connection)) {
+                queryBuilder.executeUpdate(statement, new BeanAdapter(song));
+            } catch (SQLException exception) {
+                throw new RuntimeException(exception);
+            }
         }
     }
 
