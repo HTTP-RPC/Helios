@@ -135,7 +135,7 @@ public class PlaylistDetailPanel extends StackPanel {
                 var selectedRows = songTable.getSelectedRows();
 
                 for (var i = 0; i < selectedRows.length; i++) {
-                    var song = songs.get(i);
+                    var song = songs.get(selectedRows[i]);
 
                     queryBuilder.addBatch(statement, mapOf(
                         entry("playlistID", playlistID),

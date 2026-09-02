@@ -447,9 +447,15 @@ public class MainFrame extends JFrame implements Runnable {
             throw new RuntimeException(exception);
         }
 
+        var i = playlistList.getSelectedIndex();
+
         playlistList.setModel(new BasicListModel<>(playlists));
 
-        playlistIndex = playlists.isEmpty() ? -1 : 0;
+        if (i != -1) {
+            playlistList.requestFocus();
+        } else {
+            playlistIndex = playlists.isEmpty() ? -1 : 0;
+        }
     }
 
     private void play() {
