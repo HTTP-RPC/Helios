@@ -31,8 +31,8 @@ create table PlaylistSong (
     playlistID integer not null,
     songID integer not null,
     primary key (playlistID, songID),
-    foreign key (playlistID) references Playlist (id),
-    foreign key (songID) references Song (id)
+    foreign key (playlistID) references Playlist (id) on delete cascade,
+    foreign key (songID) references Song (id) on delete cascade
 );
 
 drop view if exists Artist;

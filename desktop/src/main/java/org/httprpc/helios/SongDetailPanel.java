@@ -153,7 +153,21 @@ public class SongDetailPanel extends StackPanel {
     }
 
     private void addToPlaylist(Playlist playlist) {
-        // TODO
+        var queryBuilder = QueryBuilder.insert(PlaylistSong.class);
+
+        try (var connection = MainFrame.openConnection();
+            var statement = queryBuilder.prepare(connection)) {
+            queryBuilder.executeUpdate(statement, mapOf(
+                entry("playlistID", playlist.getID()),
+                entry("songID", song.getID())
+            ));
+        } catch (SQLException exception) {
+            if (exception.getErrorCode() != 19) {
+                throw new RuntimeException(exception);
+            }
+        }
+
+        MainFrame.getInstance().refresh();
     }
 
     private void editSong() {
