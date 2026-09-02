@@ -54,7 +54,11 @@ public class PlaylistDetailPanel extends StackPanel {
             resourceBundle));
 
         songTable.getSelectionModel().addListSelectionListener(event -> {
-            var i = songTable.getSelectionModel().getAnchorSelectionIndex();
+            if (event.getValueIsAdjusting()) {
+                return;
+            }
+
+            var i = songTable.getSelectionModel().getMinSelectionIndex();
 
             removeFromPlaylistButton.setEnabled(i != -1);
         });

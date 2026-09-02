@@ -195,6 +195,8 @@ public class SongDetailPanel extends StackPanel {
             } catch (SQLException exception) {
                 throw new RuntimeException(exception);
             }
+
+            // TODO Delete song content
         }
     }
 
