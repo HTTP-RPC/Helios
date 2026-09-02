@@ -4,7 +4,7 @@
 
 <column-panel spacing="8">
     <row-panel spacing="4" alignToBaseline="true">
-        <label name="nameLabel" styleClass="h1"/>
+        <text-field name="nameTextField" focusable="false" editable="false" opaque="false" styleClass="h1"/>
         <button name="playAllButton" icon="icons/play_arrow_24dp.svg; 20"
             focusable="false"
             toolTipText="playAll"

@@ -6,16 +6,23 @@ import org.httprpc.sierra.BasicTableModel;
 import org.httprpc.sierra.Outlet;
 import org.httprpc.sierra.StackPanel;
 import org.httprpc.sierra.UILoader;
+import org.sqlite.SQLiteErrorCode;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.TableCellRenderer;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.KeyboardFocusManager;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -59,7 +66,7 @@ public class PlaylistDetailPanel extends StackPanel {
     private Playlist playlist;
     private List<Song> songs;
 
-    private @Outlet JLabel nameLabel = null;
+    private @Outlet JTextField nameTextField = null;
     private @Outlet JButton playAllButton = null;
 
     private @Outlet JButton removeFromPlaylistButton = null;
@@ -76,7 +83,36 @@ public class PlaylistDetailPanel extends StackPanel {
 
         add(UILoader.load(this, "PlaylistDetailPanel.xml", resourceBundle));
 
-        nameLabel.setText(playlist.getName());
+        nameTextField.setText(playlist.getName());
+        nameTextField.setBorder(null);
+
+        nameTextField.addActionListener(event -> updatePlaylistName());
+
+        nameTextField.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent event) {
+                nameTextField.getParent().revalidate();
+            }
+
+            @Override
+            public void keyPressed(KeyEvent event) {
+                if (event.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                    revertPlaylistNameChange();
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent event) {
+                // No-op
+            }
+        });
+
+        nameTextField.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent event) {
+                revertPlaylistNameChange();
+            }
+        });
 
         playAllButton.addActionListener(event -> MainFrame.getInstance().playAll(songs));
 
@@ -157,7 +193,56 @@ public class PlaylistDetailPanel extends StackPanel {
     }
 
     private void editPlaylistName() {
-        // TODO
+        nameTextField.setFocusable(true);
+        nameTextField.setEditable(true);
+
+        nameTextField.selectAll();
+
+        nameTextField.requestFocus();
+    }
+
+    private void revertPlaylistNameChange() {
+        nameTextField.setText(playlist.getName());
+
+        nameTextField.getParent().revalidate();
+
+        endPlaylistNameEdit();
+    }
+
+    private void updatePlaylistName() {
+        var name = nameTextField.getText();
+
+        if (name.isEmpty()) {
+            revertPlaylistNameChange();
+        } else {
+            playlist.setName(name);
+
+            var queryBuilder = QueryBuilder.update(Playlist.class).filterByPrimaryKey("id");
+
+            try (var connection = MainFrame.openConnection();
+                var statement = queryBuilder.prepare(connection)) {
+                queryBuilder.executeUpdate(statement, new BeanAdapter(playlist));
+
+                MainFrame.getInstance().loadPlaylists();
+            } catch (SQLException exception) {
+                if (SQLiteErrorCode.getErrorCode(exception.getErrorCode()) == SQLiteErrorCode.SQLITE_CONSTRAINT) {
+                    nameTextField.selectAll();
+
+                    UIManager.getLookAndFeel().provideErrorFeedback(nameTextField);
+
+                    return;
+                }
+
+                throw new RuntimeException(exception);
+            } finally {
+                endPlaylistNameEdit();
+            }
+        }
+    }
+
+    private void endPlaylistNameEdit() {
+        nameTextField.setFocusable(false);
+        nameTextField.setEditable(false);
     }
 
     private void deletePlaylist() {

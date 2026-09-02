@@ -7,6 +7,7 @@ import org.httprpc.sierra.MenuButton;
 import org.httprpc.sierra.Outlet;
 import org.httprpc.sierra.StackPanel;
 import org.httprpc.sierra.UILoader;
+import org.sqlite.SQLiteErrorCode;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -162,7 +163,7 @@ public class SongDetailPanel extends StackPanel {
                 entry("songID", song.getID())
             ));
         } catch (SQLException exception) {
-            if (exception.getErrorCode() != 19) {
+            if (SQLiteErrorCode.getErrorCode(exception.getErrorCode()) != SQLiteErrorCode.SQLITE_CONSTRAINT) {
                 throw new RuntimeException(exception);
             }
         }
