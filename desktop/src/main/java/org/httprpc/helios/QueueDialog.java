@@ -1,8 +1,10 @@
 package org.httprpc.helios;
 
 import org.httprpc.sierra.BasicListModel;
+import org.httprpc.sierra.Outlet;
 import org.httprpc.sierra.RowPanel;
 import org.httprpc.sierra.Spacer;
+import org.httprpc.sierra.UILoader;
 
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -11,7 +13,6 @@ import javax.swing.ListCellRenderer;
 import javax.swing.border.EmptyBorder;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.time.Duration;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -65,6 +66,10 @@ public class QueueDialog extends ModalDialog {
         }
     }
 
+    private @Outlet JScrollPane scrollPane = null;
+
+    private @Outlet JList<Song> queueList = null;
+
     private static ResourceBundle resourceBundle = ResourceBundle.getBundle(QueueDialog.class.getName());
 
     public QueueDialog(MainFrame owner, List<Song> queue) {
@@ -72,16 +77,13 @@ public class QueueDialog extends ModalDialog {
 
         setTitle(resourceBundle.getString("windowTitle"));
 
-        var queueList = new JList<>(new BasicListModel<>(queue));
+        setContentPane(UILoader.load(this, "QueueDialog.xml", resourceBundle));
 
-        queueList.setCellRenderer(new SongCellRenderer());
-
-        var scrollPane = new JScrollPane(queueList);
-
-        scrollPane.setPreferredSize(new Dimension(480, 360));
         scrollPane.setBorder(null);
 
-        setContentPane(scrollPane);
+        queueList.setModel(new BasicListModel<>(queue));
+
+        queueList.setCellRenderer(new SongCellRenderer());
 
         setResizable(false);
     }

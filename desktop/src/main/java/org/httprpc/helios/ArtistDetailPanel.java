@@ -1,99 +1,61 @@
 package org.httprpc.helios;
 
-import com.formdev.flatlaf.extras.FlatSVGIcon;
-import org.httprpc.kilo.beans.BeanAdapter;
-import org.httprpc.kilo.sql.QueryBuilder;
-import org.httprpc.sierra.RowPanel;
+import org.httprpc.sierra.ColumnPanel;
+import org.httprpc.sierra.Outlet;
+import org.httprpc.sierra.StackPanel;
+import org.httprpc.sierra.UILoader;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import java.sql.SQLException;
+import javax.swing.border.EmptyBorder;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
 import static org.httprpc.kilo.util.Optionals.*;
 
-public class ArtistDetailPanel extends CollectionDetailPanel {
-    private Artist artist;
+public class ArtistDetailPanel extends StackPanel {
+    private @Outlet JLabel nameLabel = null;
+    private @Outlet JButton playAllButton = null;
 
-    private JLabel nameLabel = new JLabel();
-
-    private JButton playAllButton = new JButton();
-
-    private Map<String, List<Song>> albums = null;
-
-    private List<AlbumDetailPanel> albumDetailPanels = listOf();
+    private @Outlet ColumnPanel albumListPanel = null;
 
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(ArtistDetailPanel.class.getName());
 
-    public ArtistDetailPanel(Artist artist) {
-        this.artist = artist;
-    }
-
-    @Override
-    public void load() {
-        var artistNamePanel = new RowPanel();
-
-        artistNamePanel.setSpacing(4);
-        artistNamePanel.setAlignToBaseline(true);
+    public ArtistDetailPanel(Artist artist, Map<String, List<Song>> albums) {
+        add(UILoader.load(this, "ArtistDetailPanel.xml", resourceBundle));
 
         nameLabel.setText(artist.getName());
 
-        nameLabel.putClientProperty("FlatLaf.styleClass", "h1");
-
-        artistNamePanel.add(nameLabel);
-
-        var playIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/play_arrow_24dp.svg")).derive(20, 20);
-
-        playIcon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> UIManager.getColor("Button.foreground")));
-
-        playAllButton.setIcon(playIcon);
-        playAllButton.setFocusable(false);
-        playAllButton.setToolTipText(resourceBundle.getString("playAll"));
-        playAllButton.putClientProperty("FlatLaf.style", "buttonType: borderless");
-
         playAllButton.addActionListener(event -> MainFrame.getInstance().playAll(flatten(albums.entrySet(), Map.Entry::getValue)));
 
-        artistNamePanel.add(playAllButton);
+        for (var entry : albums.entrySet()) {
+            var name = entry.getKey();
+            var songs = entry.getValue();
 
-        add(artistNamePanel);
+            songs.sort(Comparator.comparing(song -> coalesce(song.getTrackNumber(), () -> 0)));
 
-        var queryBuilder = QueryBuilder.select(Song.class).filterByIndexEqualTo("artist").ordered(true);
+            var albumDetailPanel = new AlbumDetailPanel(artist, name, songs);
 
-        try (var connection = MainFrame.openConnection();
-            var statement = queryBuilder.prepare(connection);
-            var results = queryBuilder.executeQuery(statement, mapOf(
-                entry("artist", artist.getName())
-            ))) {
-            albums = groupBy(mapAll(results, BeanAdapter.toType(Song.class)), Song::getAlbum);
-
-            for (var entry : albums.entrySet()) {
-                var name = entry.getKey();
-                var songs = entry.getValue();
-
-                songs.sort(Comparator.comparing(song -> coalesce(song.getTrackNumber(), () -> 0)));
-
-                var albumDetailPanel = new AlbumDetailPanel(artist, name, songs);
-
-                add(albumDetailPanel);
-
-                albumDetailPanels.add(albumDetailPanel);
-            }
-        } catch (SQLException exception) {
-            throw new RuntimeException(exception);
+            albumListPanel.add(albumDetailPanel);
         }
+
+        setBorder(new EmptyBorder(8, 8, 8, 8));
+
+        setScrollableTracksViewportWidth(true);
     }
 
     public void scrollToSong(Song song) {
         var album = song.getAlbum();
 
-        for (var albumDetailPanel : albumDetailPanels) {
+        var n = albumListPanel.getComponentCount();
+
+        for (var i = 0; i < n; i++) {
+            var albumDetailPanel = (AlbumDetailPanel)albumListPanel.getComponent(i);
+
             if (albumDetailPanel.matches(album)) {
                 scrollRectToVisible(SwingUtilities.convertRectangle(this, albumDetailPanel.getBounds(), this));
 

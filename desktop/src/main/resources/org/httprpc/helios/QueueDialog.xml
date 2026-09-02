@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE scroll-pane SYSTEM "sierra.dtd">
+
+<scroll-pane name="scrollPane" size="480, 360">
+    <list name="queueList"/>
+</scroll-pane>

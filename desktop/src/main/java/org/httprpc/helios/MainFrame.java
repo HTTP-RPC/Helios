@@ -19,6 +19,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JToggleButton;
@@ -45,6 +46,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
@@ -538,20 +540,51 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     private void showSelectedCollection() {
-        CollectionDetailPanel collectionDetailPanel;
+        JPanel collectionDetailPanel;
         if (artistList.getSelectedIndex() != -1) {
-            collectionDetailPanel = new ArtistDetailPanel(artistList.getSelectedValue());
+            var artist = artistList.getSelectedValue();
+
+            collectionDetailPanel = new ArtistDetailPanel(artist, getAlbums(artist));
         } else if (playlistList.getSelectedIndex() != -1) {
-            collectionDetailPanel = new PlaylistDetailPanel(playlistList.getSelectedValue());
+            var playlist = playlistList.getSelectedValue();
+
+            collectionDetailPanel = new PlaylistDetailPanel(playlist, getSongs(playlist));
         } else {
             collectionDetailPanel = null;
         }
 
-        if (collectionDetailPanel != null) {
-            collectionDetailPanel.load();
-        }
-
         collectionScrollPane.setViewportView(collectionDetailPanel);
+    }
+
+    private Map<String, List<Song>> getAlbums(Artist artist) {
+        var queryBuilder = QueryBuilder.select(Song.class).filterByIndexEqualTo("artist").ordered(true);
+
+        try (var connection = MainFrame.openConnection();
+            var statement = queryBuilder.prepare(connection);
+            var results = queryBuilder.executeQuery(statement, mapOf(
+                entry("artist", artist.getName())
+            ))) {
+            return groupBy(mapAll(results, BeanAdapter.toType(Song.class)), Song::getAlbum);
+        } catch (SQLException exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+
+    private List<Song> getSongs(Playlist playlist) {
+        var queryBuilder = QueryBuilder.select(Song.class)
+            .join(PlaylistSong.class, Song.class)
+            .filterByForeignKey(PlaylistSong.class, Playlist.class, "playlistID")
+            .ordered(true);
+
+        try (var connection = MainFrame.openConnection();
+            var statement = queryBuilder.prepare(connection);
+            var results = queryBuilder.executeQuery(statement, mapOf(
+                entry("playlistID", playlist.getID())
+            ))) {
+            return sortBy(mapAll(results, BeanAdapter.toType(Song.class)), Song::getTitle);
+        } catch (SQLException exception) {
+            throw new RuntimeException(exception);
+        }
     }
 
     public void playAll(Iterable<Song> songs) {
@@ -562,10 +595,6 @@ public class MainFrame extends JFrame implements Runnable {
         }
 
         play();
-    }
-
-    public List<ExpandedArtist> getArtists() {
-        return artists;
     }
 
     public List<ExpandedPlaylist> getPlaylists() {
