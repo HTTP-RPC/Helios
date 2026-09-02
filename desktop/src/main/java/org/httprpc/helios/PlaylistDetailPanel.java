@@ -1,5 +1,7 @@
 package org.httprpc.helios;
 
+import org.httprpc.kilo.beans.BeanAdapter;
+import org.httprpc.kilo.sql.QueryBuilder;
 import org.httprpc.sierra.BasicTableModel;
 import org.httprpc.sierra.Outlet;
 import org.httprpc.sierra.StackPanel;
@@ -7,12 +9,14 @@ import org.httprpc.sierra.UILoader;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.TableCellRenderer;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.KeyboardFocusManager;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -51,6 +55,9 @@ public class PlaylistDetailPanel extends StackPanel {
         }
     }
 
+    private Playlist playlist;
+    private List<Song> songs;
+
     private @Outlet JLabel nameLabel = null;
     private @Outlet JButton playAllButton = null;
 
@@ -63,6 +70,9 @@ public class PlaylistDetailPanel extends StackPanel {
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(PlaylistDetailPanel.class.getName());
 
     public PlaylistDetailPanel(Playlist playlist, List<Song> songs) {
+        this.playlist = playlist;
+        this.songs = songs;
+
         add(UILoader.load(this, "PlaylistDetailPanel.xml", resourceBundle));
 
         nameLabel.setText(playlist.getName());
@@ -71,6 +81,8 @@ public class PlaylistDetailPanel extends StackPanel {
 
         removeFromPlaylistButton.addActionListener(event -> removeFromPlaylist());
         removeFromPlaylistButton.setEnabled(false);
+
+        // TODO Disable these buttons for new playlists
 
         editPlaylistNameButton.addActionListener(event -> editPlaylistName());
 
@@ -95,9 +107,7 @@ public class PlaylistDetailPanel extends StackPanel {
                 return;
             }
 
-            var i = songTable.getSelectionModel().getMinSelectionIndex();
-
-            removeFromPlaylistButton.setEnabled(i != -1);
+            removeFromPlaylistButton.setEnabled(songTable.getSelectionModel().getMinSelectionIndex() != -1);
         });
 
         setBorder(new EmptyBorder(8, 8, 8, 8));
@@ -107,7 +117,39 @@ public class PlaylistDetailPanel extends StackPanel {
     }
 
     private void removeFromPlaylist() {
-        // TODO Confirm remove
+        var result = JOptionPane.showConfirmDialog(getTopLevelAncestor(),
+            resourceBundle.getString("confirmRemoveSongsMessage"),
+            resourceBundle.getString("removeFromPlaylist"),
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.WARNING_MESSAGE);
+
+        if (result == JOptionPane.YES_OPTION) {
+            var queryBuilder = QueryBuilder.delete(PlaylistSong.class)
+                .filterByForeignKey(Playlist.class, "playlistID")
+                .filterByForeignKey(Song.class, "songID");
+
+            try (var connection = MainFrame.openConnection();
+                var statement = queryBuilder.prepare(connection)) {
+                var playlistID = playlist.getID();
+
+                var selectedRows = songTable.getSelectedRows();
+
+                for (var i = 0; i < selectedRows.length; i++) {
+                    var song = songs.get(i);
+
+                    queryBuilder.addBatch(statement, mapOf(
+                        entry("playlistID", playlistID),
+                        entry("songID", song.getID())
+                    ));
+                }
+
+                statement.executeBatch();
+            } catch (SQLException exception) {
+                throw new RuntimeException(exception);
+            }
+
+            MainFrame.getInstance().loadPlaylists();
+        }
     }
 
     private void editPlaylistName() {
@@ -115,6 +157,23 @@ public class PlaylistDetailPanel extends StackPanel {
     }
 
     private void deletePlaylist() {
-        // TODO Confirm delete
+        var result = JOptionPane.showConfirmDialog(getTopLevelAncestor(),
+            resourceBundle.getString("confirmDeleteMessage"),
+            resourceBundle.getString("deletePlaylist"),
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.WARNING_MESSAGE);
+
+        if (result == JOptionPane.YES_OPTION) {
+            var queryBuilder = QueryBuilder.delete(Playlist.class).filterByPrimaryKey("id");
+
+            try (var connection = MainFrame.openConnection();
+                var statement = queryBuilder.prepare(connection)) {
+                queryBuilder.executeUpdate(statement, new BeanAdapter(playlist));
+            } catch (SQLException exception) {
+                throw new RuntimeException(exception);
+            }
+
+            MainFrame.getInstance().loadPlaylists();
+        }
     }
 }
