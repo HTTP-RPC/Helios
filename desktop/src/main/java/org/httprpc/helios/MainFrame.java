@@ -13,6 +13,7 @@ import org.httprpc.sierra.UILoader;
 
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
+import javax.swing.DefaultListSelectionModel;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -130,6 +131,17 @@ public class MainFrame extends JFrame implements Runnable {
             return String.format(resourceBundle.getString("countFormat"),
                 String.format(resourceBundle.getString(artistCount == 1 ? "singleArtistFormat" : "multipleArtistFormat"), artistCount),
                 String.format(resourceBundle.getString(songCount == 1 ? "singleSongFormat" : "multipleSongFormat"), songCount));
+        }
+    }
+
+    private static class CollectionListSelectionModel extends DefaultListSelectionModel {
+        CollectionListSelectionModel() {
+            setSelectionMode(SINGLE_SELECTION);
+        }
+
+        @Override
+        public void removeSelectionInterval(int index0, int index1) {
+            // No-op
         }
     }
 
@@ -335,6 +347,7 @@ public class MainFrame extends JFrame implements Runnable {
         settingsButton.addActionListener(event -> showSettingsDialog());
 
         artistList.setCellRenderer(new ArtistCellRenderer());
+        artistList.setSelectionModel(new CollectionListSelectionModel());
 
         artistList.addListSelectionListener(event -> {
             var artistIndex = artistList.getSelectedIndex();
@@ -360,6 +373,7 @@ public class MainFrame extends JFrame implements Runnable {
         });
 
         playlistList.setCellRenderer(new PlaylistCellRenderer());
+        playlistList.setSelectionModel(new CollectionListSelectionModel());
 
         playlistList.addListSelectionListener(event -> {
             var playlistIndex = playlistList.getSelectedIndex();
