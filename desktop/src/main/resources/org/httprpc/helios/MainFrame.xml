@@ -70,7 +70,7 @@
             </column-panel>
         </row-panel>
 
-        <row-panel weight="3">
+        <row-panel weight="2.75">
             <label name="elapsedTimeLabel" horizontalAlignment="trailing"
                 styleClass="small"
                 weight="1"/>

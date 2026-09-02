@@ -352,11 +352,13 @@ public class MainFrame extends JFrame implements Runnable {
         artistList.addListSelectionListener(event -> {
             var artistIndex = artistList.getSelectedIndex();
 
-            if (artistIndex != -1) {
-                this.artistIndex = artistIndex;
-
-                playlistList.clearSelection();
+            if (artistIndex == -1) {
+                return;
             }
+
+            this.artistIndex = artistIndex;
+
+            playlistList.clearSelection();
 
             if (!event.getValueIsAdjusting()) {
                 showSelectedCollection();
@@ -378,11 +380,13 @@ public class MainFrame extends JFrame implements Runnable {
         playlistList.addListSelectionListener(event -> {
             var playlistIndex = playlistList.getSelectedIndex();
 
-            if (playlistIndex != -1) {
-                this.playlistIndex = playlistIndex;
-
-                artistList.clearSelection();
+            if (playlistIndex == -1) {
+                return;
             }
+
+            this.playlistIndex = playlistIndex;
+
+            artistList.clearSelection();
 
             if (!event.getValueIsAdjusting()) {
                 showSelectedCollection();
@@ -461,14 +465,12 @@ public class MainFrame extends JFrame implements Runnable {
             throw new RuntimeException(exception);
         }
 
-        var i = playlistList.getSelectedIndex();
+        if (playlistList.getSelectedIndex() == -1) {
+            playlistList.setModel(new BasicListModel<>(playlists));
 
-        playlistList.setModel(new BasicListModel<>(playlists));
-
-        if (i != -1) {
-            playlistList.requestFocus();
-        } else {
             playlistIndex = playlists.isEmpty() ? -1 : 0;
+        } else {
+            playlistList.requestFocus();
         }
     }
 
