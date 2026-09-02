@@ -26,9 +26,10 @@ import static org.httprpc.kilo.util.Optionals.*;
 public class PlaylistDetailPanel extends StackPanel {
     private static class PlaylistCellRenderer extends JLabel implements TableCellRenderer {
         PlaylistCellRenderer() {
+            setText("A");
             setOpaque(true);
 
-            setBorder(new EmptyBorder(2, 2, 2, 2));
+            setBorder(new EmptyBorder(4, 4, 4, 4));
         }
 
         @Override
@@ -100,7 +101,10 @@ public class PlaylistDetailPanel extends StackPanel {
             listOf("title", "artist", "album"),
             resourceBundle));
 
-        songTable.setDefaultRenderer(Object.class, new PlaylistCellRenderer());
+        var playlistCellRenderer = new PlaylistCellRenderer();
+
+        songTable.setDefaultRenderer(Object.class, playlistCellRenderer);
+        songTable.setRowHeight(playlistCellRenderer.getPreferredSize().height);
 
         songTable.getSelectionModel().addListSelectionListener(event -> {
             if (event.getValueIsAdjusting()) {
