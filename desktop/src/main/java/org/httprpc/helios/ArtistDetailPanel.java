@@ -38,7 +38,7 @@ public class ArtistDetailPanel extends StackPanel {
 
             songs.sort(Comparator.comparing(song -> coalesce(song.getTrackNumber(), () -> 0)));
 
-            var albumDetailPanel = new AlbumDetailPanel(artist, name, songs);
+            var albumDetailPanel = new AlbumDetailPanel(name, MainFrame.getAlbumArtwork(artist, name), songs);
 
             albumListPanel.add(albumDetailPanel);
         }

@@ -161,7 +161,6 @@ public class MainFrame extends JFrame implements Runnable {
 
     private boolean playing = false;
 
-    private List<ExpandedArtist> artists = listOf();
     private int artistIndex = -1;
 
     private List<ExpandedPlaylist> playlists = listOf();
@@ -423,6 +422,7 @@ public class MainFrame extends JFrame implements Runnable {
     public void loadArtists() {
         var queryBuilder = QueryBuilder.select(ExpandedArtist.class).ordered(true);
 
+        List<ExpandedArtist> artists;
         try (var connection = openConnection();
             var statement = queryBuilder.prepare(connection);
             var results = queryBuilder.executeQuery(statement)) {
