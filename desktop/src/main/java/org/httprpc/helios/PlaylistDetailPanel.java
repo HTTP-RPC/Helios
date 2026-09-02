@@ -98,10 +98,8 @@ public class PlaylistDetailPanel extends CollectionDetailPanel {
             songTable.setFocusable(false);
 
             songTable.setModel(new BasicTableModel<>(Song.class, songs,
-                listOf("title", "time", "artist", "album"),
+                listOf("title", "artist", "album"),
                 resourceBundle));
-
-            songTable.getColumnModel().getColumn(1).setCellRenderer(new TimeCellRenderer());
 
             add(new JScrollPane(songTable), 1.0);
         } catch (SQLException exception) {

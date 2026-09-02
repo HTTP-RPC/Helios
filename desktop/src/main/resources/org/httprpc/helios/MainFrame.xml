@@ -70,10 +70,16 @@
             </column-panel>
         </row-panel>
 
-        <row-panel weight="2.75">
-            <label name="elapsedTimeLabel" styleClass="small"/>
-            <slider name="positionSlider" focusable="false" weight="1"/>
-            <label name="remainingTimeLabel" styleClass="small"/>
+        <row-panel weight="3">
+            <label name="elapsedTimeLabel" horizontalAlignment="trailing"
+                styleClass="small"
+                weight="1"/>
+
+            <slider name="positionSlider" focusable="false" weight="9"/>
+
+            <label name="remainingTimeLabel"
+                styleClass="small"
+                weight="1"/>
         </row-panel>
 
         <row-panel weight="1.25">
