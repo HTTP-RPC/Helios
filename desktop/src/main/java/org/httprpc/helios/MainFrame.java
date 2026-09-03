@@ -473,9 +473,9 @@ public class MainFrame extends JFrame implements Runnable {
             throw new RuntimeException(exception);
         }
 
-        var selectedIndex = artistList.getSelectedIndex();
+        var selectedIndex = playlistList.getSelectedIndex();
 
-        if (selectedIndex == -1 && !artists.isEmpty()) {
+        if (selectedIndex == -1 && !playlists.isEmpty()) {
             selectedIndex = 0;
         }
 
