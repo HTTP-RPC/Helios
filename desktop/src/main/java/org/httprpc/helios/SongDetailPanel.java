@@ -1,3 +1,5 @@
+// Copyright © 2026 GK Brown/httprpc.org. All rights reserved.
+
 package org.httprpc.helios;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;

@@ -1,3 +1,5 @@
+// Copyright © 2026 GK Brown/httprpc.org. All rights reserved.
+
 package org.httprpc.helios;
 
 import com.formdev.flatlaf.FlatDarkLaf;
@@ -576,7 +578,12 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     private void showSettingsDialog() {
-        // TODO
+        var settingsDialog = new SettingsDialog(this);
+
+        settingsDialog.pack();
+        settingsDialog.setLocationRelativeTo(this);
+
+        settingsDialog.setVisible(true);
     }
 
     public void playAll(Iterable<Song> songs) {
