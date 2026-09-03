@@ -3,6 +3,7 @@
 package org.httprpc.helios;
 
 import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.io.TextDecoder;
@@ -188,6 +189,8 @@ public class MainFrame extends JFrame implements Runnable {
     private FlatSVGIcon pauseIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/pause_24dp.svg"));
 
     private static MainFrame instance = null;
+
+    public static final String DARK_MODE_KEY = "darkMode";
 
     private static final String PLAY_PAUSE_KEY = "playPause";
     private static final String PREVIOUS_KEY = "previous";
@@ -638,7 +641,11 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     public static void main(String[] args) throws Exception {
-        FlatDarkLaf.setup();
+        if (preferences.getBoolean(DARK_MODE_KEY, true)) {
+            FlatDarkLaf.setup();
+        } else {
+            FlatLightLaf.setup();
+        }
 
         Files.createDirectories(rootDirectory);
 

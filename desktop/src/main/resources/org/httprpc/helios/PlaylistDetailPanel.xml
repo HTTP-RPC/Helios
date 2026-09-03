@@ -20,9 +20,9 @@
 
             <spacer width="8"/>
 
-            <button name="editPlaylistNameButton" icon="icons/edit_24dp.svg; 16"
+            <button name="editNameButton" icon="icons/edit_24dp.svg; 16"
                 focusable="false"
-                toolTipText="editPlaylistName"
+                toolTipText="editName"
                 style="buttonType: borderless"/>
 
             <button name="deletePlaylistButton" icon="icons/delete_24dp.svg; 18"

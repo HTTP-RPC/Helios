@@ -73,7 +73,7 @@ public class PlaylistDetailPanel extends StackPanel {
     private @Outlet JButton playAllButton = null;
 
     private @Outlet JButton removeFromPlaylistButton = null;
-    private @Outlet JButton editPlaylistNameButton = null;
+    private @Outlet JButton editNameButton = null;
     private @Outlet JButton deletePlaylistButton = null;
 
     private @Outlet JTable songTable = null;
@@ -124,8 +124,8 @@ public class PlaylistDetailPanel extends StackPanel {
 
         var playlistID = playlist.getID();
 
-        editPlaylistNameButton.addActionListener(event -> editPlaylistName());
-        editPlaylistNameButton.setEnabled(playlistID != null);
+        editNameButton.addActionListener(event -> editPlaylistName());
+        editNameButton.setEnabled(playlistID != null);
 
         deletePlaylistButton.addActionListener(event -> deletePlaylist());
         deletePlaylistButton.setEnabled(playlistID != null);

@@ -2,6 +2,25 @@
 
 <!DOCTYPE column-panel SYSTEM "sierra.dtd">
 
-<column-panel spacing="8">
-    <!-- TODO -->
+<column-panel spacing="8" padding="8" opaque="true">
+    <form-panel>
+        <column-panel label="appearance" spacing="4">
+            <column-panel>
+                <radio-button name="lightRadioButton" text="light" group="appearance"/>
+                <radio-button name="darkRadioButton" text="dark" group="appearance"/>
+            </column-panel>
+
+            <label text="requiresRestart" enabled="false"/>
+        </column-panel>
+    </form-panel>
+
+    <separator/>
+
+    <row-panel spacing="8">
+        <spacer weight="1"/>
+
+        <button name="cancelButton" text="cancel"/>
+        <button name="okButton" text="ok"/>
+    </row-panel>
 </column-panel>
+
