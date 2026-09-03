@@ -125,8 +125,8 @@ public class MainFrame extends JFrame implements Runnable {
 
         @Override
         protected String getCountText(ExpandedPlaylist value) {
-            var artistCount = value.getArtistCount();
-            var songCount = value.getSongCount();
+            var artistCount = coalesce(value.getArtistCount(), () -> 0);
+            var songCount = coalesce(value.getSongCount(), () -> 0);
 
             return String.format(resourceBundle.getString("countFormat"),
                 String.format(resourceBundle.getString(artistCount == 1 ? "singleArtistFormat" : "multipleArtistFormat"), artistCount),
@@ -178,7 +178,6 @@ public class MainFrame extends JFrame implements Runnable {
 
     private boolean playing = false;
 
-    private List<ExpandedArtist> artists = listOf();
     private List<ExpandedPlaylist> playlists = listOf();
 
     private List<Song> queue = new ArrayList<>();
@@ -319,10 +318,6 @@ public class MainFrame extends JFrame implements Runnable {
         });
     }
 
-    public List<ExpandedArtist> getArtists() {
-        return artists;
-    }
-
     public List<ExpandedPlaylist> getPlaylists() {
         return playlists;
     }
@@ -444,6 +439,7 @@ public class MainFrame extends JFrame implements Runnable {
     public void loadArtists() {
         var queryBuilder = QueryBuilder.select(ExpandedArtist.class).ordered(true);
 
+        List<ExpandedArtist> artists;
         try (var connection = openConnection();
             var statement = queryBuilder.prepare(connection);
             var results = queryBuilder.executeQuery(statement)) {
@@ -480,7 +476,13 @@ public class MainFrame extends JFrame implements Runnable {
         }
 
         playlistList.setModel(new BasicListModel<>(playlists));
-        playlistList.setSelectedIndex(selectedIndex);
+
+        if (selectedIndex < playlists.size()) {
+            playlistList.setSelectedIndex(selectedIndex);
+        } else {
+            playlistList.setSelectedIndex(0);
+            playlistList.requestFocus();
+        }
     }
 
     private void play() {
@@ -526,7 +528,16 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     private void addPlaylist() {
-        // TODO
+        collectionTabbedPane.setSelectedIndex(PLAYLIST_TAB_INDEX);
+
+        var playlist = BeanAdapter.coerce(mapOf(), ExpandedPlaylist.class);
+
+        playlist.setName("New Playlist"); // TODO
+
+        playlists.add(playlist);
+
+        playlistList.setModel(new BasicListModel<>(playlists));
+        playlistList.setSelectedIndex(playlists.size() - 1);
     }
 
     private void updatePosition() {

@@ -13,6 +13,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.TableCellRenderer;
@@ -119,11 +120,13 @@ public class PlaylistDetailPanel extends StackPanel {
         removeFromPlaylistButton.addActionListener(event -> removeFromPlaylist());
         removeFromPlaylistButton.setEnabled(false);
 
-        // TODO Disable these buttons for new playlists
+        var playlistID = playlist.getID();
 
         editPlaylistNameButton.addActionListener(event -> editPlaylistName());
+        editPlaylistNameButton.setEnabled(playlistID != null);
 
         deletePlaylistButton.addActionListener(event -> deletePlaylist());
+        deletePlaylistButton.setEnabled(playlistID != null);
 
         var songTableHeader = songTable.getTableHeader();
 
@@ -154,6 +157,10 @@ public class PlaylistDetailPanel extends StackPanel {
 
         setScrollableTracksViewportWidth(true);
         setScrollableTracksViewportHeight(true);
+
+        if (playlist.getID() == null) {
+            SwingUtilities.invokeLater(this::editPlaylistName);
+        }
     }
 
     private void removeFromPlaylist() {
@@ -202,9 +209,13 @@ public class PlaylistDetailPanel extends StackPanel {
     }
 
     private void revertPlaylistNameChange() {
-        nameTextField.setText(playlist.getName());
+        if (playlist.getID() == null) {
+            MainFrame.getInstance().loadPlaylists();
+        } else {
+            nameTextField.setText(playlist.getName());
 
-        nameTextField.getParent().revalidate();
+            nameTextField.getParent().revalidate();
+        }
 
         endPlaylistNameEdit();
     }
@@ -214,6 +225,8 @@ public class PlaylistDetailPanel extends StackPanel {
 
         if (name.isEmpty()) {
             revertPlaylistNameChange();
+        } else if (playlist.getID() == null) {
+            // TODO
         } else {
             playlist.setName(name);
 
