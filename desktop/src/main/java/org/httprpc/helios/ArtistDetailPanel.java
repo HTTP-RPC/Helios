@@ -57,7 +57,7 @@ public class ArtistDetailPanel extends StackPanel {
             var albumDetailPanel = (AlbumDetailPanel)albumListPanel.getComponent(i);
 
             if (albumDetailPanel.matches(album)) {
-                scrollRectToVisible(SwingUtilities.convertRectangle(this, albumDetailPanel.getBounds(), this));
+                scrollRectToVisible(SwingUtilities.convertRectangle(albumListPanel, albumDetailPanel.getBounds(), this));
 
                 break;
             }
