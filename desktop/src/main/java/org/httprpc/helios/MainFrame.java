@@ -557,8 +557,12 @@ public class MainFrame extends JFrame implements Runnable {
         if (Files.isDirectory(path)) {
             // TODO
         } else {
-            // TODO
+            addSong(path);
         }
+    }
+
+    private void addSong(Path path) {
+        // TODO
     }
 
     private void addPlaylist() {

@@ -205,7 +205,7 @@ public class SongDetailPanel extends StackPanel {
             mainFrame.loadArtists();
             mainFrame.loadPlaylists();
 
-            // TODO Delete song content
+            // TODO Delete content
         }
     }
 
