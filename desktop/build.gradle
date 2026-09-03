@@ -16,6 +16,6 @@ tasks.withType(JavaCompile).configureEach {
     ]
 }
 
-jar {
-    archiveFileName = "${project.name}.jar"
+application {
+    mainClass = 'org.httprpc.helios.MainFrame'
 }
