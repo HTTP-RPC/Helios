@@ -31,6 +31,7 @@ import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -402,11 +403,14 @@ public class MainFrame extends JFrame implements Runnable {
             showSelectedCollection();
         });
 
+        pack();
+
+        var size = getSize();
+
+        setMinimumSize(new Dimension(size.width, (int)Math.ceil(size.width * (2.0 / 3.0))));
+
         loadArtists();
         loadPlaylists();
-
-        pack();
-        setMinimumSize(getSize());
 
         setLocationRelativeTo(null);
 
@@ -455,7 +459,6 @@ public class MainFrame extends JFrame implements Runnable {
         }
 
         artistList.setModel(new BasicListModel<>(artists));
-
         artistList.setSelectedIndex(selectedIndex);
     }
 
@@ -472,11 +475,12 @@ public class MainFrame extends JFrame implements Runnable {
 
         var selectedIndex = artistList.getSelectedIndex();
 
-        playlistList.setModel(new BasicListModel<>(playlists));
-
-        if (selectedIndex != -1) {
-            playlistList.setSelectedIndex(selectedIndex);
+        if (selectedIndex == -1 && !artists.isEmpty()) {
+            selectedIndex = 0;
         }
+
+        playlistList.setModel(new BasicListModel<>(playlists));
+        playlistList.setSelectedIndex(selectedIndex);
     }
 
     private void play() {

@@ -197,6 +197,11 @@ public class SongDetailPanel extends StackPanel {
                 throw new RuntimeException(exception);
             }
 
+            var mainFrame = MainFrame.getInstance();
+
+            mainFrame.loadArtists();
+            mainFrame.loadPlaylists();
+
             // TODO Delete song content
         }
     }

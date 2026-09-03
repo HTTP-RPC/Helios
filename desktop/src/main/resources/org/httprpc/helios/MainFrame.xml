@@ -110,11 +110,11 @@
             border="Component.borderColor; 1"
             weight="1">
             <scroll-pane name="artistScrollPane" tabTitle="artists" tabIcon="icons/piano_24dp.svg; 18">
-                <list name="artistList" selectionMode="single-selection" visibleRowCount="15"/>
+                <list name="artistList" selectionMode="single-selection"/>
             </scroll-pane>
 
             <scroll-pane name="playlistScrollPane" tabTitle="playlists" tabIcon="icons/music_note_24dp.svg; 18">
-                <list name="playlistList" selectionMode="single-selection" visibleRowCount="15"/>
+                <list name="playlistList" selectionMode="single-selection"/>
             </scroll-pane>
         </tabbed-pane>
 
