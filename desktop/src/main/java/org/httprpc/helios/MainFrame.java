@@ -448,14 +448,11 @@ public class MainFrame extends JFrame implements Runnable {
             throw new RuntimeException(exception);
         }
 
-        var selectedIndex = artistList.getSelectedIndex();
-
-        if (selectedIndex == -1 && !artists.isEmpty()) {
-            selectedIndex = 0;
-        }
-
         artistList.setModel(new BasicListModel<>(artists));
-        artistList.setSelectedIndex(selectedIndex);
+
+        if (!artists.isEmpty()) {
+            artistList.setSelectedIndex(0);
+        }
     }
 
     public void loadPlaylists() {
@@ -469,19 +466,10 @@ public class MainFrame extends JFrame implements Runnable {
             throw new RuntimeException(exception);
         }
 
-        var selectedIndex = playlistList.getSelectedIndex();
-
-        if (selectedIndex == -1 && !playlists.isEmpty()) {
-            selectedIndex = 0;
-        }
-
         playlistList.setModel(new BasicListModel<>(playlists));
 
-        if (selectedIndex < playlists.size()) {
-            playlistList.setSelectedIndex(selectedIndex);
-        } else {
+        if (!playlists.isEmpty()) {
             playlistList.setSelectedIndex(0);
-            playlistList.requestFocus();
         }
     }
 
