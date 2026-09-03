@@ -19,6 +19,7 @@ import javax.swing.AbstractAction;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -32,6 +33,7 @@ import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
+import javax.swing.filechooser.FileFilter;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -41,6 +43,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -523,7 +526,31 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     private void addSongs() {
-        // TODO
+        var fileChooser = new JFileChooser();
+
+        fileChooser.setFileFilter(new FileFilter() {
+            @Override
+            public boolean accept(File file) {
+                if (file.isDirectory()) {
+                    return true;
+                } else {
+                    var path = file.getPath();
+
+                    return path.endsWith(".mp3") || path.endsWith(".m4a");
+                }
+            }
+
+            @Override
+            public String getDescription() {
+                return resourceBundle.getString("audioFileFilterDescription");
+            }
+        });
+
+        var result = fileChooser.showOpenDialog(this);
+
+        if (result == JFileChooser.APPROVE_OPTION) {
+            // TODO
+        }
     }
 
     private void addPlaylist() {
