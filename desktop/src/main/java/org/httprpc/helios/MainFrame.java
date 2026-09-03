@@ -466,10 +466,16 @@ public class MainFrame extends JFrame implements Runnable {
             throw new RuntimeException(exception);
         }
 
+        var selectedPlaylistName = map(playlistList.getSelectedValue(), Playlist::getName);
+
         playlistList.setModel(new BasicListModel<>(playlists));
 
         if (!playlists.isEmpty()) {
-            playlistList.setSelectedIndex(0);
+            if (selectedPlaylistName != null) {
+                playlistList.setSelectedIndex(indexOf(playlists, whereEqualTo(Playlist::getName, selectedPlaylistName)));
+            } else {
+                playlistList.setSelectedIndex(0);
+            }
         }
     }
 

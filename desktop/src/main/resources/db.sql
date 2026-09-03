@@ -2,11 +2,11 @@ drop table if exists Song;
 
 create table Song (
     id integer primary key,
-    artist text not null,
-    album text not null,
-    title text not null,
+    artist text not null collate nocase,
+    album text not null collate nocase,
+    title text not null collate nocase,
     time integer not null,
-    genre text,
+    genre text collate nocase,
     year integer,
     trackNumber integer,
     trackCount integer,
@@ -21,7 +21,7 @@ drop table if exists Playlist;
 
 create table Playlist (
     id integer primary key,
-    name text not null,
+    name text not null collate nocase,
     unique (name)
 );
 
