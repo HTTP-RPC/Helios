@@ -225,18 +225,23 @@ public class PlaylistDetailPanel extends StackPanel {
 
         if (name.isEmpty()) {
             revertPlaylistNameChange();
-        } else if (playlist.getID() == null) {
-            // TODO
         } else {
-            playlist.setName(name);
+            QueryBuilder queryBuilder;
+            if (playlist.getID() == null) {
+                queryBuilder = QueryBuilder.insert(Playlist.class);
+            } else {
+                queryBuilder = QueryBuilder.update(Playlist.class).filterByPrimaryKey("id");
+            }
 
-            var queryBuilder = QueryBuilder.update(Playlist.class).filterByPrimaryKey("id");
+            playlist.setName(name);
 
             try (var connection = MainFrame.openConnection();
                 var statement = queryBuilder.prepare(connection)) {
                 queryBuilder.executeUpdate(statement, new BeanAdapter(playlist));
 
                 MainFrame.getInstance().loadPlaylists();
+
+                endPlaylistNameEdit();
             } catch (SQLException exception) {
                 if (SQLiteErrorCode.getErrorCode(exception.getErrorCode()) == SQLiteErrorCode.SQLITE_CONSTRAINT) {
                     nameTextField.selectAll();
@@ -247,8 +252,6 @@ public class PlaylistDetailPanel extends StackPanel {
                 }
 
                 throw new RuntimeException(exception);
-            } finally {
-                endPlaylistNameEdit();
             }
         }
     }
