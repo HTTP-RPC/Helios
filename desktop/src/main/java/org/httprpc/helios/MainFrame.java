@@ -13,6 +13,9 @@ import org.httprpc.sierra.ColumnPanel;
 import org.httprpc.sierra.MenuButton;
 import org.httprpc.sierra.Outlet;
 import org.httprpc.sierra.UILoader;
+import org.jaudiotagger.audio.AudioFile;
+import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.tag.FieldKey;
 
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
@@ -43,6 +46,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -214,6 +218,9 @@ public class MainFrame extends JFrame implements Runnable {
 
     private static final int ARTIST_TAB_INDEX = 0;
     private static final int PLAYLIST_TAB_INDEX = 1;
+
+    private static final String MP3_EXTENSION = ".mp3";
+    private static final String M4A_EXTENSION = ".m4a";
 
     private static final Path rootDirectory = Path.of(System.getProperty("user.home"), ".helios");
     private static final Path dbFile = rootDirectory.resolve("music.db");
@@ -536,7 +543,7 @@ public class MainFrame extends JFrame implements Runnable {
                 } else {
                     var path = file.getPath();
 
-                    return path.endsWith(".mp3") || path.endsWith(".m4a");
+                    return path.endsWith(MP3_EXTENSION) || path.endsWith(M4A_EXTENSION);
                 }
             }
 
@@ -555,14 +562,58 @@ public class MainFrame extends JFrame implements Runnable {
 
     private void addSongs(Path path) {
         if (Files.isDirectory(path)) {
-            // TODO
+            // TODO Recursively add songs
         } else {
             addSong(path);
         }
     }
 
     private void addSong(Path path) {
-        // TODO
+        AudioFile audioFile;
+        try {
+            audioFile = AudioFileIO.read(path.toFile());
+        } catch (Exception exception) {
+            // TODO
+            throw new RuntimeException(exception);
+        }
+
+        var tag = audioFile.getTag();
+        var audioHeader = audioFile.getAudioHeader();
+
+        var artist = tag.getFirst(FieldKey.ARTIST);
+        var album = tag.getFirst(FieldKey.ALBUM);
+        var title = tag.getFirst(FieldKey.TITLE);
+
+        var time = audioHeader.getTrackLength();
+
+        var genre = tag.getFirst(FieldKey.GENRE);
+
+        // TODO Format?
+        var year = tag.getFirst(FieldKey.YEAR);
+
+        var trackNumber = tag.getFirst(FieldKey.TRACK);
+        var trackCount = tag.getFirst(FieldKey.TRACK_TOTAL);
+
+        var discNumber = tag.getFirst(FieldKey.DISC_NO);
+        var discCount = tag.getFirst(FieldKey.DISC_TOTAL);
+
+        // TODO Add row to Song table
+
+        // TODO Copy file to album folder
+
+        // TODO Import artwork if not already defined
+        var artwork = tag.getFirstArtwork();
+
+        if (artwork != null) {
+            Image image;
+            try {
+                image = ImageIO.read(new ByteArrayInputStream(artwork.getBinaryData()));
+            } catch (IOException exception) {
+                image = null;
+            }
+
+            // TODO
+        }
     }
 
     private void addPlaylist() {
