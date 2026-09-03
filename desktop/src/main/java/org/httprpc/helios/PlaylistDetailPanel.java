@@ -273,7 +273,9 @@ public class PlaylistDetailPanel extends StackPanel {
 
             try (var connection = MainFrame.openConnection();
                 var statement = queryBuilder.prepare(connection)) {
-                queryBuilder.executeUpdate(statement, new BeanAdapter(playlist));
+                queryBuilder.executeUpdate(statement, mapOf(
+                    entry("id", playlist.getID())
+                ));
             } catch (SQLException exception) {
                 throw new RuntimeException(exception);
             }

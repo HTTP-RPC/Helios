@@ -1,7 +1,6 @@
 package org.httprpc.helios;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
-import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.sql.QueryBuilder;
 import org.httprpc.sierra.MenuButton;
 import org.httprpc.sierra.Outlet;
@@ -192,7 +191,9 @@ public class SongDetailPanel extends StackPanel {
 
             try (var connection = MainFrame.openConnection();
                 var statement = queryBuilder.prepare(connection)) {
-                queryBuilder.executeUpdate(statement, new BeanAdapter(song));
+                queryBuilder.executeUpdate(statement, mapOf(
+                    entry("id", song.getID())
+                ));
             } catch (SQLException exception) {
                 throw new RuntimeException(exception);
             }

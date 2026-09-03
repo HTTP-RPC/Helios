@@ -661,7 +661,7 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     public static Connection openConnection() throws SQLException {
-        return DriverManager.getConnection(String.format("jdbc:sqlite:%s", dbFile.toAbsolutePath()));
+        return DriverManager.getConnection(String.format("jdbc:sqlite:%s?foreign_keys=true", dbFile.toAbsolutePath()));
     }
 
     public static Image getAlbumArtwork(Artist artist, String name) {
