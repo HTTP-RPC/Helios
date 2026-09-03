@@ -13,7 +13,10 @@
 
     <row-panel spacing="16">
         <column-panel spacing="2">
-            <image-pane name="artworkImagePane" size="180" scaleMode="fill-width" border="Component.borderColor"/>
+            <stack-panel>
+                <image-pane name="artworkImagePane" size="180" scaleMode="fill-width" border="Component.borderColor"/>
+                <label icon="icons/photo_24dp.svg; 48" horizontalAlignment="center"/>
+            </stack-panel>
 
             <spacer height="4"/>
 
