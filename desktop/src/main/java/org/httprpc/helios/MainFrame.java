@@ -205,6 +205,9 @@ public class MainFrame extends JFrame implements Runnable {
     private static final String SIZE_WIDTH_KEY = "sizeWidth";
     private static final String SIZE_HEIGHT_KEY = "sizeHeight";
 
+    private static final int ARTIST_TAB_INDEX = 0;
+    private static final int PLAYLIST_TAB_INDEX = 1;
+
     private static final Path rootDirectory = Path.of(System.getProperty("user.home"), ".helios");
     private static final Path dbFile = rootDirectory.resolve("music.db");
 
@@ -303,7 +306,7 @@ public class MainFrame extends JFrame implements Runnable {
         actionMap.put(ARTISTS_KEY, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent event) {
-                collectionTabbedPane.setSelectedIndex(0);
+                collectionTabbedPane.setSelectedIndex(ARTIST_TAB_INDEX);
             }
         });
 
@@ -311,7 +314,7 @@ public class MainFrame extends JFrame implements Runnable {
         actionMap.put(PLAYLISTS_KEY, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent event) {
-                collectionTabbedPane.setSelectedIndex(1);
+                collectionTabbedPane.setSelectedIndex(PLAYLIST_TAB_INDEX);
             }
         });
     }
@@ -404,18 +407,15 @@ public class MainFrame extends JFrame implements Runnable {
         });
 
         pack();
-
-        var size = getSize();
-
-        setMinimumSize(new Dimension(size.width, (int)Math.ceil(size.width * (2.0 / 3.0))));
-
-        loadArtists();
-        loadPlaylists();
+        setMinimumSize(map(getSize(), size -> new Dimension(size.width, (int)Math.ceil(size.width * (2.0 / 3.0)))));
 
         setLocationRelativeTo(null);
 
         setLocation(preferences.getInt(LOCATION_X_KEY, getX()), preferences.getInt(LOCATION_Y_KEY, getY()));
         setSize(preferences.getInt(SIZE_WIDTH_KEY, getWidth()), preferences.getInt(SIZE_HEIGHT_KEY, getHeight()));
+
+        loadArtists();
+        loadPlaylists();
 
         setVisible(true);
 
@@ -543,27 +543,31 @@ public class MainFrame extends JFrame implements Runnable {
 
         var selectedSong = searchDialog.getSelectedSong();
 
-        if (selectedSong != null) {
-            var artist = selectedSong.getArtist();
+        if (selectedSong == null) {
+            return;
+        }
 
-            var artistListModel = artistList.getModel();
+        var artist = selectedSong.getArtist();
 
-            var n = artistListModel.getSize();
+        var artistListModel = artistList.getModel();
 
-            for (var i = 0; i < n; i++) {
-                if (artistListModel.getElementAt(i).getName().equals(artist)) {
-                    artistList.setSelectedIndex(i);
+        var n = artistListModel.getSize();
 
-                    SwingUtilities.invokeLater(() -> {
-                        if (collectionScrollPane.getViewport().getView() instanceof ArtistDetailPanel artistDetailPanel) {
-                            artistDetailPanel.scrollToSong(selectedSong);
-                        }
-                    });
+        for (var i = 0; i < n; i++) {
+            if (artistListModel.getElementAt(i).getName().equals(artist)) {
+                artistList.setSelectedIndex(i);
 
-                    break;
-                }
+                SwingUtilities.invokeLater(() -> {
+                    if (collectionScrollPane.getViewport().getView() instanceof ArtistDetailPanel artistDetailPanel) {
+                        artistDetailPanel.scrollToSong(selectedSong);
+                    }
+                });
+
+                break;
             }
         }
+
+        collectionTabbedPane.setSelectedIndex(ARTIST_TAB_INDEX);
     }
 
     private void showSettingsDialog() {
@@ -582,8 +586,8 @@ public class MainFrame extends JFrame implements Runnable {
 
     private void showSelectedCollection() {
         var collectionDetailPanel = switch (collectionTabbedPane.getSelectedIndex()) {
-            case 0 -> map(artistList.getSelectedValue(), artist -> new ArtistDetailPanel(artist, getAlbums(artist)));
-            case 1 -> map(playlistList.getSelectedValue(), playlist -> new PlaylistDetailPanel(playlist, getSongs(playlist)));
+            case ARTIST_TAB_INDEX -> map(artistList.getSelectedValue(), artist -> new ArtistDetailPanel(artist, getAlbums(artist)));
+            case PLAYLIST_TAB_INDEX -> map(playlistList.getSelectedValue(), playlist -> new PlaylistDetailPanel(playlist, getSongs(playlist)));
             default -> throw new UnsupportedOperationException();
         };
 
