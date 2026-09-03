@@ -196,6 +196,8 @@ public class MainFrame extends JFrame implements Runnable {
     private static final String ADD_KEY = "add";
     private static final String SEARCH_KEY = "search";
     private static final String SETTINGS_KEY = "settings";
+    private static final String ARTISTS_KEY = "artists";
+    private static final String PLAYLISTS_KEY = "playlists";
 
     private static final String LOCATION_X_KEY = "locationX";
     private static final String LOCATION_Y_KEY = "locationY";
@@ -293,6 +295,22 @@ public class MainFrame extends JFrame implements Runnable {
             @Override
             public void actionPerformed(ActionEvent event) {
                 settingsButton.doClick();
+            }
+        });
+
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_1, shortcutModifier, false), ARTISTS_KEY);
+        actionMap.put(ARTISTS_KEY, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                collectionTabbedPane.setSelectedIndex(0);
+            }
+        });
+
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_2, shortcutModifier, false), PLAYLISTS_KEY);
+        actionMap.put(PLAYLISTS_KEY, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                collectionTabbedPane.setSelectedIndex(1);
             }
         });
     }
@@ -432,11 +450,13 @@ public class MainFrame extends JFrame implements Runnable {
 
         var selectedIndex = artistList.getSelectedIndex();
 
+        if (selectedIndex == -1 && !artists.isEmpty()) {
+            selectedIndex = 0;
+        }
+
         artistList.setModel(new BasicListModel<>(artists));
 
-        if (selectedIndex != -1) {
-            artistList.setSelectedIndex(selectedIndex);
-        }
+        artistList.setSelectedIndex(selectedIndex);
     }
 
     public void loadPlaylists() {

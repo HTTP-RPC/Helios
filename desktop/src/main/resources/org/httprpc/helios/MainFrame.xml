@@ -104,8 +104,8 @@
     </row-panel>
 
     <row-panel spacing="4" weight="1">
-        <tabbed-pane name="collectionTabbedPane"
-            tabPlacement="bottom"
+        <tabbed-pane name="collectionTabbedPane" tabPlacement="bottom"
+            focusable="false"
             style="tabAreaAlignment: fill"
             border="Component.borderColor; 1"
             weight="1">
