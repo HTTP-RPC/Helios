@@ -549,6 +549,14 @@ public class MainFrame extends JFrame implements Runnable {
         var result = fileChooser.showOpenDialog(this);
 
         if (result == JFileChooser.APPROVE_OPTION) {
+            importSongs(fileChooser.getSelectedFile().toPath());
+        }
+    }
+
+    private void importSongs(Path path) {
+        if (Files.isDirectory(path)) {
+            // TODO
+        } else {
             // TODO
         }
     }
@@ -558,7 +566,7 @@ public class MainFrame extends JFrame implements Runnable {
 
         var playlist = BeanAdapter.coerce(mapOf(), ExpandedPlaylist.class);
 
-        playlist.setName("New Playlist"); // TODO
+        playlist.setName(resourceBundle.getString("newPlaylistName"));
 
         playlists.add(playlist);
 
