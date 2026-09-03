@@ -63,7 +63,7 @@
                         style="buttonType: borderless"
                         toolTipText="add">
                         <menu-item name="addSongsMenuItem" text="songs" icon="icons/folder_24dp.svg; 18"/>
-                        <menu-item name="addPlaylistMenuItem" text="playlist" icon="icons/playlist_add_24dp.svg; 18"/>
+                        <menu-item name="addPlaylistMenuItem" text="playlist" icon="icons/music_note_24dp.svg; 18"/>
                     </menu-button>
                 </row-panel>
                 <spacer weight="1"/>
