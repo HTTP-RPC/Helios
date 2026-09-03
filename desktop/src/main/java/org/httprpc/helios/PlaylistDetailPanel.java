@@ -188,7 +188,7 @@ public class PlaylistDetailPanel extends StackPanel {
                 throw new RuntimeException(exception);
             }
 
-            MainFrame.getInstance().refreshPlaylist();
+            MainFrame.getInstance().loadPlaylists();
         }
     }
 
@@ -223,7 +223,7 @@ public class PlaylistDetailPanel extends StackPanel {
                 var statement = queryBuilder.prepare(connection)) {
                 queryBuilder.executeUpdate(statement, new BeanAdapter(playlist));
 
-                MainFrame.getInstance().refreshPlaylist();
+                MainFrame.getInstance().loadPlaylists();
             } catch (SQLException exception) {
                 if (SQLiteErrorCode.getErrorCode(exception.getErrorCode()) == SQLiteErrorCode.SQLITE_CONSTRAINT) {
                     nameTextField.selectAll();

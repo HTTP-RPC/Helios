@@ -20,7 +20,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JToggleButton;
@@ -34,8 +33,6 @@ import java.awt.Component;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -166,17 +163,18 @@ public class MainFrame extends JFrame implements Runnable {
     private @Outlet JSlider positionSlider = null;
     private @Outlet JLabel remainingTimeLabel = null;
 
+    private @Outlet JScrollPane artistScrollPane = null;
     private @Outlet JList<ExpandedArtist> artistList = null;
+
+    private @Outlet JScrollPane playlistScrollPane = null;
     private @Outlet JList<ExpandedPlaylist> playlistList = null;
 
     private @Outlet JScrollPane collectionScrollPane = null;
 
     private boolean playing = false;
 
-    private int artistIndex = -1;
-
+    private List<ExpandedArtist> artists = listOf();
     private List<ExpandedPlaylist> playlists = listOf();
-    private int playlistIndex = -1;
 
     private List<Song> queue = new ArrayList<>();
 
@@ -295,6 +293,14 @@ public class MainFrame extends JFrame implements Runnable {
         });
     }
 
+    public List<ExpandedArtist> getArtists() {
+        return artists;
+    }
+
+    public List<ExpandedPlaylist> getPlaylists() {
+        return playlists;
+    }
+
     @Override
     public void run() {
         setContentPane(UILoader.load(this, "MainFrame.xml", resourceBundle));
@@ -346,60 +352,34 @@ public class MainFrame extends JFrame implements Runnable {
         searchButton.addActionListener(event -> showSearchDialog());
         settingsButton.addActionListener(event -> showSettingsDialog());
 
+        artistScrollPane.setBorder(null);
+
         artistList.setCellRenderer(new ArtistCellRenderer());
         artistList.setSelectionModel(new CollectionListSelectionModel());
 
         artistList.addListSelectionListener(event -> {
-            var artistIndex = artistList.getSelectedIndex();
-
-            if (artistIndex == -1) {
+            if (event.getValueIsAdjusting()) {
                 return;
             }
 
-            this.artistIndex = artistIndex;
+            var artist = artistList.getSelectedValue();
 
-            playlistList.clearSelection();
-
-            if (!event.getValueIsAdjusting()) {
-                showSelectedCollection();
-            }
+            collectionScrollPane.setViewportView(new ArtistDetailPanel(artist, getAlbums(artist)));
         });
 
-        artistList.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusGained(FocusEvent event) {
-                if (artistIndex != -1) {
-                    artistList.setSelectedIndex(artistIndex);
-                }
-            }
-        });
+        playlistScrollPane.setBorder(null);
 
         playlistList.setCellRenderer(new PlaylistCellRenderer());
         playlistList.setSelectionModel(new CollectionListSelectionModel());
 
         playlistList.addListSelectionListener(event -> {
-            var playlistIndex = playlistList.getSelectedIndex();
-
-            if (playlistIndex == -1) {
+            if (event.getValueIsAdjusting()) {
                 return;
             }
 
-            this.playlistIndex = playlistIndex;
+            var playlist = playlistList.getSelectedValue();
 
-            artistList.clearSelection();
-
-            if (!event.getValueIsAdjusting()) {
-                showSelectedCollection();
-            }
-        });
-
-        playlistList.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusGained(FocusEvent event) {
-                if (playlistIndex != -1) {
-                    playlistList.setSelectedIndex(playlistIndex);
-                }
-            }
+            collectionScrollPane.setViewportView(new PlaylistDetailPanel(playlist, getSongs(playlist)));
         });
 
         loadArtists();
@@ -440,7 +420,6 @@ public class MainFrame extends JFrame implements Runnable {
     public void loadArtists() {
         var queryBuilder = QueryBuilder.select(ExpandedArtist.class).ordered(true);
 
-        List<ExpandedArtist> artists;
         try (var connection = openConnection();
             var statement = queryBuilder.prepare(connection);
             var results = queryBuilder.executeQuery(statement)) {
@@ -450,8 +429,20 @@ public class MainFrame extends JFrame implements Runnable {
         }
 
         artistList.setModel(new BasicListModel<>(artists));
+    }
 
-        artistIndex = artists.isEmpty() ? -1 : 0;
+    private Map<String, List<Song>> getAlbums(Artist artist) {
+        var queryBuilder = QueryBuilder.select(Song.class).filterByIndexEqualTo("artist").ordered(true);
+
+        try (var connection = MainFrame.openConnection();
+            var statement = queryBuilder.prepare(connection);
+            var results = queryBuilder.executeQuery(statement, mapOf(
+                entry("artist", artist.getName())
+            ))) {
+            return groupBy(mapAll(results, BeanAdapter.toType(Song.class)), Song::getAlbum);
+        } catch (SQLException exception) {
+            throw new RuntimeException(exception);
+        }
     }
 
     public void loadPlaylists() {
@@ -466,14 +457,23 @@ public class MainFrame extends JFrame implements Runnable {
         }
 
         playlistList.setModel(new BasicListModel<>(playlists));
-
-        playlistIndex = playlists.isEmpty() ? -1 : 0;
     }
 
-    public void refreshPlaylist() {
-        playlistList.requestFocus();
+    private List<Song> getSongs(Playlist playlist) {
+        var queryBuilder = QueryBuilder.select(Song.class)
+            .join(PlaylistSong.class, Song.class)
+            .filterByForeignKey(PlaylistSong.class, Playlist.class, "playlistID")
+            .ordered(true);
 
-        showSelectedCollection();
+        try (var connection = MainFrame.openConnection();
+            var statement = queryBuilder.prepare(connection);
+            var results = queryBuilder.executeQuery(statement, mapOf(
+                entry("playlistID", playlist.getID())
+            ))) {
+            return sortBy(mapAll(results, BeanAdapter.toType(Song.class)), Song::getTitle);
+        } catch (SQLException exception) {
+            throw new RuntimeException(exception);
+        }
     }
 
     private void play() {
@@ -563,54 +563,6 @@ public class MainFrame extends JFrame implements Runnable {
         // TODO
     }
 
-    private void showSelectedCollection() {
-        JPanel collectionDetailPanel;
-        if (artistList.getSelectedIndex() != -1) {
-            var artist = artistList.getSelectedValue();
-
-            collectionDetailPanel = new ArtistDetailPanel(artist, getAlbums(artist));
-        } else if (playlistList.getSelectedIndex() != -1) {
-            var playlist = playlistList.getSelectedValue();
-
-            collectionDetailPanel = new PlaylistDetailPanel(playlist, getSongs(playlist));
-        } else {
-            collectionDetailPanel = null;
-        }
-
-        collectionScrollPane.setViewportView(collectionDetailPanel);
-    }
-
-    private Map<String, List<Song>> getAlbums(Artist artist) {
-        var queryBuilder = QueryBuilder.select(Song.class).filterByIndexEqualTo("artist").ordered(true);
-
-        try (var connection = MainFrame.openConnection();
-            var statement = queryBuilder.prepare(connection);
-            var results = queryBuilder.executeQuery(statement, mapOf(
-                entry("artist", artist.getName())
-            ))) {
-            return groupBy(mapAll(results, BeanAdapter.toType(Song.class)), Song::getAlbum);
-        } catch (SQLException exception) {
-            throw new RuntimeException(exception);
-        }
-    }
-
-    private List<Song> getSongs(Playlist playlist) {
-        var queryBuilder = QueryBuilder.select(Song.class)
-            .join(PlaylistSong.class, Song.class)
-            .filterByForeignKey(PlaylistSong.class, Playlist.class, "playlistID")
-            .ordered(true);
-
-        try (var connection = MainFrame.openConnection();
-            var statement = queryBuilder.prepare(connection);
-            var results = queryBuilder.executeQuery(statement, mapOf(
-                entry("playlistID", playlist.getID())
-            ))) {
-            return sortBy(mapAll(results, BeanAdapter.toType(Song.class)), Song::getTitle);
-        } catch (SQLException exception) {
-            throw new RuntimeException(exception);
-        }
-    }
-
     public void playAll(Iterable<Song> songs) {
         queue.clear();
 
@@ -619,10 +571,6 @@ public class MainFrame extends JFrame implements Runnable {
         }
 
         play();
-    }
-
-    public List<ExpandedPlaylist> getPlaylists() {
-        return playlists;
     }
 
     public static void main(String[] args) throws Exception {

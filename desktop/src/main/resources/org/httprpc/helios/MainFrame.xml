@@ -70,7 +70,7 @@
             </column-panel>
         </row-panel>
 
-        <row-panel weight="2.75">
+        <row-panel weight="3">
             <label name="elapsedTimeLabel" horizontalAlignment="trailing"
                 styleClass="small"
                 weight="1"/>
@@ -104,15 +104,15 @@
     </row-panel>
 
     <row-panel spacing="4" weight="1">
-        <column-panel spacing="4" weight="1">
-            <scroll-pane weight="2">
-                <list name="artistList" selectionMode="single-selection" visibleRowCount="10"/>
+        <tabbed-pane tabPlacement="bottom" style="tabAreaAlignment: fill" border="Component.borderColor; 1" weight="1">
+            <scroll-pane name="artistScrollPane" tabTitle="artists" tabIcon="icons/piano_24dp.svg; 18">
+                <list name="artistList" selectionMode="single-selection" visibleRowCount="15"/>
             </scroll-pane>
 
-            <scroll-pane weight="1">
-                <list name="playlistList" selectionMode="single-selection" visibleRowCount="5"/>
+            <scroll-pane name="playlistScrollPane" tabTitle="playlists" tabIcon="icons/music_note_24dp.svg; 18">
+                <list name="playlistList" selectionMode="single-selection" visibleRowCount="15"/>
             </scroll-pane>
-        </column-panel>
+        </tabbed-pane>
 
         <scroll-pane name="collectionScrollPane" weight="3"/>
     </row-panel>
