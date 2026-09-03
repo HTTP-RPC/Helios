@@ -549,11 +549,11 @@ public class MainFrame extends JFrame implements Runnable {
         var result = fileChooser.showOpenDialog(this);
 
         if (result == JFileChooser.APPROVE_OPTION) {
-            importSongs(fileChooser.getSelectedFile().toPath());
+            addSongs(fileChooser.getSelectedFile().toPath());
         }
     }
 
-    private void importSongs(Path path) {
+    private void addSongs(Path path) {
         if (Files.isDirectory(path)) {
             // TODO
         } else {
