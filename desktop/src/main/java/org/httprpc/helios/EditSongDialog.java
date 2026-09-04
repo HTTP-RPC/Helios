@@ -162,6 +162,8 @@ public class EditSongDialog extends ModalDialog {
         song.setDiscNumber(discNumber);
         song.setDiscCount(discCount);
 
+        song.setType(this.song.getType());
+
         var queryBuilder = QueryBuilder.update(Song.class).filterByPrimaryKey("id");
 
         try (var connection = MainFrame.openConnection();
