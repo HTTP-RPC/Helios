@@ -171,8 +171,6 @@ public class EditSongDialog extends ModalDialog {
             throw new RuntimeException(exception);
         }
 
-        // TODO Update metadata
-
         var mainFrame = MainFrame.getInstance();
 
         mainFrame.loadArtists();
