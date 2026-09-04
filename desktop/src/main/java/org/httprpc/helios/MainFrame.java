@@ -12,6 +12,7 @@ import org.httprpc.sierra.BasicListModel;
 import org.httprpc.sierra.ColumnPanel;
 import org.httprpc.sierra.MenuButton;
 import org.httprpc.sierra.Outlet;
+import org.httprpc.sierra.StackPanel;
 import org.httprpc.sierra.UILoader;
 
 import javax.swing.AbstractAction;
@@ -180,6 +181,8 @@ public class MainFrame extends JFrame implements Runnable {
     private @Outlet JList<ExpandedPlaylist> playlistList = null;
 
     private @Outlet JScrollPane collectionScrollPane = null;
+
+    private ImportStatusPanel importStatusPanel = new ImportStatusPanel();
 
     private boolean playing = false;
 
@@ -411,6 +414,14 @@ public class MainFrame extends JFrame implements Runnable {
             showSelectedCollection();
         });
 
+        importStatusPanel.setVisible(false);
+
+        var glassPane = new StackPanel();
+
+        glassPane.add(importStatusPanel);
+
+        setGlassPane(glassPane);
+
         pack();
         setMinimumSize(map(getSize(), size -> new Dimension(size.width, (int)Math.ceil(size.width * (2.0 / 3.0)))));
 
@@ -581,13 +592,20 @@ public class MainFrame extends JFrame implements Runnable {
         }
 
         if (!paths.isEmpty()) {
+            var songCount = paths.size();
+
             var result = JOptionPane.showConfirmDialog(this,
-                String.format(resourceBundle.getString("confirmAddSongsFormat"), paths.size()),
+                String.format(resourceBundle.getString("confirmAddSongsFormat"),
+                    String.format(resourceBundle.getString(songCount == 1 ? "singleSongFormat" : "multipleSongFormat"), songCount)),
                 resourceBundle.getString("addSongs"),
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.WARNING_MESSAGE);
 
             if (result == JOptionPane.YES_OPTION) {
+                getGlassPane().setVisible(true);
+
+                importStatusPanel.setVisible(true);
+
                 // TODO
             }
         }
