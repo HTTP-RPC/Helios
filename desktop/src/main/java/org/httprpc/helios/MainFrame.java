@@ -680,6 +680,10 @@ public class MainFrame extends JFrame implements Runnable {
                 // No-op
             }
 
+            var type = audioFile.getExt();
+
+            song.setType(type);
+
             var queryBuilder = QueryBuilder.insert(Song.class);
 
             try (var connection = openConnection();
@@ -690,14 +694,6 @@ public class MainFrame extends JFrame implements Runnable {
                     throw new RuntimeException(exception);
                 }
             }
-
-            var albumContentPath = getAlbumContentPath(artist, album);
-
-            Files.createDirectories(albumContentPath);
-
-            var contentPath = albumContentPath.resolve(String.format("%s.%s", song.getTitle(), audioFile.getExt()));
-
-            Files.copy(path, contentPath, StandardCopyOption.REPLACE_EXISTING);
 
             var albumArtworkPath = getAlbumArtworkPath(artist, album);
 
@@ -715,6 +711,14 @@ public class MainFrame extends JFrame implements Runnable {
                     }
                 }
             }
+
+            var albumContentPath = getAlbumContentPath(artist, album);
+
+            Files.createDirectories(albumContentPath);
+
+            var contentPath = albumContentPath.resolve(String.format("%s.%s", song.getTitle(), type));
+
+            Files.copy(path, contentPath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException exception) {
             ignoredPaths.add(path);
         }

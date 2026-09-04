@@ -60,4 +60,8 @@ public interface Song {
     @Column("discCount")
     Integer getDiscCount();
     void setDiscCount(Integer discCount);
+
+    @Column("type")
+    String getType();
+    void setType(String type);
 }

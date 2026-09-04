@@ -19,6 +19,8 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.util.ResourceBundle;
@@ -200,12 +202,20 @@ public class SongDetailPanel extends StackPanel {
                 throw new RuntimeException(exception);
             }
 
+            var albumContentPath = MainFrame.getAlbumContentPath(song.getArtist(), song.getAlbum());
+
+            var contentPath = albumContentPath.resolve(String.format("%s.%s", song.getTitle(), song.getType()));
+
+            try {
+                Files.deleteIfExists(contentPath);
+            } catch (IOException exception) {
+                // No-op
+            }
+
             var mainFrame = MainFrame.getInstance();
 
             mainFrame.loadArtists();
             mainFrame.loadPlaylists();
-
-            // TODO Delete content
         }
     }
 
