@@ -613,11 +613,16 @@ public class MainFrame extends JFrame implements Runnable {
             var tag = audioFile.getTag();
             var audioHeader = audioFile.getAudioHeader();
 
-            var artist = tag.getFirst(FieldKey.ARTIST);
-            var album = tag.getFirst(FieldKey.ALBUM);
-            var title = tag.getFirst(FieldKey.TITLE);
+            var artist = coalesce(tag.getFirst(FieldKey.ALBUM_ARTIST), () -> "");
 
-            if (artist == null || album == null || title == null) {
+            if (artist.isEmpty()) {
+                artist = coalesce(tag.getFirst(FieldKey.ARTIST), () -> "");
+            }
+
+            var album = coalesce(tag.getFirst(FieldKey.ALBUM), () -> "");
+            var title = coalesce(tag.getFirst(FieldKey.TITLE), () -> "");
+
+            if (artist.isEmpty() || album.isEmpty() || title.isEmpty()) {
                 throw new IOException("Missing required fields.");
             }
 
