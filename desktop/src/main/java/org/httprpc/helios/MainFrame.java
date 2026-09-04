@@ -15,9 +15,13 @@ import org.httprpc.sierra.Outlet;
 import org.httprpc.sierra.UILoader;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.audio.exceptions.CannotReadException;
+import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
+import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.tag.FieldKey;
+import org.jaudiotagger.tag.TagException;
+import org.sqlite.SQLiteErrorCode;
 
-import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JButton;
@@ -40,7 +44,6 @@ import javax.swing.filechooser.FileFilter;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -50,11 +53,15 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -192,12 +199,17 @@ public class MainFrame extends JFrame implements Runnable {
 
     private List<Song> queue = new ArrayList<>();
 
+    private List<Path> ignoredPaths = new LinkedList<>();
+
     private FlatSVGIcon playIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/play_arrow_24dp.svg"));
     private FlatSVGIcon pauseIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/pause_24dp.svg"));
 
     private static MainFrame instance = null;
 
     public static final String DARK_MODE_KEY = "darkMode";
+
+    public static final String MP3_EXTENSION = ".mp3";
+    public static final String M4A_EXTENSION = ".m4a";
 
     private static final String PLAY_PAUSE_KEY = "playPause";
     private static final String PREVIOUS_KEY = "previous";
@@ -218,9 +230,6 @@ public class MainFrame extends JFrame implements Runnable {
 
     private static final int ARTIST_TAB_INDEX = 0;
     private static final int PLAYLIST_TAB_INDEX = 1;
-
-    private static final String MP3_EXTENSION = ".mp3";
-    private static final String M4A_EXTENSION = ".m4a";
 
     private static final Path rootDirectory = Path.of(System.getProperty("user.home"), ".helios");
     private static final Path dbFile = rootDirectory.resolve("music.db");
@@ -535,6 +544,8 @@ public class MainFrame extends JFrame implements Runnable {
     private void addSongs() {
         var fileChooser = new JFileChooser();
 
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+
         fileChooser.setFileFilter(new FileFilter() {
             @Override
             public boolean accept(File file) {
@@ -558,61 +569,133 @@ public class MainFrame extends JFrame implements Runnable {
         if (result == JFileChooser.APPROVE_OPTION) {
             addSongs(fileChooser.getSelectedFile().toPath());
         }
+
+        // TODO Show ignored paths
+
+        ignoredPaths.clear();
     }
 
     private void addSongs(Path path) {
         if (Files.isDirectory(path)) {
-            // TODO Recursively add songs
+            try (var paths = Files.list(path)){
+                paths.forEach(this::addSong);
+            } catch (IOException exception) {
+                throw new RuntimeException(exception);
+            }
         } else {
             addSong(path);
         }
     }
 
     private void addSong(Path path) {
-        AudioFile audioFile;
         try {
-            audioFile = AudioFileIO.read(path.toFile());
-        } catch (Exception exception) {
-            // TODO
-            throw new RuntimeException(exception);
-        }
-
-        var tag = audioFile.getTag();
-        var audioHeader = audioFile.getAudioHeader();
-
-        var artist = tag.getFirst(FieldKey.ARTIST);
-        var album = tag.getFirst(FieldKey.ALBUM);
-        var title = tag.getFirst(FieldKey.TITLE);
-
-        var time = audioHeader.getTrackLength();
-
-        var genre = tag.getFirst(FieldKey.GENRE);
-
-        // TODO Format?
-        var year = tag.getFirst(FieldKey.YEAR);
-
-        var trackNumber = tag.getFirst(FieldKey.TRACK);
-        var trackCount = tag.getFirst(FieldKey.TRACK_TOTAL);
-
-        var discNumber = tag.getFirst(FieldKey.DISC_NO);
-        var discCount = tag.getFirst(FieldKey.DISC_TOTAL);
-
-        // TODO Add row to Song table
-
-        // TODO Copy file to album folder
-
-        // TODO Import artwork if not already defined
-        var artwork = tag.getFirstArtwork();
-
-        if (artwork != null) {
-            Image image;
+            AudioFile audioFile;
             try {
-                image = ImageIO.read(new ByteArrayInputStream(artwork.getBinaryData()));
-            } catch (IOException exception) {
-                image = null;
+                audioFile = AudioFileIO.read(path.toFile());
+            } catch (CannotReadException | TagException | InvalidAudioFrameException | ReadOnlyFileException exception) {
+                throw new IOException(exception);
             }
 
-            // TODO
+            var tag = audioFile.getTag();
+            var audioHeader = audioFile.getAudioHeader();
+
+            var artist = tag.getFirst(FieldKey.ARTIST);
+            var album = tag.getFirst(FieldKey.ALBUM);
+            var title = tag.getFirst(FieldKey.TITLE);
+
+            if (artist == null || album == null || title == null) {
+                throw new IOException("Missing required fields.");
+            }
+
+            var time = audioHeader.getTrackLength();
+
+            var song = BeanAdapter.coerce(mapOf(), Song.class);
+
+            song.setArtist(artist);
+            song.setAlbum(album);
+            song.setTitle(title);
+            song.setTime(time);
+
+            song.setGenre(tag.getFirst(FieldKey.GENRE));
+
+            var year = tag.getFirst(FieldKey.YEAR);
+
+            try {
+                song.setYear(Integer.parseInt(year));
+            } catch (Exception exception) {
+                // No-op
+            }
+
+            if (year != null && song.getYear() == null) {
+                // TODO
+            }
+
+            try {
+                song.setTrackNumber(Integer.parseInt(tag.getFirst(FieldKey.TRACK)));
+            } catch (Exception exception) {
+                // No-op
+            }
+
+            try {
+                song.setTrackCount(Integer.parseInt(tag.getFirst(FieldKey.TRACK_TOTAL)));
+            } catch (Exception exception) {
+                // No-op
+            }
+
+            try {
+                song.setDiscNumber(Integer.parseInt(tag.getFirst(FieldKey.DISC_NO)));
+            } catch (Exception exception) {
+                // No-op
+            }
+
+            try {
+                song.setDiscCount(Integer.parseInt(tag.getFirst(FieldKey.DISC_TOTAL)));
+            } catch (Exception exception) {
+                // No-op
+            }
+
+            var queryBuilder = QueryBuilder.insert(Song.class);
+
+            try (var connection = openConnection();
+                var statement = queryBuilder.prepare(connection)) {
+                queryBuilder.executeUpdate(statement, new BeanAdapter(song));
+            } catch (SQLException exception) {
+                if (SQLiteErrorCode.getErrorCode(exception.getErrorCode()) != SQLiteErrorCode.SQLITE_CONSTRAINT) {
+                    throw new RuntimeException(exception);
+                }
+            }
+
+            var albumContentPath = getAlbumContentPath(artist, album);
+
+            Files.createDirectories(albumContentPath);
+
+            var contentPath = albumContentPath.resolve(String.format("%s.%s", song.getTitle(), audioFile.getExt()));
+
+            Files.copy(path, contentPath, StandardCopyOption.REPLACE_EXISTING);
+
+            var albumArtworkPath = getAlbumArtworkPath(artist, album);
+
+            if (!Files.exists(albumArtworkPath, LinkOption.NOFOLLOW_LINKS)) {
+                var artwork = tag.getFirstArtwork();
+
+                if (artwork != null) {
+                    try (var inputStream = new ByteArrayInputStream(artwork.getBinaryData());
+                        var outputStream = Files.newOutputStream(albumArtworkPath,
+                            StandardOpenOption.CREATE,
+                            StandardOpenOption.TRUNCATE_EXISTING)) {
+                        int b;
+                        while ((b = inputStream.read()) != -1) {
+                            outputStream.write(b);
+                        }
+
+                        outputStream.flush();
+                    } catch (IOException exception) {
+                        Files.deleteIfExists(albumArtworkPath);
+                    }
+                }
+            }
+        } catch (IOException exception) {
+            ignoredPaths.add(path);
         }
     }
 
@@ -768,16 +851,17 @@ public class MainFrame extends JFrame implements Runnable {
         return DriverManager.getConnection(String.format("jdbc:sqlite:%s?foreign_keys=true", dbFile.toAbsolutePath()));
     }
 
-    public static Image getAlbumArtwork(Artist artist, String name) {
-        var path = rootDirectory.resolve("music")
-            .resolve(artist.getName())
-            .resolve(name)
-            .resolve("artwork.jpg");
+    public static Path getAlbumArtworkPath(String artist, String album) {
+        return getAlbumPath(artist, album).resolve("artwork.jpg");
+    }
 
-        try (var inputStream = Files.newInputStream(path)) {
-            return ImageIO.read(inputStream);
-        } catch (IOException exception) {
-            return null;
-        }
+    public static Path getAlbumContentPath(String artist, String album) {
+        return getAlbumPath(artist, album).resolve("content");
+    }
+
+    private static Path getAlbumPath(String artist, String album) {
+        return rootDirectory.resolve("music")
+            .resolve(artist)
+            .resolve(album);
     }
 }
