@@ -501,7 +501,12 @@ public class MainFrame extends JFrame implements Runnable {
 
         // TODO
         if (!queue.isEmpty()) {
-            setTitle(queue.removeFirst().getTitle());
+            var song = queue.removeFirst();
+
+            setTitle(String.format(resourceBundle.getString("songTitleFormat"),
+                song.getTitle(),
+                song.getArtist(),
+                song.getAlbum()));
         }
 
         playing = true;
