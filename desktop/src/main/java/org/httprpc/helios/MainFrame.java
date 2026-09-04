@@ -23,6 +23,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
@@ -558,14 +559,32 @@ public class MainFrame extends JFrame implements Runnable {
         var result = fileChooser.showOpenDialog(this);
 
         if (result == JFileChooser.APPROVE_OPTION) {
-            var importStatusDialog = new ImportStatusDialog(this, fileChooser.getSelectedFile().toPath());
+            addSongs(fileChooser.getSelectedFile().toPath());
+        }
+    }
 
-            importStatusDialog.pack();
-            importStatusDialog.setLocationRelativeTo(this);
+    private void addSongs(Path root) {
+        List<Path> paths;
+        try (var stream = Files.walk(root)) {
+            paths = listOf(filter(iterableOf(stream), path -> {
+                var fileName = path.getFileName().toString();
 
-            importStatusDialog.setVisible(true);
+                return fileName.endsWith(MP3_EXTENSION) || fileName.endsWith(M4A_EXTENSION);
+            }));
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
+        }
 
-            loadArtists();
+        if (!paths.isEmpty()) {
+            var result = JOptionPane.showConfirmDialog(this,
+                String.format(resourceBundle.getString("confirmAddSongsFormat"), paths.size()),
+                resourceBundle.getString("addSongs"),
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE);
+
+            if (result == JOptionPane.YES_OPTION) {
+                // TODO
+            }
         }
     }
 
