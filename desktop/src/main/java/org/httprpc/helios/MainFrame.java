@@ -61,6 +61,9 @@ import java.nio.file.StandardOpenOption;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -473,10 +476,16 @@ public class MainFrame extends JFrame implements Runnable {
             throw new RuntimeException(exception);
         }
 
+        var selectedArtistName = map(artistList.getSelectedValue(), Artist::getName);
+
         artistList.setModel(new BasicListModel<>(artists));
 
         if (!artists.isEmpty()) {
-            artistList.setSelectedIndex(0);
+            if (selectedArtistName != null) {
+                artistList.setSelectedIndex(indexOf(artists, whereEqualTo(Artist::getName, selectedArtistName)));
+            } else {
+                artistList.setSelectedIndex(0);
+            }
         }
     }
 
@@ -571,6 +580,10 @@ public class MainFrame extends JFrame implements Runnable {
             addSongs(fileChooser.getSelectedFile().toPath());
         }
 
+        // TODO Show status window
+
+        loadArtists();
+
         // TODO Show ignored paths
 
         ignoredPaths.clear();
@@ -628,7 +641,14 @@ public class MainFrame extends JFrame implements Runnable {
             }
 
             if (year != null && song.getYear() == null) {
-                // TODO
+                try {
+                    var instant = Instant.parse(year);
+                    var localDateTime = LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
+
+                    song.setYear(localDateTime.getYear());
+                } catch (Exception exception) {
+                    // No-op
+                }
             }
 
             try {
