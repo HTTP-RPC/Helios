@@ -13,16 +13,7 @@ import org.httprpc.sierra.ColumnPanel;
 import org.httprpc.sierra.MenuButton;
 import org.httprpc.sierra.Outlet;
 import org.httprpc.sierra.UILoader;
-import org.jaudiotagger.audio.AudioFile;
-import org.jaudiotagger.audio.AudioFileIO;
-import org.jaudiotagger.audio.exceptions.CannotReadException;
-import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
-import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
-import org.jaudiotagger.tag.FieldKey;
-import org.jaudiotagger.tag.TagException;
-import org.sqlite.SQLiteErrorCode;
 
-import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JButton;
@@ -50,22 +41,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.LinkOption;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.nio.file.StandardOpenOption;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -202,8 +185,6 @@ public class MainFrame extends JFrame implements Runnable {
     private List<ExpandedPlaylist> playlists = listOf();
 
     private List<Song> queue = new ArrayList<>();
-
-    private List<Path> ignoredPaths = new LinkedList<>();
 
     private FlatSVGIcon playIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/play_arrow_24dp.svg"));
     private FlatSVGIcon pauseIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/pause_24dp.svg"));
@@ -577,150 +558,14 @@ public class MainFrame extends JFrame implements Runnable {
         var result = fileChooser.showOpenDialog(this);
 
         if (result == JFileChooser.APPROVE_OPTION) {
-            addSongs(fileChooser.getSelectedFile().toPath());
-        }
+            var importStatusDialog = new ImportStatusDialog(this, fileChooser.getSelectedFile().toPath());
 
-        // TODO Show status window
+            importStatusDialog.pack();
+            importStatusDialog.setLocationRelativeTo(this);
 
-        loadArtists();
+            importStatusDialog.setVisible(true);
 
-        // TODO Show ignored paths
-
-        ignoredPaths.clear();
-    }
-
-    private void addSongs(Path path) {
-        if (Files.isDirectory(path)) {
-            try (var paths = Files.list(path)){
-                paths.forEach(this::addSong);
-            } catch (IOException exception) {
-                throw new RuntimeException(exception);
-            }
-        } else {
-            addSong(path);
-        }
-    }
-
-    private void addSong(Path path) {
-        try {
-            AudioFile audioFile;
-            try {
-                audioFile = AudioFileIO.read(path.toFile());
-            } catch (CannotReadException | TagException | InvalidAudioFrameException | ReadOnlyFileException exception) {
-                throw new IOException(exception);
-            }
-
-            var tag = audioFile.getTag();
-            var audioHeader = audioFile.getAudioHeader();
-
-            var artist = coalesce(tag.getFirst(FieldKey.ALBUM_ARTIST), () -> "");
-
-            if (artist.isEmpty()) {
-                artist = coalesce(tag.getFirst(FieldKey.ARTIST), () -> "");
-            }
-
-            var album = coalesce(tag.getFirst(FieldKey.ALBUM), () -> "");
-            var title = coalesce(tag.getFirst(FieldKey.TITLE), () -> "");
-
-            if (artist.isEmpty() || album.isEmpty() || title.isEmpty()) {
-                throw new IOException("Missing required fields.");
-            }
-
-            var time = audioHeader.getTrackLength();
-
-            var song = BeanAdapter.coerce(mapOf(), Song.class);
-
-            song.setArtist(artist);
-            song.setAlbum(album);
-            song.setTitle(title);
-            song.setTime(time);
-
-            song.setGenre(tag.getFirst(FieldKey.GENRE));
-
-            var year = tag.getFirst(FieldKey.YEAR);
-
-            try {
-                song.setYear(Integer.parseInt(year));
-            } catch (Exception exception) {
-                // No-op
-            }
-
-            if (year != null && song.getYear() == null) {
-                try {
-                    var instant = Instant.parse(year);
-                    var localDateTime = LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
-
-                    song.setYear(localDateTime.getYear());
-                } catch (Exception exception) {
-                    // No-op
-                }
-            }
-
-            try {
-                song.setTrackNumber(Integer.parseInt(tag.getFirst(FieldKey.TRACK)));
-            } catch (Exception exception) {
-                // No-op
-            }
-
-            try {
-                song.setTrackCount(Integer.parseInt(tag.getFirst(FieldKey.TRACK_TOTAL)));
-            } catch (Exception exception) {
-                // No-op
-            }
-
-            try {
-                song.setDiscNumber(Integer.parseInt(tag.getFirst(FieldKey.DISC_NO)));
-            } catch (Exception exception) {
-                // No-op
-            }
-
-            try {
-                song.setDiscCount(Integer.parseInt(tag.getFirst(FieldKey.DISC_TOTAL)));
-            } catch (Exception exception) {
-                // No-op
-            }
-
-            var type = audioFile.getExt();
-
-            song.setType(type);
-
-            var queryBuilder = QueryBuilder.insert(Song.class);
-
-            try (var connection = openConnection();
-                var statement = queryBuilder.prepare(connection)) {
-                queryBuilder.executeUpdate(statement, new BeanAdapter(song));
-            } catch (SQLException exception) {
-                if (SQLiteErrorCode.getErrorCode(exception.getErrorCode()) != SQLiteErrorCode.SQLITE_CONSTRAINT) {
-                    throw new RuntimeException(exception);
-                }
-            }
-
-            var albumArtworkPath = getAlbumArtworkPath(artist, album);
-
-            if (!Files.exists(albumArtworkPath, LinkOption.NOFOLLOW_LINKS)) {
-                var artwork = tag.getFirstArtwork();
-
-                if (artwork != null) {
-                    try (var inputStream = new ByteArrayInputStream(artwork.getBinaryData());
-                        var outputStream = Files.newOutputStream(albumArtworkPath,
-                            StandardOpenOption.CREATE,
-                            StandardOpenOption.TRUNCATE_EXISTING)) {
-                        ImageIO.write(ImageIO.read(inputStream), "jpeg", outputStream);
-                    } catch (IOException exception) {
-                        Files.deleteIfExists(albumArtworkPath);
-                    }
-                }
-            }
-
-            var albumContentPath = getAlbumContentPath(artist, album);
-
-            Files.createDirectories(albumContentPath);
-
-            var contentPath = albumContentPath.resolve(String.format("%s.%s", song.getTitle(), type));
-
-            Files.copy(path, contentPath, StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException exception) {
-            ignoredPaths.add(path);
+            loadArtists();
         }
     }
 

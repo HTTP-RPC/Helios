@@ -1,0 +1,193 @@
+// Copyright © 2026 GK Brown/httprpc.org. All rights reserved.
+
+package org.httprpc.helios;
+
+import org.httprpc.kilo.beans.BeanAdapter;
+import org.httprpc.kilo.sql.QueryBuilder;
+import org.httprpc.sierra.UILoader;
+import org.jaudiotagger.audio.AudioFile;
+import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.audio.exceptions.CannotReadException;
+import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
+import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
+import org.jaudiotagger.tag.FieldKey;
+import org.jaudiotagger.tag.TagException;
+import org.sqlite.SQLiteErrorCode;
+
+import javax.imageio.ImageIO;
+import javax.swing.SwingUtilities;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
+import java.sql.SQLException;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.ResourceBundle;
+
+import static org.httprpc.kilo.util.Collections.*;
+import static org.httprpc.kilo.util.Optionals.*;
+
+public class ImportStatusDialog extends ModalDialog {
+    private Path path;
+
+    private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(ImportStatusDialog.class.getName());
+
+    public ImportStatusDialog(MainFrame owner, Path path) {
+        super(owner);
+
+        this.path = path;
+
+        setTitle(resourceBundle.getString("windowTitle"));
+
+        UILoader.load(this, "ImportStatusDialog.xml", resourceBundle);
+    }
+
+    @Override
+    public void setVisible(boolean visible) {
+        if (visible) {
+            SwingUtilities.invokeLater(() -> addSongs(path));
+        }
+
+        super.setVisible(visible);
+    }
+
+    private void addSongs(Path path) {
+        if (Files.isDirectory(path)) {
+            try (var paths = Files.list(path)){
+                paths.forEach(this::addSongs);
+            } catch (IOException exception) {
+                throw new RuntimeException(exception);
+            }
+        } else {
+            addSong(path);
+        }
+    }
+
+    private void addSong(Path path) {
+        try {
+            AudioFile audioFile;
+            try {
+                audioFile = AudioFileIO.read(path.toFile());
+            } catch (CannotReadException | TagException | InvalidAudioFrameException | ReadOnlyFileException exception) {
+                throw new IOException(exception);
+            }
+
+            var tag = audioFile.getTag();
+            var audioHeader = audioFile.getAudioHeader();
+
+            var artist = coalesce(tag.getFirst(FieldKey.ALBUM_ARTIST), () -> "");
+
+            if (artist.isEmpty()) {
+                artist = coalesce(tag.getFirst(FieldKey.ARTIST), () -> "");
+            }
+
+            var album = coalesce(tag.getFirst(FieldKey.ALBUM), () -> "");
+            var title = coalesce(tag.getFirst(FieldKey.TITLE), () -> "");
+
+            if (artist.isEmpty() || album.isEmpty() || title.isEmpty()) {
+                throw new IOException("Missing required fields.");
+            }
+
+            var time = audioHeader.getTrackLength();
+
+            var song = BeanAdapter.coerce(mapOf(), Song.class);
+
+            song.setArtist(artist);
+            song.setAlbum(album);
+            song.setTitle(title);
+            song.setTime(time);
+
+            song.setGenre(tag.getFirst(FieldKey.GENRE));
+
+            var year = tag.getFirst(FieldKey.YEAR);
+
+            try {
+                song.setYear(Integer.parseInt(year));
+            } catch (Exception exception) {
+                // No-op
+            }
+
+            if (year != null && song.getYear() == null) {
+                try {
+                    var instant = Instant.parse(year);
+                    var localDateTime = LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
+
+                    song.setYear(localDateTime.getYear());
+                } catch (Exception exception) {
+                    // No-op
+                }
+            }
+
+            try {
+                song.setTrackNumber(Integer.parseInt(tag.getFirst(FieldKey.TRACK)));
+            } catch (Exception exception) {
+                // No-op
+            }
+
+            try {
+                song.setTrackCount(Integer.parseInt(tag.getFirst(FieldKey.TRACK_TOTAL)));
+            } catch (Exception exception) {
+                // No-op
+            }
+
+            try {
+                song.setDiscNumber(Integer.parseInt(tag.getFirst(FieldKey.DISC_NO)));
+            } catch (Exception exception) {
+                // No-op
+            }
+
+            try {
+                song.setDiscCount(Integer.parseInt(tag.getFirst(FieldKey.DISC_TOTAL)));
+            } catch (Exception exception) {
+                // No-op
+            }
+
+            var type = audioFile.getExt();
+
+            song.setType(type);
+
+            var queryBuilder = QueryBuilder.insert(Song.class);
+
+            try (var connection = MainFrame.openConnection();
+                var statement = queryBuilder.prepare(connection)) {
+                queryBuilder.executeUpdate(statement, new BeanAdapter(song));
+            } catch (SQLException exception) {
+                if (SQLiteErrorCode.getErrorCode(exception.getErrorCode()) != SQLiteErrorCode.SQLITE_CONSTRAINT) {
+                    throw new RuntimeException(exception);
+                }
+            }
+
+            var albumArtworkPath = MainFrame.getAlbumArtworkPath(artist, album);
+
+            if (!Files.exists(albumArtworkPath, LinkOption.NOFOLLOW_LINKS)) {
+                var artwork = tag.getFirstArtwork();
+
+                if (artwork != null) {
+                    try (var inputStream = new ByteArrayInputStream(artwork.getBinaryData());
+                        var outputStream = Files.newOutputStream(albumArtworkPath,
+                            StandardOpenOption.CREATE,
+                            StandardOpenOption.TRUNCATE_EXISTING)) {
+                        ImageIO.write(ImageIO.read(inputStream), "jpeg", outputStream);
+                    } catch (IOException exception) {
+                        Files.deleteIfExists(albumArtworkPath);
+                    }
+                }
+            }
+
+            var albumContentPath = MainFrame.getAlbumContentPath(artist, album);
+
+            Files.createDirectories(albumContentPath);
+
+            var contentPath = albumContentPath.resolve(String.format("%s.%s", song.getTitle(), type));
+
+            Files.copy(path, contentPath, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException exception) {
+            // No-op
+        }
+    }
+}
