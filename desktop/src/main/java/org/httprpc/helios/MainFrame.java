@@ -22,6 +22,7 @@ import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.TagException;
 import org.sqlite.SQLiteErrorCode;
 
+import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JButton;
@@ -683,12 +684,7 @@ public class MainFrame extends JFrame implements Runnable {
                         var outputStream = Files.newOutputStream(albumArtworkPath,
                             StandardOpenOption.CREATE,
                             StandardOpenOption.TRUNCATE_EXISTING)) {
-                        int b;
-                        while ((b = inputStream.read()) != -1) {
-                            outputStream.write(b);
-                        }
-
-                        outputStream.flush();
+                        ImageIO.write(ImageIO.read(inputStream), "jpeg", outputStream);
                     } catch (IOException exception) {
                         Files.deleteIfExists(albumArtworkPath);
                     }
