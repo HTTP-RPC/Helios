@@ -67,6 +67,8 @@ public class ImportStatusPanel extends StackPanel {
     public void addAll(List<Path> paths) {
         this.paths = paths;
 
+        index = -1;
+
         progressBar.setMinimum(0);
         progressBar.setMaximum(paths.size());
 

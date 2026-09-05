@@ -32,6 +32,7 @@ import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
+import javax.swing.TransferHandler;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileFilter;
@@ -39,6 +40,9 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.DnDConstants;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
@@ -456,6 +460,57 @@ public class MainFrame extends JFrame implements Runnable {
                 } catch (BackingStoreException exception) {
                     // No-op
                 }
+            }
+        });
+
+        setTransferHandler(new TransferHandler() {
+            @Override
+            public boolean canImport(TransferHandler.TransferSupport support) {
+                if (support.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
+                    var sourceDropActions = support.getSourceDropActions();
+
+                    if ((sourceDropActions & DnDConstants.ACTION_COPY_OR_MOVE) > 0) {
+                        support.setDropAction(DnDConstants.ACTION_COPY);
+
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            @Override
+            public boolean importData(TransferHandler.TransferSupport support) {
+                if (!canImport(support)) {
+                    return false;
+                }
+
+                var transferable = support.getTransferable();
+
+                List<?> fileList;
+                try {
+                    fileList = (java.util.List<?>)transferable.getTransferData(DataFlavor.javaFileListFlavor);
+                } catch (UnsupportedFlavorException | IOException exception) {
+                    throw new RuntimeException(exception);
+                }
+
+                var paths = listOf(flatten(fileList, element -> {
+                    var root = ((File)element).toPath();
+
+                    try (var stream = Files.walk(root)) {
+                        return listOf(filter(iterableOf(stream), path -> {
+                            var fileName = path.getFileName().toString();
+
+                            return fileName.endsWith(MP3_EXTENSION) || fileName.endsWith(M4A_EXTENSION);
+                        }));
+                    } catch (IOException exception) {
+                        throw new RuntimeException(exception);
+                    }
+                }));
+
+                importStatusPanel.addAll(paths);
+
+                return true;
             }
         });
     }
