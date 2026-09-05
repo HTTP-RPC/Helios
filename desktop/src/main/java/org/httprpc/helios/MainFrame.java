@@ -592,19 +592,23 @@ public class MainFrame extends JFrame implements Runnable {
         }
 
         if (!paths.isEmpty()) {
-            var songCount = paths.size();
+            var n = paths.size();
 
-            var result = JOptionPane.showConfirmDialog(this,
-                String.format(resourceBundle.getString("confirmAddSongsFormat"),
-                    String.format(resourceBundle.getString(songCount == 1 ? "singleSongFormat" : "multipleSongFormat"), songCount)),
-                resourceBundle.getString("addSongs"),
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.WARNING_MESSAGE);
+            int result;
+            if (n == 1) {
+                result = JOptionPane.YES_OPTION;
+            } else {
+                result = JOptionPane.showConfirmDialog(this,
+                    String.format(resourceBundle.getString("confirmAddSongsFormat"), n),
+                    resourceBundle.getString("addSongs"),
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.WARNING_MESSAGE);
+            }
 
             if (result == JOptionPane.YES_OPTION) {
                 getGlassPane().setVisible(true);
 
-                importStatusPanel.setVisible(true);
+                importStatusPanel.setVisible(n > 1);
 
                 importStatusPanel.addAll(paths);
             }
