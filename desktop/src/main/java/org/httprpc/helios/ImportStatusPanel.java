@@ -191,6 +191,11 @@ public class ImportStatusPanel extends StackPanel {
                 }
             }
 
+            var contentPath = MainFrame.getContentPath(song);
+
+            Files.createDirectories(contentPath.getParent());
+            Files.copy(path, contentPath, StandardCopyOption.REPLACE_EXISTING);
+
             var albumArtworkPath = MainFrame.getArtworkPath(artist, album);
 
             if (!Files.exists(albumArtworkPath, LinkOption.NOFOLLOW_LINKS)) {
@@ -207,11 +212,6 @@ public class ImportStatusPanel extends StackPanel {
                     }
                 }
             }
-
-            var contentPath = MainFrame.getContentPath(song);
-
-            Files.createDirectories(contentPath.getParent());
-            Files.copy(path, contentPath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }
