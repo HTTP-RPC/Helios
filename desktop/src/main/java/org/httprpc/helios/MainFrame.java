@@ -54,6 +54,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.function.Predicate;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
@@ -226,6 +227,8 @@ public class MainFrame extends JFrame implements Runnable {
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(MainFrame.class.getName());
 
     private static final Preferences preferences = Preferences.userRoot().node(MainFrame.class.getName());
+
+    private static final Predicate<Path> dsStoreFilter = path -> !path.getFileName().toString().equals(".DS_Store");
 
     private MainFrame() {
         super(resourceBundle.getString("title"));
@@ -795,7 +798,7 @@ public class MainFrame extends JFrame implements Runnable {
         var artistPath = albumPath.getParent();
 
         try (var stream = Files.list(artistPath)) {
-            if (isEmpty(iterableOf(stream))) {
+            if (isEmpty(filter(iterableOf(stream), dsStoreFilter))) {
                 deleteArtist(artistPath);
             }
         } catch (IOException exception) {
@@ -813,7 +816,7 @@ public class MainFrame extends JFrame implements Runnable {
         var albumContentPath = contentPath.getParent();
 
         try (var stream = Files.list(albumContentPath)) {
-            if (isEmpty(iterableOf(stream))) {
+            if (isEmpty(filter(iterableOf(stream), dsStoreFilter))) {
                 deleteAlbum(albumContentPath.getParent());
             }
         } catch (IOException exception) {
