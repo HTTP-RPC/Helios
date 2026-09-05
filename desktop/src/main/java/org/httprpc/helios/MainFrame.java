@@ -616,10 +616,6 @@ public class MainFrame extends JFrame implements Runnable {
             }
 
             if (result == JOptionPane.YES_OPTION) {
-                getGlassPane().setVisible(true);
-
-                importStatusPanel.setVisible(n > 1);
-
                 importStatusPanel.addAll(paths);
             }
         }

@@ -70,6 +70,10 @@ public class ImportStatusPanel extends StackPanel {
         progressBar.setMinimum(0);
         progressBar.setMaximum(paths.size());
 
+        ((RootPaneContainer)getTopLevelAncestor()).getGlassPane().setVisible(true);
+
+        setVisible(paths.size() > 1);
+
         addNext();
     }
 
