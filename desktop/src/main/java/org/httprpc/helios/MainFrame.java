@@ -175,9 +175,11 @@ public class MainFrame extends JFrame implements Runnable {
     private @Outlet JTabbedPane collectionTabbedPane = null;
 
     private @Outlet JScrollPane artistScrollPane = null;
+    private @Outlet JLabel noArtistsLabel = null;
     private @Outlet JList<ExpandedArtist> artistList = null;
 
     private @Outlet JScrollPane playlistScrollPane = null;
+    private @Outlet JLabel noPlaylistsLabel = null;
     private @Outlet JList<ExpandedPlaylist> playlistList = null;
 
     private @Outlet JScrollPane collectionScrollPane = null;
@@ -479,6 +481,10 @@ public class MainFrame extends JFrame implements Runnable {
             } else {
                 artistList.setSelectedIndex(0);
             }
+
+            noArtistsLabel.setVisible(false);
+        } else {
+            noArtistsLabel.setVisible(true);
         }
     }
 
@@ -503,6 +509,10 @@ public class MainFrame extends JFrame implements Runnable {
             } else {
                 playlistList.setSelectedIndex(0);
             }
+
+            noPlaylistsLabel.setVisible(false);
+        } else {
+            noPlaylistsLabel.setVisible(true);
         }
     }
 

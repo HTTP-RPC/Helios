@@ -109,13 +109,21 @@
             style="tabAreaAlignment: fill"
             border="Component.borderColor; 1"
             weight="1">
-            <scroll-pane name="artistScrollPane" tabTitle="artists" tabIcon="icons/piano_24dp.svg; 18">
-                <list name="artistList" selectionMode="single-selection"/>
-            </scroll-pane>
+            <stack-panel tabTitle="artists" tabIcon="icons/piano_24dp.svg; 18">
+                <label name="noArtistsLabel" text="noArtists" horizontalAlignment="center"/>
 
-            <scroll-pane name="playlistScrollPane" tabTitle="playlists" tabIcon="icons/music_note_24dp.svg; 18">
-                <list name="playlistList" selectionMode="single-selection"/>
-            </scroll-pane>
+                <scroll-pane name="artistScrollPane">
+                    <list name="artistList" selectionMode="single-selection"/>
+                </scroll-pane>
+            </stack-panel>
+
+            <stack-panel tabTitle="playlists" tabIcon="icons/music_note_24dp.svg; 18">
+                <label name="noPlaylistsLabel" text="noPlaylists" horizontalAlignment="center"/>
+
+                <scroll-pane name="playlistScrollPane">
+                    <list name="playlistList" selectionMode="single-selection"/>
+                </scroll-pane>
+            </stack-panel>
         </tabbed-pane>
 
         <scroll-pane name="collectionScrollPane" border="Component.borderColor; 1" weight="3"/>
