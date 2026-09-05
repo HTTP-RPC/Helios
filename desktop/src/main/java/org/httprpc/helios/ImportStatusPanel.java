@@ -86,18 +86,10 @@ public class ImportStatusPanel extends StackPanel {
 
         if (index < paths.size()) {
             taskExecutor.execute(() -> {
-                var path = paths.get(index);
-
-                System.out.println(String.format("Importing [%d] \"%s\"", index, path));
-
-                add(path);
+                add(paths.get(index));
 
                 return null;
             }, (result, exception) -> {
-                if (exception != null) {
-                    System.out.println(exception.getMessage());
-                }
-
                 addNext();
             });
         } else {
