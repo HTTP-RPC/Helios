@@ -17,11 +17,13 @@ import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.tag.FieldDataInvalidException;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.TagException;
+import org.sqlite.SQLiteErrorCode;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -177,12 +179,39 @@ public class EditSongDialog extends ModalDialog {
 
         song.setType(this.song.getType());
 
+        var queryBuilder = QueryBuilder.update(Song.class).filterByPrimaryKey("id");
+
+        try (var connection = MainFrame.openConnection();
+            var statement = queryBuilder.prepare(connection)) {
+            queryBuilder.executeUpdate(statement, new BeanAdapter(song));
+        } catch (SQLException exception) {
+            if (SQLiteErrorCode.getErrorCode(exception.getErrorCode()) == SQLiteErrorCode.SQLITE_CONSTRAINT) {
+                UIManager.getLookAndFeel().provideErrorFeedback(null);
+
+                return;
+            }
+
+            throw new RuntimeException(exception);
+        }
+
+        var contentPath = MainFrame.getContentPath(song);
         var previousContentPath = MainFrame.getContentPath(this.song);
+
+        if (!contentPath.equals(previousContentPath)) {
+            try {
+                Files.createDirectories(contentPath.getParent());
+                Files.move(previousContentPath, contentPath, StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException exception) {
+                throw new RuntimeException(exception);
+            }
+
+            MainFrame.deleteSong(previousContentPath);
+        }
 
         AudioFile audioFile;
         try {
             try {
-                audioFile = AudioFileIO.read(previousContentPath.toFile());
+                audioFile = AudioFileIO.read(contentPath.toFile());
             } catch (CannotReadException | TagException | InvalidAudioFrameException |
                 ReadOnlyFileException exception) {
                 throw new IOException(exception);
@@ -212,28 +241,6 @@ public class EditSongDialog extends ModalDialog {
         try {
             AudioFileIO.write(audioFile);
         } catch (CannotWriteException exception) {
-            throw new RuntimeException(exception);
-        }
-
-        var contentPath = MainFrame.getContentPath(song);
-
-        if (!contentPath.equals(previousContentPath)) {
-            try {
-                Files.createDirectories(contentPath.getParent());
-                Files.move(previousContentPath, contentPath, StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException exception) {
-                throw new RuntimeException(exception);
-            }
-
-            MainFrame.deleteSong(previousContentPath);
-        }
-
-        var queryBuilder = QueryBuilder.update(Song.class).filterByPrimaryKey("id");
-
-        try (var connection = MainFrame.openConnection();
-            var statement = queryBuilder.prepare(connection)) {
-            queryBuilder.executeUpdate(statement, new BeanAdapter(song));
-        } catch (SQLException exception) {
             throw new RuntimeException(exception);
         }
 
