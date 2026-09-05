@@ -11,5 +11,5 @@
             style="buttonType: borderless"/>
     </row-panel>
 
-    <column-panel name="albumListPanel"/>
+    <column-panel name="albumListPanel" spacing="16"/>
 </column-panel>
