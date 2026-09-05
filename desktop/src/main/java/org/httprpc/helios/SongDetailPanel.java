@@ -202,15 +202,15 @@ public class SongDetailPanel extends StackPanel {
                 throw new RuntimeException(exception);
             }
 
-            var albumContentPath = MainFrame.getAlbumContentPath(song.getArtist(), song.getAlbum());
-
-            var contentPath = albumContentPath.resolve(String.format("%s.%s", song.getTitle(), song.getType()));
+            var contentPath = MainFrame.getContentPath(song);
 
             try {
                 Files.deleteIfExists(contentPath);
             } catch (IOException exception) {
-                // No-op
+                throw new RuntimeException(exception);
             }
+
+            MainFrame.deleteIfEmpty(contentPath);
 
             var mainFrame = MainFrame.getInstance();
 

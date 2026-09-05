@@ -13,6 +13,9 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.util.List;
@@ -151,6 +154,7 @@ public class EditSongDialog extends ModalDialog {
         song.setArtist(artist);
         song.setAlbum(album);
         song.setTitle(title);
+
         song.setTime(this.song.getTime());
 
         song.setGenre(genre);
@@ -171,6 +175,23 @@ public class EditSongDialog extends ModalDialog {
             queryBuilder.executeUpdate(statement, new BeanAdapter(song));
         } catch (SQLException exception) {
             throw new RuntimeException(exception);
+        }
+
+        // TODO Update metadata
+
+        if (!artist.equals(this.song.getArtist())
+            || !album.equals(this.song.getAlbum())
+            || !title.equals(this.song.getTitle())) {
+            var contentPath = MainFrame.getContentPath(song);
+
+            try {
+                Files.createDirectories(contentPath.getParent());
+                Files.move(MainFrame.getContentPath(this.song), contentPath, StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException exception) {
+                throw new RuntimeException(exception);
+            }
+
+            MainFrame.deleteIfEmpty(contentPath);
         }
 
         var mainFrame = MainFrame.getInstance();

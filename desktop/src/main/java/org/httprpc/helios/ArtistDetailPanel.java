@@ -45,7 +45,7 @@ public class ArtistDetailPanel extends StackPanel {
             songs.sort(Comparator.comparing(song -> coalesce(song.getTrackNumber(), () -> 0)));
 
             Image artwork;
-            try (var inputStream = Files.newInputStream(MainFrame.getAlbumArtworkPath(artist.getName(), name))) {
+            try (var inputStream = Files.newInputStream(MainFrame.getArtworkPath(artist.getName(), name))) {
                 artwork = ImageIO.read(inputStream);
             } catch (IOException exception) {
                 artwork = null;

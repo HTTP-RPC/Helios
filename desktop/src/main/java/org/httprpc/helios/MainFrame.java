@@ -763,17 +763,21 @@ public class MainFrame extends JFrame implements Runnable {
         return DriverManager.getConnection(String.format("jdbc:sqlite:%s?foreign_keys=true", dbFile.toAbsolutePath()));
     }
 
-    public static Path getAlbumArtworkPath(String artist, String album) {
+    public static Path getAlbumPath(String artist, String album) {
+        return rootDirectory.resolve("music").resolve(artist).resolve(album);
+    }
+
+    public static Path getArtworkPath(String artist, String album) {
         return getAlbumPath(artist, album).resolve("artwork.jpg");
     }
 
-    public static Path getAlbumContentPath(String artist, String album) {
-        return getAlbumPath(artist, album).resolve("content");
+    public static Path getContentPath(Song song) {
+        var fileName = String.format("%s.%s", song.getTitle(), song.getType());
+
+        return getAlbumPath(song.getArtist(), song.getAlbum()).resolve("content").resolve(fileName);
     }
 
-    private static Path getAlbumPath(String artist, String album) {
-        return rootDirectory.resolve("music")
-            .resolve(artist)
-            .resolve(album);
+    public static void deleteIfEmpty(Path contentPath) {
+        // TODO
     }
 }
