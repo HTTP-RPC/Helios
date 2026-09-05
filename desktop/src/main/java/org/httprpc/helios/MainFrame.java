@@ -777,7 +777,63 @@ public class MainFrame extends JFrame implements Runnable {
         return getAlbumPath(song.getArtist(), song.getAlbum()).resolve("content").resolve(fileName);
     }
 
-    public static void deleteIfEmpty(Path contentPath) {
-        // TODO
+    public static void deleteArtist(Path artistPath) {
+        try {
+            deleteAll(artistPath);
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+
+    public static void deleteAlbum(Path albumPath) {
+        try {
+            deleteAll(albumPath);
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
+        }
+
+        var artistPath = albumPath.getParent();
+
+        try (var stream = Files.list(artistPath)) {
+            if (isEmpty(iterableOf(stream))) {
+                deleteArtist(artistPath);
+            }
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+
+    public static void deleteSong(Path contentPath) {
+        try {
+            Files.deleteIfExists(contentPath);
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
+        }
+
+        var albumContentPath = contentPath.getParent();
+
+        try (var stream = Files.list(albumContentPath)) {
+            if (isEmpty(iterableOf(stream))) {
+                deleteAlbum(albumContentPath.getParent());
+            }
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+
+    private static void deleteAll(Path root) throws IOException {
+        if (!Files.exists(root)) {
+            return;
+        }
+
+        try (var stream = Files.list(root)) {
+            for (var path : iterableOf(stream)) {
+                if (Files.isDirectory(path)) {
+                    deleteAll(path);
+                }
+
+                Files.delete(path);
+            }
+        }
     }
 }

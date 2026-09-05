@@ -186,12 +186,12 @@ public class EditSongDialog extends ModalDialog {
 
             try {
                 Files.createDirectories(contentPath.getParent());
-                Files.move(MainFrame.getContentPath(this.song), contentPath, StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(MainFrame.getContentPath(this.song), contentPath, StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException exception) {
                 throw new RuntimeException(exception);
             }
 
-            MainFrame.deleteIfEmpty(contentPath);
+            MainFrame.deleteSong(contentPath);
         }
 
         var mainFrame = MainFrame.getInstance();
