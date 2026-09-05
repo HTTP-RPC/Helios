@@ -54,10 +54,13 @@ public class AlbumDetailPanel extends StackPanel {
 
         playAlbumButton.addActionListener(event -> MainFrame.getInstance().playAll(songs));
 
+        downloadArtworkButton.addActionListener(event -> downloadArtwork());
         downloadArtworkButton.setVisible(false);
 
+        editArtworkButton.addActionListener(event -> editArtwork());
         editArtworkButton.setVisible(false);
 
+        deleteArtworkButton.addActionListener(event -> deleteArtwork());
         deleteArtworkButton.setVisible(false);
 
         artworkPanel.addMouseListener(new MouseAdapter() {
@@ -127,8 +130,16 @@ public class AlbumDetailPanel extends StackPanel {
         }
     }
 
-    public boolean matches(String name) {
-        return this.name.equals(name);
+    private void downloadArtwork() {
+        // TODO
+    }
+
+    private void editArtwork() {
+        // TODO
+    }
+
+    private void deleteArtwork() {
+        // TODO
     }
 
     private void showButtons() {
@@ -145,5 +156,9 @@ public class AlbumDetailPanel extends StackPanel {
         downloadArtworkButton.setVisible(false);
         editArtworkButton.setVisible(false);
         deleteArtworkButton.setVisible(false);
+    }
+
+    public boolean matches(String name) {
+        return this.name.equals(name);
     }
 }

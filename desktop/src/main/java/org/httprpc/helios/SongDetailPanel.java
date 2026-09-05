@@ -120,6 +120,13 @@ public class SongDetailPanel extends StackPanel {
             }
         });
 
+        playSongButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseExited(MouseEvent event) {
+                hideButtons();
+            }
+        });
+
         addToPlaylistButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseExited(MouseEvent event) {
