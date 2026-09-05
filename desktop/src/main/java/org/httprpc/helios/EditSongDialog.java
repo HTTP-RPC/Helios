@@ -8,6 +8,15 @@ import org.httprpc.sierra.NumberField;
 import org.httprpc.sierra.Outlet;
 import org.httprpc.sierra.SuggestionPicker;
 import org.httprpc.sierra.UILoader;
+import org.jaudiotagger.audio.AudioFile;
+import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.audio.exceptions.CannotReadException;
+import org.jaudiotagger.audio.exceptions.CannotWriteException;
+import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
+import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
+import org.jaudiotagger.tag.FieldDataInvalidException;
+import org.jaudiotagger.tag.FieldKey;
+import org.jaudiotagger.tag.TagException;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -168,6 +177,7 @@ public class EditSongDialog extends ModalDialog {
 
         song.setType(this.song.getType());
 
+        // TODO Do this last in case other changes fail?
         var queryBuilder = QueryBuilder.update(Song.class).filterByPrimaryKey("id");
 
         try (var connection = MainFrame.openConnection();
@@ -177,14 +187,47 @@ public class EditSongDialog extends ModalDialog {
             throw new RuntimeException(exception);
         }
 
-        // TODO Update metadata
+        var previousContentPath = MainFrame.getContentPath(this.song);
 
-        if (!artist.equals(this.song.getArtist())
-            || !album.equals(this.song.getAlbum())
-            || !title.equals(this.song.getTitle())) {
-            var previousContentPath = MainFrame.getContentPath(this.song);
-            var contentPath = MainFrame.getContentPath(song);
+        AudioFile audioFile;
+        try {
+            try {
+                audioFile = AudioFileIO.read(previousContentPath.toFile());
+            } catch (CannotReadException | TagException | InvalidAudioFrameException |
+                ReadOnlyFileException exception) {
+                throw new IOException(exception);
+            }
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
+        }
 
+        var tag = audioFile.getTag();
+
+        try {
+            tag.setField(FieldKey.ARTIST, artist);
+            tag.setField(FieldKey.ALBUM_ARTIST, artist);
+            tag.setField(FieldKey.ALBUM, album);
+
+            tag.setField(FieldKey.GENRE, genre);
+            tag.setField(FieldKey.YEAR, map(year, Object::toString));
+
+            tag.setField(FieldKey.TRACK, map(trackNumber, Object::toString));
+            tag.setField(FieldKey.TRACK_TOTAL, map(trackCount, Object::toString));
+            tag.setField(FieldKey.DISC_NO, map(discNumber, Object::toString));
+            tag.setField(FieldKey.DISC_TOTAL, map(discCount, Object::toString));
+        } catch (FieldDataInvalidException exception) {
+            throw new RuntimeException(exception);
+        }
+
+        try {
+            AudioFileIO.write(audioFile);
+        } catch (CannotWriteException exception) {
+            throw new RuntimeException(exception);
+        }
+
+        var contentPath = MainFrame.getContentPath(song);
+
+        if (!contentPath.equals(previousContentPath)) {
             try {
                 Files.createDirectories(contentPath.getParent());
                 Files.move(previousContentPath, contentPath, StandardCopyOption.REPLACE_EXISTING);
