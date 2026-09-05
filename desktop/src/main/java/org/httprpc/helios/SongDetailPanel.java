@@ -210,22 +210,22 @@ public class SongDetailPanel extends StackPanel {
     }
 
     private void showButtons() {
+        setOpaque(true);
+
         playSongButton.setVisible(true);
 
         addToPlaylistButton.setVisible(true);
         editSongButton.setVisible(true);
         deleteSongButton.setVisible(true);
-
-        setOpaque(true);
     }
 
     private void hideButtons() {
+        setOpaque(false);
+
         playSongButton.setVisible(false);
 
         addToPlaylistButton.setVisible(false);
         editSongButton.setVisible(false);
         deleteSongButton.setVisible(false);
-
-        setOpaque(false);
     }
 }
