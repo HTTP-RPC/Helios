@@ -5,6 +5,7 @@ package org.httprpc.helios;
 import org.httprpc.sierra.ColumnPanel;
 import org.httprpc.sierra.ImagePane;
 import org.httprpc.sierra.Outlet;
+import org.httprpc.sierra.RowPanel;
 import org.httprpc.sierra.StackPanel;
 import org.httprpc.sierra.UILoader;
 
@@ -15,6 +16,9 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 import java.awt.Image;
+import java.awt.Rectangle;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -24,7 +28,16 @@ public class AlbumDetailPanel extends StackPanel {
     private @Outlet JLabel nameLabel = null;
     private @Outlet JButton playAlbumButton = null;
 
+    private @Outlet StackPanel artworkPanel = null;
+
+    private @Outlet RowPanel artworkButtonPanel = null;
+
+    private @Outlet JButton downloadArtworkButton = null;
+    private @Outlet JButton editArtworkButton = null;
+    private @Outlet JButton deleteArtworkButton = null;
+
     private @Outlet ImagePane artworkImagePane = null;
+
     private @Outlet JLabel genreLabel = null;
     private @Outlet JLabel yearLabel = null;
 
@@ -40,6 +53,49 @@ public class AlbumDetailPanel extends StackPanel {
         nameLabel.setText(name);
 
         playAlbumButton.addActionListener(event -> MainFrame.getInstance().playAll(songs));
+
+        downloadArtworkButton.setVisible(false);
+
+        editArtworkButton.setVisible(false);
+
+        deleteArtworkButton.setVisible(false);
+
+        artworkPanel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent event) {
+                showButtons();
+            }
+
+            @Override
+            public void mouseExited(MouseEvent event) {
+                var rectangle = new Rectangle(0, 0, artworkPanel.getWidth(), artworkPanel.getHeight());
+
+                if (!rectangle.contains(event.getPoint())) {
+                    hideButtons();
+                }
+            }
+        });
+
+        downloadArtworkButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseExited(MouseEvent event) {
+                hideButtons();
+            }
+        });
+
+        editArtworkButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseExited(MouseEvent event) {
+                hideButtons();
+            }
+        });
+
+        deleteArtworkButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseExited(MouseEvent event) {
+                hideButtons();
+            }
+        });
 
         artworkImagePane.setImage(artwork);
 
@@ -73,5 +129,21 @@ public class AlbumDetailPanel extends StackPanel {
 
     public boolean matches(String name) {
         return this.name.equals(name);
+    }
+
+    private void showButtons() {
+        artworkButtonPanel.setOpaque(true);
+
+        downloadArtworkButton.setVisible(true);
+        editArtworkButton.setVisible(true);
+        deleteArtworkButton.setVisible(true);
+    }
+
+    private void hideButtons() {
+        artworkButtonPanel.setOpaque(false);
+
+        downloadArtworkButton.setVisible(false);
+        editArtworkButton.setVisible(false);
+        deleteArtworkButton.setVisible(false);
     }
 }

@@ -13,8 +13,30 @@
 
     <row-panel spacing="16">
         <column-panel spacing="2">
-            <stack-panel>
+            <stack-panel name="artworkPanel">
+                <column-panel>
+                    <spacer weight="1"/>
+
+                    <row-panel name="artworkButtonPanel" spacing="2" padding="2, 4, 2, 4" background="Component.borderColor; 0.9">
+                        <spacer weight="1"/>
+
+                        <button name="downloadArtworkButton" icon="icons/file_download_24dp.svg; 18"
+                            focusable="false"
+                            toolTipText="downloadArtwork"
+                            style="buttonType: borderless"/>
+                        <button name="editArtworkButton" icon="icons/edit_24dp.svg; 16"
+                            focusable="false"
+                            toolTipText="editArtwork"
+                            style="buttonType: borderless"/>
+                        <button name="deleteArtworkButton" icon="icons/delete_24dp.svg; 18"
+                            focusable="false"
+                            toolTipText="deleteArtwork"
+                            style="buttonType: borderless"/>
+                    </row-panel>
+                </column-panel>
+
                 <image-pane name="artworkImagePane" size="180" scaleMode="fill-width" border="Component.borderColor"/>
+
                 <label icon="icons/photo_24dp.svg; 48" horizontalAlignment="center"/>
             </stack-panel>
 
