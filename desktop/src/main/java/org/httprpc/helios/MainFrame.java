@@ -826,14 +826,14 @@ public class MainFrame extends JFrame implements Runnable {
             return;
         }
 
-        try (var stream = Files.list(root)) {
-            for (var path : iterableOf(stream)) {
-                if (Files.isDirectory(path)) {
+        if (Files.isDirectory(root)) {
+            try (var stream = Files.list(root)) {
+                for (var path : iterableOf(stream)) {
                     deleteAll(path);
                 }
-
-                Files.delete(path);
             }
         }
+
+        Files.delete(root);
     }
 }
