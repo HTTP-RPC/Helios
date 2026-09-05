@@ -17,6 +17,7 @@ import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
+import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
@@ -103,7 +104,7 @@ public class SongDetailPanel extends StackPanel {
             duration.toMinutesPart(),
             duration.toSecondsPart()));
 
-        content.addMouseListener(new MouseAdapter() {
+        addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent event) {
                 showButtons();
@@ -111,39 +112,11 @@ public class SongDetailPanel extends StackPanel {
 
             @Override
             public void mouseExited(MouseEvent event) {
-                if (content.getComponentAt(event.getX(), event.getY()) == null) {
+                var rectangle = new Rectangle(0, 0, getWidth(), getHeight());
+
+                if (!rectangle.contains(event.getPoint())) {
                     hideButtons();
                 }
-            }
-        });
-
-        playSongButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseExited(MouseEvent event) {
-                hideButtons();
-            }
-        });
-
-        addToPlaylistButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseExited(MouseEvent event) {
-                if (!addToPlaylistButton.getComponentPopupMenu().isVisible()) {
-                    hideButtons();
-                }
-            }
-        });
-
-        editSongButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseExited(MouseEvent event) {
-                hideButtons();
-            }
-        });
-
-        deleteSongButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseExited(MouseEvent event) {
-                hideButtons();
             }
         });
 
