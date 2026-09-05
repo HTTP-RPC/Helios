@@ -177,16 +177,6 @@ public class EditSongDialog extends ModalDialog {
 
         song.setType(this.song.getType());
 
-        // TODO Do this last in case other changes fail?
-        var queryBuilder = QueryBuilder.update(Song.class).filterByPrimaryKey("id");
-
-        try (var connection = MainFrame.openConnection();
-            var statement = queryBuilder.prepare(connection)) {
-            queryBuilder.executeUpdate(statement, new BeanAdapter(song));
-        } catch (SQLException exception) {
-            throw new RuntimeException(exception);
-        }
-
         var previousContentPath = MainFrame.getContentPath(this.song);
 
         AudioFile audioFile;
@@ -236,6 +226,15 @@ public class EditSongDialog extends ModalDialog {
             }
 
             MainFrame.deleteSong(previousContentPath);
+        }
+
+        var queryBuilder = QueryBuilder.update(Song.class).filterByPrimaryKey("id");
+
+        try (var connection = MainFrame.openConnection();
+            var statement = queryBuilder.prepare(connection)) {
+            queryBuilder.executeUpdate(statement, new BeanAdapter(song));
+        } catch (SQLException exception) {
+            throw new RuntimeException(exception);
         }
 
         var mainFrame = MainFrame.getInstance();
