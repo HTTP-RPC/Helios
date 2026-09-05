@@ -21,6 +21,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.util.Comparator;
 import java.util.ResourceBundle;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static org.httprpc.kilo.util.Collections.*;
@@ -78,13 +79,15 @@ public class SearchDialog extends ModalDialog {
 
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(SearchDialog.class.getName());
 
-    private static final TaskExecutor taskExecutor = new TaskExecutor(Executors.newSingleThreadExecutor(runnable -> {
+    private static final ExecutorService executorService = Executors.newSingleThreadExecutor(runnable -> {
         var thread = new Thread(runnable);
 
         thread.setDaemon(true);
 
         return thread;
-    }));
+    });
+
+    private static final TaskExecutor taskExecutor = new TaskExecutor(executorService);
 
     public SearchDialog(MainFrame owner) {
         super(owner);
@@ -153,5 +156,12 @@ public class SearchDialog extends ModalDialog {
                 resultList.setModel(new BasicListModel<>(results));
             }
         });
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+
+        executorService.shutdown();
     }
 }

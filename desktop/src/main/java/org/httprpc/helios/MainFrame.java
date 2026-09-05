@@ -606,7 +606,7 @@ public class MainFrame extends JFrame implements Runnable {
 
                 importStatusPanel.setVisible(true);
 
-                // TODO
+                importStatusPanel.addAll(paths);
             }
         }
     }
