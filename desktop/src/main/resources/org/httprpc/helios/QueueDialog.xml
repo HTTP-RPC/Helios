@@ -2,6 +2,6 @@
 
 <!DOCTYPE scroll-pane SYSTEM "sierra.dtd">
 
-<scroll-pane name="scrollPane" size="480, 360">
+<scroll-pane name="scrollPane" size="640, 480">
     <list name="queueList"/>
 </scroll-pane>
