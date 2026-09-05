@@ -34,7 +34,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static org.httprpc.kilo.util.Collections.*;
@@ -51,15 +50,13 @@ public class ImportStatusPanel extends StackPanel {
 
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(ImportStatusPanel.class.getName());
 
-    private static final ExecutorService executorService = Executors.newSingleThreadExecutor(runnable -> {
+    private static final TaskExecutor taskExecutor = new TaskExecutor(Executors.newSingleThreadExecutor(runnable -> {
         var thread = new Thread(runnable);
 
         thread.setDaemon(true);
 
         return thread;
-    });
-
-    private static final TaskExecutor taskExecutor = new TaskExecutor(executorService);
+    }));
 
     public ImportStatusPanel() {
         add(UILoader.load(this, "ImportStatusPanel.xml", resourceBundle));
@@ -83,10 +80,20 @@ public class ImportStatusPanel extends StackPanel {
 
         if (index < paths.size()) {
             taskExecutor.execute(() -> {
-                add(paths.get(index));
+                var path = paths.get(index);
+
+                System.out.println(String.format("Importing [%d] \"%s\"", index, path));
+
+                add(path);
 
                 return null;
-            }, (result, exception) -> addNext());
+            }, (result, exception) -> {
+                if (exception != null) {
+                    System.out.println(exception.getMessage());
+                }
+
+                addNext();
+            });
         } else {
             close();
         }
@@ -211,7 +218,7 @@ public class ImportStatusPanel extends StackPanel {
 
             Files.copy(path, contentPath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException exception) {
-            // No-op
+            throw new RuntimeException(exception);
         }
     }
 
@@ -225,8 +232,6 @@ public class ImportStatusPanel extends StackPanel {
         ((RootPaneContainer)getTopLevelAncestor()).getGlassPane().setVisible(false);
 
         setVisible(false);
-
-        executorService.shutdown();
 
         MainFrame.getInstance().loadArtists();
     }
