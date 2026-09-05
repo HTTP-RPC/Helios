@@ -182,16 +182,17 @@ public class EditSongDialog extends ModalDialog {
         if (!artist.equals(this.song.getArtist())
             || !album.equals(this.song.getAlbum())
             || !title.equals(this.song.getTitle())) {
+            var previousContentPath = MainFrame.getContentPath(this.song);
             var contentPath = MainFrame.getContentPath(song);
 
             try {
                 Files.createDirectories(contentPath.getParent());
-                Files.copy(MainFrame.getContentPath(this.song), contentPath, StandardCopyOption.REPLACE_EXISTING);
+                Files.move(previousContentPath, contentPath, StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException exception) {
                 throw new RuntimeException(exception);
             }
 
-            MainFrame.deleteSong(contentPath);
+            MainFrame.deleteSong(previousContentPath);
         }
 
         var mainFrame = MainFrame.getInstance();
