@@ -3,9 +3,8 @@
 package org.httprpc.helios;
 
 import org.httprpc.sierra.BasicListModel;
+import org.httprpc.sierra.ColumnPanel;
 import org.httprpc.sierra.Outlet;
-import org.httprpc.sierra.RowPanel;
-import org.httprpc.sierra.Spacer;
 import org.httprpc.sierra.UILoader;
 
 import javax.swing.JLabel;
@@ -20,7 +19,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class QueueDialog extends ModalDialog {
-    private static class SongCellRenderer extends RowPanel implements ListCellRenderer<Song> {
+    private static class SongCellRenderer extends ColumnPanel implements ListCellRenderer<Song> {
         JLabel titleTimeLabel = new JLabel();
         JLabel artistAlbumLabel = new JLabel();
 
@@ -30,8 +29,9 @@ public class QueueDialog extends ModalDialog {
             setBorder(new EmptyBorder(4, 8, 4, 8));
 
             add(titleTimeLabel);
-            add(new Spacer(), 1.0);
             add(artistAlbumLabel);
+
+            artistAlbumLabel.putClientProperty("FlatLaf.styleClass", "small");
         }
 
         @Override
