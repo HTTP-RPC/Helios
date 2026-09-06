@@ -15,7 +15,6 @@ import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.TagException;
-import org.sqlite.SQLiteErrorCode;
 
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
@@ -88,9 +87,7 @@ public class ImportStatusPanel extends StackPanel {
                 add(paths.get(index));
 
                 return null;
-            }, (result, exception) -> {
-                addNext();
-            });
+            }, (result, exception) -> addNext());
         } else {
             close();
         }
@@ -179,15 +176,13 @@ public class ImportStatusPanel extends StackPanel {
 
             song.setType(type);
 
-            var queryBuilder = QueryBuilder.insert(Song.class);
+            var queryBuilder = QueryBuilder.insert(Song.class).onConflictDoUpdate();
 
             try (var connection = MainFrame.openConnection();
                 var statement = queryBuilder.prepare(connection)) {
                 queryBuilder.executeUpdate(statement, new BeanAdapter(song));
             } catch (SQLException exception) {
-                if (SQLiteErrorCode.getErrorCode(exception.getErrorCode()) != SQLiteErrorCode.SQLITE_CONSTRAINT) {
-                    throw new RuntimeException(exception);
-                }
+                throw new RuntimeException(exception);
             }
 
             var contentPath = MainFrame.getContentPath(song);

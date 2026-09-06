@@ -5,6 +5,7 @@ package org.httprpc.helios;
 import org.httprpc.kilo.Name;
 import org.httprpc.kilo.sql.Column;
 import org.httprpc.kilo.sql.ForeignKey;
+import org.httprpc.kilo.sql.Identifier;
 import org.httprpc.kilo.sql.Index;
 import org.httprpc.kilo.sql.PrimaryKey;
 import org.httprpc.kilo.sql.Table;
@@ -42,6 +43,7 @@ public class Song {
     @Column("artist")
     @ForeignKey(Artist.class)
     @Index(1)
+    @Identifier(1)
     public String getArtist() {
         return artist;
     }
@@ -52,6 +54,7 @@ public class Song {
 
     @Column("album")
     @Index(2)
+    @Identifier(2)
     public String getAlbum() {
         return album;
     }
@@ -62,6 +65,7 @@ public class Song {
 
     @Column("title")
     @Index(3)
+    @Identifier(3)
     public String getTitle() {
         return title;
     }
