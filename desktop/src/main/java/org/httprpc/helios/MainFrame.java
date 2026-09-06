@@ -44,6 +44,7 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DnDConstants;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -423,6 +424,8 @@ public class MainFrame extends JFrame implements Runnable {
         importStatusPanel.setVisible(false);
 
         var glassPane = new StackPanel();
+
+        glassPane.addMouseListener(new MouseAdapter() {});
 
         glassPane.add(importStatusPanel);
 

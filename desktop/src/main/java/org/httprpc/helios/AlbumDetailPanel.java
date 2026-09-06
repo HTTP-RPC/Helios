@@ -54,7 +54,6 @@ public class AlbumDetailPanel extends StackPanel {
 
     private @Outlet RowPanel artworkButtonPanel = null;
 
-    private @Outlet JButton downloadArtworkButton = null;
     private @Outlet JButton editArtworkButton = null;
     private @Outlet JButton deleteArtworkButton = null;
 
@@ -78,9 +77,6 @@ public class AlbumDetailPanel extends StackPanel {
 
         playAlbumButton.addActionListener(event -> MainFrame.getInstance().playAll(songs));
 
-        downloadArtworkButton.addActionListener(event -> downloadArtwork());
-        downloadArtworkButton.setVisible(false);
-
         editArtworkButton.addActionListener(event -> editArtwork());
         editArtworkButton.setVisible(false);
 
@@ -102,13 +98,6 @@ public class AlbumDetailPanel extends StackPanel {
                 if (!rectangle.contains(event.getPoint())) {
                     hideButtons();
                 }
-            }
-        });
-
-        downloadArtworkButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseExited(MouseEvent event) {
-                hideButtons();
             }
         });
 
@@ -163,10 +152,6 @@ public class AlbumDetailPanel extends StackPanel {
         }
     }
 
-    private void downloadArtwork() {
-        // TODO
-    }
-
     private void editArtwork() {
         var fileChooser = new JFileChooser();
 
@@ -212,8 +197,6 @@ public class AlbumDetailPanel extends StackPanel {
             ImageIO.write(artwork, "jpeg", outputStream);
         } catch (IOException exception) {
             artwork = null;
-
-            // TODO Show error message
         }
 
         if (artwork != null) {
@@ -277,12 +260,13 @@ public class AlbumDetailPanel extends StackPanel {
                 throw new RuntimeException(exception);
             }
         }
+
+        // TODO Remove from metadata
     }
 
     private void showButtons() {
         artworkButtonPanel.setOpaque(true);
 
-        downloadArtworkButton.setVisible(true);
         editArtworkButton.setVisible(true);
         deleteArtworkButton.setVisible(true);
     }
@@ -290,7 +274,6 @@ public class AlbumDetailPanel extends StackPanel {
     private void hideButtons() {
         artworkButtonPanel.setOpaque(false);
 
-        downloadArtworkButton.setVisible(false);
         editArtworkButton.setVisible(false);
         deleteArtworkButton.setVisible(false);
     }
