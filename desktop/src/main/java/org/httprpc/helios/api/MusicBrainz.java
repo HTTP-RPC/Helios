@@ -60,13 +60,9 @@ public class MusicBrainz {
         var artistID = map(getArtist(artist), Artist::getID);
 
         if (artistID != null) {
-            System.out.println(String.format("Got artist ID %s", artist));
-
             var releaseID = map(getRelease(artistID, album), Release::getID);
 
             if (releaseID != null) {
-                System.out.println(String.format("Got release ID %s", releaseID));
-
                 return getArtwork(releaseID);
             }
         }
@@ -75,8 +71,6 @@ public class MusicBrainz {
     }
 
     private static Artist getArtist(String name) throws IOException {
-        System.out.println("Getting artist");
-
         var webServiceProxy = new WebServiceProxy("GET", apiBaseURI.resolve("artist"));
 
         webServiceProxy.setArguments(mapOf(
@@ -101,8 +95,6 @@ public class MusicBrainz {
     }
 
     private static Release getRelease(String artistID, String title) throws IOException {
-        System.out.println("Getting release");
-
         var webServiceProxy = new WebServiceProxy("GET", apiBaseURI.resolve("release"));
 
         webServiceProxy.setArguments(mapOf(
@@ -126,13 +118,7 @@ public class MusicBrainz {
     }
 
     private static BufferedImage getArtwork(String releaseID) throws IOException {
-        System.out.println("Getting artwork");
-
-        var uri = artworkBaseURI.resolve(String.format("release/%s/front", releaseID));
-
-        System.out.println(uri);
-
-        var webServiceProxy = new WebServiceProxy("GET", uri);
+        var webServiceProxy = new WebServiceProxy("GET", artworkBaseURI.resolve(String.format("release/%s/front", releaseID)));
 
         webServiceProxy.setResponseHandler((inputStream, contentType) -> ImageIO.read(inputStream));
 
