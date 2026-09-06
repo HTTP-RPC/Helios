@@ -37,7 +37,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -186,69 +185,16 @@ public class AlbumDetailPanel extends StackPanel {
         var result = fileChooser.showOpenDialog(this);
 
         if (result == JFileChooser.APPROVE_OPTION) {
-            updateArtwork(fileChooser.getSelectedFile().toPath());
-        }
-    }
+            var path = fileChooser.getSelectedFile().toPath();
 
-    private void updateArtwork(Path path) {
-        var artworkPath = MainFrame.getArtworkPath(artist.getName(), name);
-
-        BufferedImage artwork;
-        try (var inputStream = Files.newInputStream(path);
-            var outputStream = Files.newOutputStream(artworkPath,
-                StandardOpenOption.CREATE,
-                StandardOpenOption.TRUNCATE_EXISTING)) {
-            artwork = ImageIO.read(inputStream);
-
-            artworkImagePane.setImage(artwork);
-
-            ImageIO.write(artwork, "jpeg", outputStream);
-        } catch (IOException exception) {
-            artwork = null;
-        }
-
-        if (artwork != null) {
-            byte[] binaryData;
-            try (var outputStream = new ByteArrayOutputStream()) {
-                ImageIO.write(artwork, "jpeg", outputStream);
-
-                binaryData = outputStream.toByteArray();
+            BufferedImage artwork;
+            try (var inputStream = Files.newInputStream(path)) {
+                artwork = ImageIO.read(inputStream);
             } catch (IOException exception) {
-                throw new RuntimeException(exception);
+                artwork = null;
             }
 
-            for (var song : songs) {
-                var contentPath = MainFrame.getContentPath(song);
-
-                try {
-                    AudioFile audioFile;
-                    try {
-                        audioFile = AudioFileIO.read(contentPath.toFile());
-                    } catch (CannotReadException | TagException | InvalidAudioFrameException | ReadOnlyFileException exception) {
-                        throw new IOException(exception);
-                    }
-
-                    var tag = audioFile.getTag();
-
-                    var artworkField = new StandardArtwork();
-
-                    artworkField.setBinaryData(binaryData);
-
-                    try {
-                        tag.setField(artworkField);
-                    } catch (FieldDataInvalidException exception) {
-                        throw new IOException(exception);
-                    }
-
-                    try {
-                        AudioFileIO.write(audioFile);
-                    } catch (CannotWriteException exception) {
-                        throw new RuntimeException(exception);
-                    }
-                } catch (IOException exception) {
-                    throw new RuntimeException(exception);
-                }
-            }
+            updateArtwork(artwork);
         }
     }
 
@@ -260,16 +206,74 @@ public class AlbumDetailPanel extends StackPanel {
             JOptionPane.WARNING_MESSAGE);
 
         if (result == JOptionPane.YES_OPTION) {
-            try {
-                artworkImagePane.setImage(null);
+            updateArtwork(null);
+        }
+    }
 
+    private void updateArtwork(BufferedImage artwork) {
+        artworkImagePane.setImage(artwork);
+
+        byte[] binaryData;
+        if (artwork != null) {
+            var artworkPath = MainFrame.getArtworkPath(artist.getName(), name);
+
+            try (var outputStream = Files.newOutputStream(artworkPath,
+                StandardOpenOption.CREATE,
+                StandardOpenOption.TRUNCATE_EXISTING)) {
+                ImageIO.write(artwork, "jpeg", outputStream);
+            } catch (IOException exception) {
+                throw new RuntimeException(exception);
+            }
+
+            try (var outputStream = new ByteArrayOutputStream()) {
+                ImageIO.write(artwork, "jpeg", outputStream);
+
+                binaryData = outputStream.toByteArray();
+            } catch (IOException exception) {
+                throw new RuntimeException(exception);
+            }
+        } else {
+            try {
                 Files.deleteIfExists(MainFrame.getArtworkPath(artist.getName(), name));
             } catch (IOException exception) {
                 throw new RuntimeException(exception);
             }
+
+            binaryData = null;
         }
 
-        // TODO Remove from metadata
+        for (var song : songs) {
+            var contentPath = MainFrame.getContentPath(song);
+
+            try {
+                AudioFile audioFile;
+                try {
+                    audioFile = AudioFileIO.read(contentPath.toFile());
+                } catch (CannotReadException | TagException | InvalidAudioFrameException | ReadOnlyFileException exception) {
+                    throw new IOException(exception);
+                }
+
+                var tag = audioFile.getTag();
+
+                var artworkField = new StandardArtwork();
+
+                artworkField.setBinaryData(binaryData);
+
+                try {
+                    tag.setField(artworkField);
+                } catch (FieldDataInvalidException exception) {
+                    throw new IOException(exception);
+                }
+
+                try {
+                    AudioFileIO.write(audioFile);
+                } catch (CannotWriteException exception) {
+                    throw new RuntimeException(exception);
+                }
+            } catch (IOException exception) {
+                throw new RuntimeException(exception);
+            }
+        }
     }
 
     private void showButtons() {
