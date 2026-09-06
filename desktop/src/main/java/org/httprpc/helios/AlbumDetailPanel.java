@@ -7,6 +7,7 @@ import org.httprpc.sierra.ImagePane;
 import org.httprpc.sierra.Outlet;
 import org.httprpc.sierra.RowPanel;
 import org.httprpc.sierra.StackPanel;
+import org.httprpc.sierra.TaskExecutor;
 import org.httprpc.sierra.UILoader;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
@@ -28,7 +29,6 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 import javax.swing.filechooser.FileFilter;
-import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -41,6 +41,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.Executors;
 
 public class AlbumDetailPanel extends StackPanel {
     private Artist artist;
@@ -65,6 +66,14 @@ public class AlbumDetailPanel extends StackPanel {
     private @Outlet ColumnPanel songListPanel = null;
 
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(AlbumDetailPanel.class.getName());
+
+    private static final TaskExecutor taskExecutor = new TaskExecutor(Executors.newCachedThreadPool(runnable -> {
+        var thread = new Thread(runnable);
+
+        thread.setDaemon(true);
+
+        return thread;
+    }));
 
     public AlbumDetailPanel(Artist artist, String name, List<Song> songs) {
         this.artist = artist;
@@ -115,14 +124,13 @@ public class AlbumDetailPanel extends StackPanel {
             }
         });
 
-        Image artwork;
-        try (var inputStream = Files.newInputStream(MainFrame.getArtworkPath(artist.getName(), name))) {
-            artwork = ImageIO.read(inputStream);
-        } catch (IOException exception) {
-            artwork = null;
-        }
-
-        artworkImagePane.setImage(artwork);
+        taskExecutor.execute(() -> {
+            try (var inputStream = Files.newInputStream(MainFrame.getArtworkPath(artist.getName(), name))) {
+                return ImageIO.read(inputStream);
+            } catch (IOException exception) {
+                return null;
+            }
+        }, (artwork, exception) -> artworkImagePane.setImage(artwork));
 
         for (var song : songs) {
             var genre = song.getGenre();
