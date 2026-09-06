@@ -8,9 +8,22 @@ import org.httprpc.kilo.sql.PrimaryKey;
 import org.httprpc.kilo.sql.Table;
 
 @Table("Artist")
-public interface Artist {
+public class Artist {
+    private String name;
+
     @Column("name")
     @PrimaryKey
     @Index
-    String getName();
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

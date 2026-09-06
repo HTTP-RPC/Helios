@@ -656,7 +656,7 @@ public class MainFrame extends JFrame implements Runnable {
     private void addPlaylist() {
         collectionTabbedPane.setSelectedIndex(PLAYLIST_TAB_INDEX);
 
-        var playlist = BeanAdapter.coerce(mapOf(), ExpandedPlaylist.class);
+        var playlist = new ExpandedPlaylist();
 
         playlist.setName(resourceBundle.getString("newPlaylistName"));
 

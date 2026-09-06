@@ -36,7 +36,6 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
 
-import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Optionals.*;
 
 public class ImportStatusPanel extends StackPanel {
@@ -124,7 +123,7 @@ public class ImportStatusPanel extends StackPanel {
 
             var time = audioHeader.getTrackLength();
 
-            var song = BeanAdapter.coerce(mapOf(), Song.class);
+            var song = new Song();
 
             song.setArtist(artist);
             song.setAlbum(album);

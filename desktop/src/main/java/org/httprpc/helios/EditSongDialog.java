@@ -158,7 +158,7 @@ public class EditSongDialog extends ModalDialog {
         var discNumber = map(discNumberTextField.getValue(), Number::intValue);
         var discCount = map(discCountTextField.getValue(), Number::intValue);
 
-        var song = BeanAdapter.coerce(mapOf(), Song.class);
+        var song = new Song();
 
         song.setID(this.song.getID());
 

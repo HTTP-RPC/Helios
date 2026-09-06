@@ -9,14 +9,33 @@ import org.httprpc.kilo.sql.PrimaryKey;
 import org.httprpc.kilo.sql.Table;
 
 @Table("Playlist")
-public interface Playlist {
+public class Playlist {
+    private Integer id;
+    private String name;
+
     @Name("id")
     @Column("id")
     @PrimaryKey
-    Integer getID();
+    public Integer getID() {
+        return id;
+    }
+
+    public void setID(Integer id) {
+        this.id = id;
+    }
 
     @Column("name")
     @Index
-    String getName();
-    void setName(String name);
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

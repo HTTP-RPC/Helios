@@ -6,10 +6,25 @@ import org.httprpc.kilo.sql.Column;
 import org.httprpc.kilo.sql.Table;
 
 @Table("ExpandedArtist")
-public interface ExpandedArtist extends Artist {
+public class ExpandedArtist extends Artist {
+    private Integer albumCount;
+    private Integer songCount;
+
     @Column("albumCount")
-    Integer getAlbumCount();
+    public Integer getAlbumCount() {
+        return albumCount;
+    }
+
+    public void setAlbumCount(Integer albumCount) {
+        this.albumCount = albumCount;
+    }
 
     @Column("songCount")
-    Integer getSongCount();
+    public Integer getSongCount() {
+        return songCount;
+    }
+
+    public void setSongCount(Integer songCount) {
+        this.songCount = songCount;
+    }
 }

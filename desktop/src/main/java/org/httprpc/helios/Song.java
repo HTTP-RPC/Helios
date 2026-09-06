@@ -10,58 +10,135 @@ import org.httprpc.kilo.sql.PrimaryKey;
 import org.httprpc.kilo.sql.Table;
 
 @Table("Song")
-public interface Song {
+public class Song {
+    private Integer id;
+    private String artist;
+    private String album;
+    private String title;
+    private Integer time;
+
+    private String genre;
+    private Integer year;
+
+    private Integer trackNumber;
+    private Integer trackCount;
+
+    private Integer discNumber;
+    private Integer discCount;
+
+    private String type;
+
     @Name("id")
     @Column("id")
     @PrimaryKey
-    Integer getID();
-    void setID(Integer id);
+    public Integer getID() {
+        return id;
+    }
+
+    public void setID(Integer id) {
+        this.id = id;
+    }
 
     @Column("artist")
     @ForeignKey(Artist.class)
     @Index(1)
-    String getArtist();
-    void setArtist(String artist);
+    public String getArtist() {
+        return artist;
+    }
+
+    public void setArtist(String artist) {
+        this.artist = artist;
+    }
 
     @Column("album")
     @Index(2)
-    String getAlbum();
-    void setAlbum(String album);
+    public String getAlbum() {
+        return album;
+    }
+
+    public void setAlbum(String album) {
+        this.album = album;
+    }
 
     @Column("title")
     @Index(3)
-    String getTitle();
-    void setTitle(String title);
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
     @Column("time")
-    Integer getTime();
-    void setTime(Integer time);
+    public Integer getTime() {
+        return time;
+    }
+
+    public void setTime(Integer time) {
+        this.time = time;
+    }
 
     @Column("genre")
-    String getGenre();
-    void setGenre(String genre);
+    public String getGenre() {
+        return genre;
+    }
+
+    public void setGenre(String genre) {
+        this.genre = genre;
+    }
 
     @Column("year")
-    Integer getYear();
-    void setYear(Integer year);
+    public Integer getYear() {
+        return year;
+    }
+
+    public void setYear(Integer year) {
+        this.year = year;
+    }
 
     @Column("trackNumber")
-    Integer getTrackNumber();
-    void setTrackNumber(Integer trackNumber);
+    public Integer getTrackNumber() {
+        return trackNumber;
+    }
+
+    public void setTrackNumber(Integer trackNumber) {
+        this.trackNumber = trackNumber;
+    }
 
     @Column("trackCount")
-    Integer getTrackCount();
-    void setTrackCount(Integer trackCount);
+    public Integer getTrackCount() {
+        return trackCount;
+    }
+
+    public void setTrackCount(Integer trackCount) {
+        this.trackCount = trackCount;
+    }
 
     @Column("discNumber")
-    Integer getDiscNumber();
-    void setDiscNumber(Integer discNumber);
+    public Integer getDiscNumber() {
+        return discNumber;
+    }
+
+    public void setDiscNumber(Integer discNumber) {
+        this.discNumber = discNumber;
+    }
 
     @Column("discCount")
-    Integer getDiscCount();
-    void setDiscCount(Integer discCount);
+    public Integer getDiscCount() {
+        return discCount;
+    }
+
+    public void setDiscCount(Integer discCount) {
+        this.discCount = discCount;
+    }
 
     @Column("type")
-    String getType();
-    void setType(String type);
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 }
