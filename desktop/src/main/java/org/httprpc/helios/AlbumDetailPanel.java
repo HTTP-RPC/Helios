@@ -259,14 +259,18 @@ public class AlbumDetailPanel extends StackPanel {
 
                     var tag = audioFile.getTag();
 
-                    var artworkField = new StandardArtwork();
+                    if (artwork != null) {
+                        var artworkField = new StandardArtwork();
 
-                    artworkField.setBinaryData(binaryData);
+                        artworkField.setBinaryData(binaryData);
 
-                    try {
-                        tag.setField(artworkField);
-                    } catch (FieldDataInvalidException exception) {
-                        throw new IOException(exception);
+                        try {
+                            tag.setField(artworkField);
+                        } catch (FieldDataInvalidException exception) {
+                            throw new IOException(exception);
+                        }
+                    } else {
+                        tag.deleteArtworkField();
                     }
 
                     try {
@@ -281,7 +285,7 @@ public class AlbumDetailPanel extends StackPanel {
 
             return null;
         }, (result, exception) -> {
-            editArtworkButton.setEnabled(false);
+            editArtworkButton.setEnabled(true);
             deleteArtworkButton.setEnabled(artwork != null);
         });
     }
