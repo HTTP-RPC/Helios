@@ -199,13 +199,20 @@ public class EditSongDialog extends ModalDialog {
 
         if (!contentPath.equals(previousContentPath)) {
             try {
-                Files.createDirectories(contentPath.getParent());
-                Files.move(previousContentPath, contentPath, StandardCopyOption.REPLACE_EXISTING);
+                var albumContentPath = contentPath.getParent();
+
+                Files.createDirectories(albumContentPath);
+
+                var temporaryContentPath = albumContentPath.resolve(String.format("%s.tmp", song.getTitle()));
+
+                Files.copy(previousContentPath, temporaryContentPath, StandardCopyOption.REPLACE_EXISTING);
+
+                MainFrame.deleteSong(previousContentPath);
+
+                Files.move(temporaryContentPath, contentPath, StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException exception) {
                 throw new RuntimeException(exception);
             }
-
-            MainFrame.deleteSong(previousContentPath);
         }
 
         AudioFile audioFile;

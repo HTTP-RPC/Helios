@@ -14,7 +14,6 @@ create table Song (
     discCount integer,
     type text not null check (type in ('mp3', 'm4a')),
     unique (artist, album, title)
-
 );
 
 create index idx_genre on Song(genre);
