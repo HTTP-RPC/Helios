@@ -405,7 +405,9 @@ public class MainFrame extends JFrame implements Runnable {
                 return;
             }
 
-            showSelectedCollection();
+            if (collectionTabbedPane.getSelectedIndex() == ARTIST_TAB_INDEX) {
+                showSelectedCollection();
+            }
         });
 
         playlistScrollPane.setBorder(null);
@@ -418,7 +420,9 @@ public class MainFrame extends JFrame implements Runnable {
                 return;
             }
 
-            showSelectedCollection();
+            if (collectionTabbedPane.getSelectedIndex() == PLAYLIST_TAB_INDEX) {
+                showSelectedCollection();
+            }
         });
 
         importStatusPanel.setVisible(false);
