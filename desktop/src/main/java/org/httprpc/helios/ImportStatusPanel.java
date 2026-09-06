@@ -105,12 +105,7 @@ public class ImportStatusPanel extends StackPanel {
             var tag = audioFile.getTag();
             var audioHeader = audioFile.getAudioHeader();
 
-            var artist = coalesce(tag.getFirst(FieldKey.ALBUM_ARTIST), () -> "");
-
-            if (artist.isEmpty()) {
-                artist = coalesce(tag.getFirst(FieldKey.ARTIST), () -> "");
-            }
-
+            var artist = coalesce(tag.getFirst(FieldKey.ARTIST), () -> "");
             var album = coalesce(tag.getFirst(FieldKey.ALBUM), () -> "");
             var title = coalesce(tag.getFirst(FieldKey.TITLE), () -> "");
 

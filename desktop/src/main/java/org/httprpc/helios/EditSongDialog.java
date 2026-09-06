@@ -231,7 +231,6 @@ public class EditSongDialog extends ModalDialog {
 
         try {
             tag.setField(FieldKey.ARTIST, artist);
-            tag.setField(FieldKey.ALBUM_ARTIST, artist);
             tag.setField(FieldKey.ALBUM, album);
 
             tag.setField(FieldKey.GENRE, genre);
