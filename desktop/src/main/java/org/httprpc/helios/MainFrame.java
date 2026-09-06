@@ -24,7 +24,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
@@ -650,22 +649,7 @@ public class MainFrame extends JFrame implements Runnable {
         }
 
         if (!paths.isEmpty()) {
-            var n = paths.size();
-
-            int result;
-            if (n == 1) {
-                result = JOptionPane.YES_OPTION;
-            } else {
-                result = JOptionPane.showConfirmDialog(this,
-                    String.format(resourceBundle.getString("confirmAddSongsFormat"), n),
-                    resourceBundle.getString("addSongs"),
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.WARNING_MESSAGE);
-            }
-
-            if (result == JOptionPane.YES_OPTION) {
-                importStatusPanel.addAll(paths);
-            }
+            importStatusPanel.addAll(paths);
         }
     }
 
