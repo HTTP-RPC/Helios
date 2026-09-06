@@ -130,7 +130,9 @@ public class SongDetailPanel extends StackPanel {
         addToPlaylistButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseExited(MouseEvent event) {
-                hideButtons();
+                if (!addToPlaylistButton.getComponentPopupMenu().isVisible()) {
+                    hideButtons();
+                }
             }
         });
 
