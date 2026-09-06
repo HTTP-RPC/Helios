@@ -7,14 +7,10 @@ import org.httprpc.sierra.Outlet;
 import org.httprpc.sierra.StackPanel;
 import org.httprpc.sierra.UILoader;
 
-import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
-import java.awt.Image;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -44,14 +40,7 @@ public class ArtistDetailPanel extends StackPanel {
 
             songs.sort(Comparator.comparing(song -> coalesce(song.getTrackNumber(), () -> 0)));
 
-            Image artwork;
-            try (var inputStream = Files.newInputStream(MainFrame.getArtworkPath(artist.getName(), name))) {
-                artwork = ImageIO.read(inputStream);
-            } catch (IOException exception) {
-                artwork = null;
-            }
-
-            var albumDetailPanel = new AlbumDetailPanel(artist, name, artwork, songs);
+            var albumDetailPanel = new AlbumDetailPanel(artist, name, songs);
 
             albumListPanel.add(albumDetailPanel);
         }

@@ -8,6 +8,15 @@ import org.httprpc.sierra.Outlet;
 import org.httprpc.sierra.RowPanel;
 import org.httprpc.sierra.StackPanel;
 import org.httprpc.sierra.UILoader;
+import org.jaudiotagger.audio.AudioFile;
+import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.audio.exceptions.CannotReadException;
+import org.jaudiotagger.audio.exceptions.CannotWriteException;
+import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
+import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
+import org.jaudiotagger.tag.FieldDataInvalidException;
+import org.jaudiotagger.tag.TagException;
+import org.jaudiotagger.tag.images.StandardArtwork;
 
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
@@ -24,6 +33,7 @@ import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -35,6 +45,7 @@ import java.util.ResourceBundle;
 public class AlbumDetailPanel extends StackPanel {
     private Artist artist;
     private String name;
+    private List<Song> songs;
 
     private @Outlet JLabel nameLabel = null;
     private @Outlet JButton playAlbumButton = null;
@@ -56,9 +67,10 @@ public class AlbumDetailPanel extends StackPanel {
 
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(AlbumDetailPanel.class.getName());
 
-    public AlbumDetailPanel(Artist artist, String name, Image artwork, List<Song> songs) {
+    public AlbumDetailPanel(Artist artist, String name, List<Song> songs) {
         this.artist = artist;
         this.name = name;
+        this.songs = songs;
 
         add(UILoader.load(this, "AlbumDetailPanel.xml", resourceBundle));
 
@@ -113,6 +125,13 @@ public class AlbumDetailPanel extends StackPanel {
                 hideButtons();
             }
         });
+
+        Image artwork;
+        try (var inputStream = Files.newInputStream(MainFrame.getArtworkPath(artist.getName(), name))) {
+            artwork = ImageIO.read(inputStream);
+        } catch (IOException exception) {
+            artwork = null;
+        }
 
         artworkImagePane.setImage(artwork);
 
@@ -198,7 +217,47 @@ public class AlbumDetailPanel extends StackPanel {
         }
 
         if (artwork != null) {
-            // TODO Update song metadata
+            byte[] binaryData;
+            try (var outputStream = new ByteArrayOutputStream()) {
+                ImageIO.write(artwork, "jpeg", outputStream);
+
+                binaryData = outputStream.toByteArray();
+            } catch (IOException exception) {
+                throw new RuntimeException(exception);
+            }
+
+            for (var song : songs) {
+                var contentPath = MainFrame.getContentPath(song);
+
+                try {
+                    AudioFile audioFile;
+                    try {
+                        audioFile = AudioFileIO.read(contentPath.toFile());
+                    } catch (CannotReadException | TagException | InvalidAudioFrameException | ReadOnlyFileException exception) {
+                        throw new IOException(exception);
+                    }
+
+                    var tag = audioFile.getTag();
+
+                    var artworkField = new StandardArtwork();
+
+                    artworkField.setBinaryData(binaryData);
+
+                    try {
+                        tag.setField(artworkField);
+                    } catch (FieldDataInvalidException exception) {
+                        throw new IOException(exception);
+                    }
+
+                    try {
+                        AudioFileIO.write(audioFile);
+                    } catch (CannotWriteException exception) {
+                        throw new RuntimeException(exception);
+                    }
+                } catch (IOException exception) {
+                    throw new RuntimeException(exception);
+                }
+            }
         }
     }
 
