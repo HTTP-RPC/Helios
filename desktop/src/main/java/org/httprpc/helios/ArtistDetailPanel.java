@@ -51,7 +51,7 @@ public class ArtistDetailPanel extends StackPanel {
                 artwork = null;
             }
 
-            var albumDetailPanel = new AlbumDetailPanel(name, artwork, songs);
+            var albumDetailPanel = new AlbumDetailPanel(artist, name, artwork, songs);
 
             albumListPanel.add(albumDetailPanel);
         }

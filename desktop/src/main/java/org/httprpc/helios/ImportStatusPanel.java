@@ -196,19 +196,19 @@ public class ImportStatusPanel extends StackPanel {
             Files.createDirectories(contentPath.getParent());
             Files.copy(path, contentPath, StandardCopyOption.REPLACE_EXISTING);
 
-            var albumArtworkPath = MainFrame.getArtworkPath(artist, album);
+            var artworkPath = MainFrame.getArtworkPath(artist, album);
 
-            if (!Files.exists(albumArtworkPath, LinkOption.NOFOLLOW_LINKS)) {
+            if (!Files.exists(artworkPath, LinkOption.NOFOLLOW_LINKS)) {
                 var artwork = tag.getFirstArtwork();
 
                 if (artwork != null) {
                     try (var inputStream = new ByteArrayInputStream(artwork.getBinaryData());
-                        var outputStream = Files.newOutputStream(albumArtworkPath,
+                        var outputStream = Files.newOutputStream(artworkPath,
                             StandardOpenOption.CREATE,
                             StandardOpenOption.TRUNCATE_EXISTING)) {
                         ImageIO.write(ImageIO.read(inputStream), "jpeg", outputStream);
                     } catch (IOException exception) {
-                        Files.deleteIfExists(albumArtworkPath);
+                        Files.deleteIfExists(artworkPath);
                     }
                 }
             }
