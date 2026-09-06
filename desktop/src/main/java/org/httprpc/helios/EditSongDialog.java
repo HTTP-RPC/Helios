@@ -203,7 +203,7 @@ public class EditSongDialog extends ModalDialog {
 
                 Files.createDirectories(albumContentPath);
 
-                var temporaryContentPath = albumContentPath.resolve(String.format("%s.tmp", song.getTitle()));
+                var temporaryContentPath = albumContentPath.resolve(String.format("%s.tmp", MainFrame.escape(song.getTitle())));
 
                 Files.copy(previousContentPath, temporaryContentPath, StandardCopyOption.REPLACE_EXISTING);
 

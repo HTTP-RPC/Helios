@@ -806,7 +806,7 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     public static Path getAlbumPath(String artist, String album) {
-        return rootDirectory.resolve("music").resolve(artist).resolve(album);
+        return rootDirectory.resolve("music").resolve(escape(artist)).resolve(escape(album));
     }
 
     public static Path getArtworkPath(String artist, String album) {
@@ -816,7 +816,11 @@ public class MainFrame extends JFrame implements Runnable {
     public static Path getContentPath(Song song) {
         var fileName = String.format("%s.%s", song.getTitle(), song.getType());
 
-        return getAlbumPath(song.getArtist(), song.getAlbum()).resolve("content").resolve(fileName);
+        return getAlbumPath(song.getArtist(), song.getAlbum()).resolve("content").resolve(escape(fileName));
+    }
+
+    public static String escape(String component) {
+        return component.replace('\\', '/').replace('/', '_');
     }
 
     public static void deleteArtist(Path artistPath) {
