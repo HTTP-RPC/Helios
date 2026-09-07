@@ -90,10 +90,10 @@
                 <row-panel spacing="4">
                     <activity-indicator name="albumArtworkActivityIndicator" indicatorStyle="small"/>
 
-                    <button name="downloadAlbumArtworkButton" icon="icons/file_download_24dp.svg; 18"
+                    <button name="getAlbumArtworkButton" icon="icons/file_download_24dp.svg; 18"
                         focusable="false"
                         style="buttonType: borderless"
-                        toolTipText="downloadAlbumArtwork"/>
+                        toolTipText="getAlbumArtwork"/>
                 </row-panel>
                 <spacer weight="1"/>
             </column-panel>

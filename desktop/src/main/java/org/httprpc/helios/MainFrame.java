@@ -198,7 +198,7 @@ public class MainFrame extends JFrame implements Runnable {
     private @Outlet JLabel remainingTimeLabel = null;
 
     private @Outlet ActivityIndicator albumArtworkActivityIndicator = null;
-    private @Outlet JButton downloadAlbumArtworkButton = null;
+    private @Outlet JButton getAlbumArtworkButton = null;
 
     private @Outlet JButton searchButton = null;
     private @Outlet JButton settingsButton = null;
@@ -437,7 +437,7 @@ public class MainFrame extends JFrame implements Runnable {
 
         positionSlider.addChangeListener(event -> updatePosition());
 
-        downloadAlbumArtworkButton.addActionListener(event -> downloadAlbumArtwork());
+        getAlbumArtworkButton.addActionListener(event -> getAlbumArtwork());
 
         searchButton.addActionListener(event -> showSearchDialog());
         settingsButton.addActionListener(event -> showSettingsDialog());
@@ -771,7 +771,7 @@ public class MainFrame extends JFrame implements Runnable {
         // TODO
     }
 
-    private void downloadAlbumArtwork() {
+    private void getAlbumArtwork() {
         var queryBuilder = QueryBuilder.select(ArtistAlbum.class).ordered(true);
 
         List<ArtistAlbum> artistAlbums;
