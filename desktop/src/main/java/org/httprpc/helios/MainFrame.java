@@ -5,6 +5,7 @@ package org.httprpc.helios;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import org.httprpc.helios.api.MusicBrainz;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.io.TextDecoder;
 import org.httprpc.kilo.sql.QueryBuilder;
@@ -14,8 +15,10 @@ import org.httprpc.sierra.ColumnPanel;
 import org.httprpc.sierra.MenuButton;
 import org.httprpc.sierra.Outlet;
 import org.httprpc.sierra.StackPanel;
+import org.httprpc.sierra.TaskExecutor;
 import org.httprpc.sierra.UILoader;
 
+import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JButton;
@@ -52,6 +55,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -59,6 +63,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.concurrent.Executors;
 import java.util.function.Predicate;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
@@ -259,6 +264,14 @@ public class MainFrame extends JFrame implements Runnable {
     private static final Preferences preferences = Preferences.userRoot().node(MainFrame.class.getName());
 
     private static final Predicate<Path> dsStoreFilter = path -> !path.getFileName().toString().equals(".DS_Store");
+
+    private static final TaskExecutor taskExecutor = new TaskExecutor(Executors.newSingleThreadExecutor(runnable -> {
+        var thread = new Thread(runnable);
+
+        thread.setDaemon(true);
+
+        return thread;
+    }));
 
     private MainFrame() {
         super(resourceBundle.getString("title"));
@@ -759,7 +772,53 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     private void downloadAlbumArtwork() {
-        // TODO
+        var queryBuilder = QueryBuilder.select(ArtistAlbum.class).ordered(true);
+
+        List<ArtistAlbum> artistAlbums;
+        try (var connection = openConnection();
+            var statement = queryBuilder.prepare(connection);
+            var results = queryBuilder.executeQuery(statement)) {
+            artistAlbums = listOf(mapAll(results, BeanAdapter.toType(ArtistAlbum.class)));
+        } catch (SQLException exception) {
+            throw new RuntimeException(exception);
+        }
+
+        albumArtworkActivityIndicator.start();
+
+        taskExecutor.execute(() -> {
+            for (var artistAlbum : artistAlbums) {
+                var artist = artistAlbum.getArtist();
+                var album = artistAlbum.getAlbum();
+
+                var artworkPath = getArtworkPath(artist, album);
+
+                if (Files.exists(artworkPath)) {
+                    continue;
+                }
+
+                try {
+                    System.out.println(String.format("Downloading artwork for %s / %s...", artist, album));
+
+                    var artwork = MusicBrainz.getAlbumArtwork(artist, album);
+
+                    if (artwork != null) {
+                        System.out.println("...saving artwork");
+
+                        try (var outputStream = Files.newOutputStream(artworkPath,
+                            StandardOpenOption.CREATE,
+                            StandardOpenOption.TRUNCATE_EXISTING)) {
+                            ImageIO.write(artwork, "jpeg", outputStream);
+                        }
+                    } else {
+                        System.out.println("...no artwork found");
+                    }
+                } catch (IOException exception) {
+                    // No-op
+                }
+            }
+
+            return null;
+        }, (result, exception) -> albumArtworkActivityIndicator.stop());
     }
 
     private void showSearchDialog() {

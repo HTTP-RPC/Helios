@@ -46,7 +46,7 @@ create view Artist as select distinct artist as name from Song where compilation
 
 drop view if exists ArtistAlbum;
 
-create view ArtistAlbum as select distinct artist, album as name from Song where compilation = false;
+create view ArtistAlbum as select distinct artist, album from Song where compilation = false;
 
 drop view if exists ExpandedArtist;
 

@@ -87,8 +87,8 @@
 
             <column-panel>
                 <spacer weight="1"/>
-                <row-panel spacing="2">
-                    <activity-indicator name="albumArtworkActivityIndicator"/>
+                <row-panel spacing="4">
+                    <activity-indicator name="albumArtworkActivityIndicator" indicatorStyle="small"/>
 
                     <button name="downloadAlbumArtworkButton" icon="icons/file_download_24dp.svg; 18"
                         focusable="false"
