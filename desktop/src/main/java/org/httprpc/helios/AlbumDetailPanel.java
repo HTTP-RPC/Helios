@@ -182,7 +182,7 @@ public class AlbumDetailPanel extends StackPanel {
             }
         });
 
-        var result = fileChooser.showOpenDialog(this);
+        var result = fileChooser.showOpenDialog(getTopLevelAncestor());
 
         if (result == JFileChooser.APPROVE_OPTION) {
             var path = fileChooser.getSelectedFile().toPath();
