@@ -150,6 +150,11 @@ public class SongDetailPanel extends StackPanel {
             }
         });
 
+        if (song.isCompilation()) {
+            titleLabel.setEnabled(false);
+            timeLabel.setEnabled(false);
+        }
+
         setBackground(UIManager.getColor("Component.borderColor"));
     }
 
