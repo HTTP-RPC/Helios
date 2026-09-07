@@ -241,6 +241,7 @@ public class MainFrame extends JFrame implements Runnable {
     private static final String REPEAT_KEY = "repeat";
     private static final String QUEUE_KEY = "queue";
     private static final String ADD_KEY = "add";
+    private static final String GET_ALBUM_ARTWORK_KEY = "getAlbumArtwork";
     private static final String SEARCH_KEY = "search";
     private static final String SETTINGS_KEY = "settings";
     private static final String ARTISTS_KEY = "artists";
@@ -341,6 +342,14 @@ public class MainFrame extends JFrame implements Runnable {
             @Override
             public void actionPerformed(ActionEvent event) {
                 addButton.doClick();
+            }
+        });
+
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_D, shortcutModifier, false), GET_ALBUM_ARTWORK_KEY);
+        actionMap.put(GET_ALBUM_ARTWORK_KEY, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                getAlbumArtworkButton.doClick();
             }
         });
 
