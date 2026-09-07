@@ -137,6 +137,8 @@ public class MusicBrainz {
 
         var releases = metadata.getReleaseList().getReleases();
 
+        System.out.println(String.format("...found %d releases", releases.size()));
+
         return firstOf(filter(releases, release -> title.equals(release.getTitle()) && country.equalsIgnoreCase(release.getCountry())));
     }
 
