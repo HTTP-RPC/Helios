@@ -8,6 +8,7 @@ import com.formdev.flatlaf.extras.FlatSVGIcon;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.io.TextDecoder;
 import org.httprpc.kilo.sql.QueryBuilder;
+import org.httprpc.sierra.ActivityIndicator;
 import org.httprpc.sierra.BasicListModel;
 import org.httprpc.sierra.ColumnPanel;
 import org.httprpc.sierra.MenuButton;
@@ -187,12 +188,15 @@ public class MainFrame extends JFrame implements Runnable {
     private @Outlet JMenuItem addSongsMenuItem = null;
     private @Outlet JMenuItem addPlaylistMenuItem = null;
 
-    private @Outlet JButton searchButton = null;
-    private @Outlet JButton settingsButton = null;
-
     private @Outlet JLabel elapsedTimeLabel = null;
     private @Outlet JSlider positionSlider = null;
     private @Outlet JLabel remainingTimeLabel = null;
+
+    private @Outlet ActivityIndicator albumArtworkActivityIndicator = null;
+    private @Outlet JButton downloadAlbumArtworkButton = null;
+
+    private @Outlet JButton searchButton = null;
+    private @Outlet JButton settingsButton = null;
 
     private @Outlet JTabbedPane collectionTabbedPane = null;
 
@@ -419,6 +423,8 @@ public class MainFrame extends JFrame implements Runnable {
         remainingTimeLabel.setText("-00:00");
 
         positionSlider.addChangeListener(event -> updatePosition());
+
+        downloadAlbumArtworkButton.addActionListener(event -> downloadAlbumArtwork());
 
         searchButton.addActionListener(event -> showSearchDialog());
         settingsButton.addActionListener(event -> showSettingsDialog());
@@ -749,6 +755,10 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     private void updatePosition() {
+        // TODO
+    }
+
+    private void downloadAlbumArtwork() {
         // TODO
     }
 

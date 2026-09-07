@@ -53,11 +53,11 @@
                 <spacer weight="1"/>
             </column-panel>
 
-            <spacer weight="1"/>
+            <spacer width="8"/>
 
             <column-panel>
                 <spacer weight="1"/>
-                <row-panel spacing="8">
+                <row-panel spacing="2">
                     <menu-button name="addButton" icon="icons/add_24dp.svg; 18"
                         focusable="false"
                         style="buttonType: borderless"
@@ -82,8 +82,23 @@
                 weight="1"/>
         </row-panel>
 
-        <row-panel weight="1.25">
+        <row-panel spacing="8" weight="1.25">
             <spacer weight="1"/>
+
+            <column-panel>
+                <spacer weight="1"/>
+                <row-panel spacing="2">
+                    <activity-indicator name="albumArtworkActivityIndicator"/>
+
+                    <button name="downloadAlbumArtworkButton" icon="icons/file_download_24dp.svg; 18"
+                        focusable="false"
+                        style="buttonType: borderless"
+                        toolTipText="downloadAlbumArtwork"/>
+                </row-panel>
+                <spacer weight="1"/>
+            </column-panel>
+
+            <spacer width="8"/>
 
             <column-panel>
                 <spacer weight="1"/>
