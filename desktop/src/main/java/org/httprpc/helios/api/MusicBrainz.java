@@ -2,6 +2,7 @@
 
 package org.httprpc.helios.api;
 
+import org.httprpc.helios.MainFrame;
 import org.httprpc.kilo.Name;
 import org.httprpc.kilo.WebServiceProxy;
 import org.httprpc.kilo.beans.BeanAdapter;
@@ -81,6 +82,10 @@ public class MusicBrainz {
             entry("query", name)
         ));
 
+        webServiceProxy.setHeaders(mapOf(
+            entry("User-Agent", MainFrame.getUserAgent())
+        ));
+
         webServiceProxy.setResponseHandler((inputStream, contentType) -> {
             var documentBuilder = ElementAdapter.newDocumentBuilder();
 
@@ -106,6 +111,10 @@ public class MusicBrainz {
             entry("limit", 100)
         ));
 
+        webServiceProxy.setHeaders(mapOf(
+            entry("User-Agent", MainFrame.getUserAgent())
+        ));
+
         webServiceProxy.setResponseHandler((inputStream, contentType) -> {
             var documentBuilder = ElementAdapter.newDocumentBuilder();
 
@@ -123,6 +132,10 @@ public class MusicBrainz {
 
     private static BufferedImage getArtwork(String releaseID) throws IOException {
         var webServiceProxy = new WebServiceProxy("GET", artworkBaseURI.resolve(String.format("release/%s/front", releaseID)));
+
+        webServiceProxy.setHeaders(mapOf(
+            entry("User-Agent", MainFrame.getUserAgent())
+        ));
 
         webServiceProxy.setResponseHandler((inputStream, contentType) -> ImageIO.read(inputStream));
 
