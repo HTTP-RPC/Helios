@@ -223,7 +223,7 @@ public class PlaylistDetailPanel extends StackPanel {
     }
 
     private void updatePlaylistName() {
-        var name = nameTextField.getText();
+        var name = nameTextField.getText().strip();
 
         if (name.isEmpty()) {
             revertPlaylistNameChange();

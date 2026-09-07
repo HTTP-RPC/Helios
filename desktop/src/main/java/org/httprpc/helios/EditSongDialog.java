@@ -54,6 +54,9 @@ public class EditSongDialog extends ModalDialog {
     private @Outlet NumberField discCountTextField = null;
 
     private @Outlet JCheckBox compilationCheckBox = null;
+    private @Outlet JCheckBox classicalCheckBox = null;
+
+    private @Outlet JTextField composerTextField = null;
 
     private @Outlet JButton cancelButton = null;
     private @Outlet JButton okButton = null;
@@ -104,7 +107,7 @@ public class EditSongDialog extends ModalDialog {
         titleTextField.setText(song.getTitle());
 
         genreSuggestionPicker.setText(song.getGenre());
-        genreSuggestionPicker.setSuggestions(getSuggestions());
+        genreSuggestionPicker.setSuggestions(getGenreSuggestions());
 
         yearTextField.setValue(song.getYear());
 
@@ -115,9 +118,12 @@ public class EditSongDialog extends ModalDialog {
         discCountTextField.setValue(song.getDiscCount());
 
         compilationCheckBox.setSelected(song.isCompilation());
+        classicalCheckBox.setSelected(song.isClassical());
+
+        composerTextField.setText(song.getComposer());
     }
 
-    private List<String> getSuggestions() {
+    private List<String> getGenreSuggestions() {
         var queryBuilder = new QueryBuilder();
 
         queryBuilder.append("select distinct genre from Song");
@@ -132,28 +138,28 @@ public class EditSongDialog extends ModalDialog {
     }
 
     private void save() {
-        var artist = artistTextField.getText();
+        var artist = artistTextField.getText().strip();
 
         if (artist.isEmpty()) {
             alertRequired("artist", artistTextField);
             return;
         }
 
-        var album = albumTextField.getText();
+        var album = albumTextField.getText().strip();
 
         if (album.isEmpty()) {
             alertRequired("album", albumTextField);
             return;
         }
 
-        var title = titleTextField.getText();
+        var title = titleTextField.getText().strip();
 
         if (title.isEmpty()) {
             alertRequired("title", titleTextField);
             return;
         }
 
-        var genre = genreSuggestionPicker.getText();
+        var genre = genreSuggestionPicker.getText().strip();
 
         var year = map(yearTextField.getValue(), Number::intValue);
 
@@ -164,6 +170,9 @@ public class EditSongDialog extends ModalDialog {
         var discCount = map(discCountTextField.getValue(), Number::intValue);
 
         var compilation = compilationCheckBox.isSelected();
+        var classical = classicalCheckBox.isSelected();
+
+        var composer = composerTextField.getText().strip();
 
         var song = new Song();
 
@@ -175,7 +184,10 @@ public class EditSongDialog extends ModalDialog {
 
         song.setTime(this.song.getTime());
 
-        song.setGenre(genre);
+        if (!genre.isEmpty()) {
+            song.setGenre(genre);
+        }
+
         song.setYear(year);
 
         song.setTrackNumber(trackNumber);
@@ -185,6 +197,11 @@ public class EditSongDialog extends ModalDialog {
         song.setDiscCount(discCount);
 
         song.setCompilation(compilation);
+        song.setClassical(classical);
+
+        if (!composer.isEmpty()) {
+            song.setComposer(composer);
+        }
 
         song.setType(this.song.getType());
 

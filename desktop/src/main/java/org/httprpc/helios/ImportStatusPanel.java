@@ -105,9 +105,9 @@ public class ImportStatusPanel extends StackPanel {
             var tag = audioFile.getTag();
             var audioHeader = audioFile.getAudioHeader();
 
-            var artist = coalesce(tag.getFirst(FieldKey.ARTIST), () -> "");
-            var album = coalesce(tag.getFirst(FieldKey.ALBUM), () -> "");
-            var title = coalesce(tag.getFirst(FieldKey.TITLE), () -> "");
+            var artist = coalesce(tag.getFirst(FieldKey.ARTIST), () -> "").strip();
+            var album = coalesce(tag.getFirst(FieldKey.ALBUM), () -> "").strip();
+            var title = coalesce(tag.getFirst(FieldKey.TITLE), () -> "").strip();
 
             if (artist.isEmpty() || album.isEmpty() || title.isEmpty()) {
                 throw new IOException("Missing required fields.");
@@ -122,24 +122,30 @@ public class ImportStatusPanel extends StackPanel {
             song.setTitle(title);
             song.setTime(time);
 
-            song.setGenre(tag.getFirst(FieldKey.GENRE));
+            var genre = coalesce(tag.getFirst(FieldKey.GENRE), () -> "").strip();
 
-            var year = tag.getFirst(FieldKey.YEAR);
-
-            try {
-                song.setYear(Integer.parseInt(year));
-            } catch (Exception exception) {
-                // No-op
+            if (!genre.isEmpty()) {
+                song.setGenre(tag.getFirst(FieldKey.GENRE));
             }
 
-            if (year != null && song.getYear() == null) {
-                try {
-                    var instant = Instant.parse(year);
-                    var localDateTime = LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
+            var year = map(tag.getFirst(FieldKey.YEAR), String::strip);
 
-                    song.setYear(localDateTime.getYear());
+            if (year != null) {
+                try {
+                    song.setYear(Integer.parseInt(year));
                 } catch (Exception exception) {
                     // No-op
+                }
+
+                if (song.getYear() == null) {
+                    try {
+                        var instant = Instant.parse(year);
+                        var localDateTime = LocalDateTime.ofInstant(instant, ZoneOffset.UTC);
+
+                        song.setYear(localDateTime.getYear());
+                    } catch (Exception exception) {
+                        // No-op
+                    }
                 }
             }
 
@@ -170,7 +176,19 @@ public class ImportStatusPanel extends StackPanel {
             try {
                 song.setCompilation(coalesce(map(tag.getFirst(FieldKey.IS_COMPILATION), Boolean::parseBoolean), () -> false));
             } catch (Exception exception) {
-                // No-op
+                song.setCompilation(false);
+            }
+
+            try {
+                song.setClassical(coalesce(map(tag.getFirst(FieldKey.IS_CLASSICAL), Boolean::parseBoolean), () -> false));
+            } catch (Exception exception) {
+                song.setClassical(false);
+            }
+
+            var composer = coalesce(tag.getFirst(FieldKey.COMPOSER), () -> "").strip();
+
+            if (!composer.isEmpty()) {
+                song.setComposer(composer);
             }
 
             var type = audioFile.getExt();

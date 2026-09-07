@@ -30,6 +30,9 @@
         <spacer height="4"/>
 
         <check-box name="compilationCheckBox" text="compilation"/>
+        <check-box name="classicalCheckBox" text="classical"/>
+
+        <text-field name="composerTextField" label="composer" columns="18"/>
     </form-panel>
 
     <separator/>

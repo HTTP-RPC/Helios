@@ -126,7 +126,7 @@ public class SearchDialog extends ModalDialog {
     }
 
     private void search() {
-        var text = titleTextField.getText();
+        var text = titleTextField.getText().strip();
 
         if (text.isEmpty()) {
             resultList.setModel(new BasicListModel<>(listOf()));

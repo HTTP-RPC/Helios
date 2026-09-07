@@ -13,6 +13,8 @@ create table Song (
     discNumber integer,
     discCount integer,
     compilation boolean not null,
+    classical boolean not null,
+    composer text collate nocase,
     type text not null check (type in ('mp3', 'm4a')),
     unique (artist, album, title)
 );
