@@ -973,7 +973,7 @@ public class MainFrame extends JFrame implements Runnable {
 
     public static String getUserAgent() {
         // TODO
-        return "Helios/1.0 (HTTP-RPC)";
+        return "Helios/1.0 (https://httprpc.org)";
     }
 
     public static Connection openConnection() throws SQLException {

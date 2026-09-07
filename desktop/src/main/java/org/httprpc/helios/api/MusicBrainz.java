@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
@@ -52,6 +53,7 @@ public class MusicBrainz {
         String getID();
 
         String getTitle();
+        String getCountry();
     }
 
     private static final URI apiBaseURI = URI.create("https://musicbrainz.org/ws/2/");
@@ -63,10 +65,14 @@ public class MusicBrainz {
         if (artistID != null) {
             System.out.println(String.format("...got artist ID %s", artistID));
 
+            pause();
+
             var releaseID = map(getRelease(artistID, album), Release::getID);
 
             if (releaseID != null) {
                 System.out.println(String.format("...got release ID %s", releaseID));
+
+                pause();
 
                 return getArtwork(releaseID);
             }
@@ -104,11 +110,13 @@ public class MusicBrainz {
     }
 
     private static Release getRelease(String artistID, String title) throws IOException {
+        var country = Locale.getDefault().getCountry();
+
         var webServiceProxy = new WebServiceProxy("GET", apiBaseURI.resolve("release"));
 
         webServiceProxy.setArguments(mapOf(
             entry("artist", artistID),
-            entry("limit", 100)
+            entry("limit", 250)
         ));
 
         webServiceProxy.setHeaders(mapOf(
@@ -127,7 +135,9 @@ public class MusicBrainz {
 
         var metadata = BeanAdapter.coerce(webServiceProxy.invoke(), Metadata.class);
 
-        return firstOf(filter(metadata.getReleaseList().getReleases(), whereEqualTo(Release::getTitle, title)));
+        var releases = metadata.getReleaseList().getReleases();
+
+        return firstOf(filter(releases, release -> title.equals(release.getTitle()) && country.equalsIgnoreCase(release.getCountry())));
     }
 
     private static BufferedImage getArtwork(String releaseID) throws IOException {
@@ -140,5 +150,13 @@ public class MusicBrainz {
         webServiceProxy.setResponseHandler((inputStream, contentType) -> ImageIO.read(inputStream));
 
         return (BufferedImage)webServiceProxy.invoke();
+    }
+
+    private static void pause() {
+        try {
+            Thread.sleep(2500);
+        } catch (InterruptedException exception) {
+            throw new RuntimeException(exception);
+        }
     }
 }
