@@ -38,13 +38,9 @@ public class AppleStore {
         var artistID = map(getArtist(artist.toLowerCase()), Result::getArtistID);
 
         if (artistID != null) {
-            System.out.println(String.format("...got artist ID %d", artistID));
-
             var artworkURL100 = map(getCollection(artistID, album.toLowerCase()), Result::getArtworkURL100);
 
             if (artworkURL100 != null) {
-                System.out.println(String.format("...got artwork URL/100 %s", artworkURL100));
-
                 return getArtwork(artworkURL100);
             }
         }

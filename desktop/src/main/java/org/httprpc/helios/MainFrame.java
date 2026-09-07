@@ -797,23 +797,17 @@ public class MainFrame extends JFrame implements Runnable {
                 }
 
                 try {
-                    System.out.println(String.format("Downloading artwork for %s / %s...", artist, album));
-
                     var artwork = AppleStore.getAlbumArtwork(artist, album);
 
                     if (artwork != null) {
-                        System.out.println("...saving artwork");
-
                         try (var outputStream = Files.newOutputStream(artworkPath,
                             StandardOpenOption.CREATE,
                             StandardOpenOption.TRUNCATE_EXISTING)) {
                             ImageIO.write(artwork, "jpeg", outputStream);
                         }
-                    } else {
-                        System.out.println("...no artwork found");
                     }
                 } catch (IOException exception) {
-                    System.out.println(exception.getMessage());
+                    // No-op
                 }
             }
 
