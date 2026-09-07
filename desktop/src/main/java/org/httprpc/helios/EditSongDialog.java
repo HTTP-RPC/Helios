@@ -296,8 +296,8 @@ public class EditSongDialog extends ModalDialog {
                 tag.deleteField(FieldKey.DISC_TOTAL);
             }
 
-            tag.setField(FieldKey.IS_COMPILATION, map(compilation, Object::toString));
-            tag.setField(FieldKey.IS_CLASSICAL, map(classical, Object::toString));
+            tag.setField(FieldKey.IS_COMPILATION, String.valueOf(compilation ? 1 : 0));
+            tag.setField(FieldKey.IS_CLASSICAL, String.valueOf(classical ? 1 : 0));
 
             if (!composer.isEmpty()) {
                 tag.setField(FieldKey.COMPOSER, composer);

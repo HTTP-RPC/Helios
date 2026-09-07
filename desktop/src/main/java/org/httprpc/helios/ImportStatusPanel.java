@@ -174,13 +174,13 @@ public class ImportStatusPanel extends StackPanel {
             }
 
             try {
-                song.setCompilation(coalesce(map(tag.getFirst(FieldKey.IS_COMPILATION), Boolean::parseBoolean), () -> false));
+                song.setCompilation(coalesce(map(tag.getFirst(FieldKey.IS_COMPILATION), Integer::parseInt), () -> 0) > 0);
             } catch (Exception exception) {
                 song.setCompilation(false);
             }
 
             try {
-                song.setClassical(coalesce(map(tag.getFirst(FieldKey.IS_CLASSICAL), Boolean::parseBoolean), () -> false));
+                song.setClassical(coalesce(map(tag.getFirst(FieldKey.IS_CLASSICAL), Integer::parseInt), () -> 0) > 0);
             } catch (Exception exception) {
                 song.setClassical(false);
             }
