@@ -5,7 +5,7 @@ package org.httprpc.helios;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
-import org.httprpc.helios.api.MusicBrainz;
+import org.httprpc.helios.api.AppleStore;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.io.TextDecoder;
 import org.httprpc.kilo.sql.QueryBuilder;
@@ -799,7 +799,7 @@ public class MainFrame extends JFrame implements Runnable {
                 try {
                     System.out.println(String.format("Downloading artwork for %s / %s...", artist, album));
 
-                    var artwork = MusicBrainz.getAlbumArtwork(artist, album);
+                    var artwork = AppleStore.getAlbumArtwork(artist, album);
 
                     if (artwork != null) {
                         System.out.println("...saving artwork");
