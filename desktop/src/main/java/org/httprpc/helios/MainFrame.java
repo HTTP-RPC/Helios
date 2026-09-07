@@ -818,7 +818,11 @@ public class MainFrame extends JFrame implements Runnable {
             }
 
             return null;
-        }, (result, exception) -> albumArtworkActivityIndicator.stop());
+        }, (result, exception) -> {
+            albumArtworkActivityIndicator.stop();
+
+            loadArtists();
+        });
     }
 
     private void showSearchDialog() {
