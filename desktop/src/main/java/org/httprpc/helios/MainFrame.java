@@ -423,6 +423,10 @@ public class MainFrame extends JFrame implements Runnable {
         searchButton.addActionListener(event -> showSearchDialog());
         settingsButton.addActionListener(event -> showSettingsDialog());
 
+        var tabWidth = collectionTabbedPane.getPreferredSize().width;
+
+        collectionTabbedPane.setPreferredSize(new Dimension(tabWidth + 20, 0));
+
         collectionTabbedPane.addChangeListener(event -> showSelectedCollection());
 
         artistScrollPane.setBorder(null);

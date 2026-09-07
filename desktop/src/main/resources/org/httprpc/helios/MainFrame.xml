@@ -104,11 +104,11 @@
     </row-panel>
 
     <row-panel spacing="4" weight="1">
-        <tabbed-pane name="collectionTabbedPane" tabLayoutPolicy="scroll-tab-layout" tabPlacement="bottom"
+        <tabbed-pane name="collectionTabbedPane" tabPlacement="bottom"
             focusable="false"
             style="tabAreaAlignment: fill"
             border="Component.borderColor; 1"
-            weight="1.25">
+            weight="1">
             <scroll-pane name="artistScrollPane" tabTitle="artists" tabIcon="icons/mic_24dp.svg; 18">
                 <list name="artistList" selectionMode="single-selection"/>
             </scroll-pane>
@@ -122,6 +122,6 @@
             </scroll-pane>
         </tabbed-pane>
 
-        <scroll-pane name="collectionScrollPane" border="Component.borderColor; 1" weight="3"/>
+        <scroll-pane name="collectionScrollPane" border="Component.borderColor; 1" weight="2.75"/>
     </row-panel>
 </column-panel>
