@@ -2,7 +2,6 @@
 
 package org.httprpc.helios.api;
 
-import org.httprpc.helios.MainFrame;
 import org.httprpc.kilo.Name;
 import org.httprpc.kilo.WebServiceProxy;
 import org.httprpc.kilo.beans.BeanAdapter;
@@ -56,6 +55,8 @@ public class MusicBrainz {
         String getCountry();
     }
 
+    private static final String USER_AGENT = "Helios/1.0 (https://httprpc.org)";
+
     private static final URI apiBaseURI = URI.create("https://musicbrainz.org/ws/2/");
     private static final URI artworkBaseURI = URI.create("https://coverartarchive.org/");
 
@@ -89,7 +90,7 @@ public class MusicBrainz {
         ));
 
         webServiceProxy.setHeaders(mapOf(
-            entry("User-Agent", MainFrame.getUserAgent())
+            entry("User-Agent", USER_AGENT)
         ));
 
         webServiceProxy.setResponseHandler((inputStream, contentType) -> {
@@ -120,7 +121,7 @@ public class MusicBrainz {
         ));
 
         webServiceProxy.setHeaders(mapOf(
-            entry("User-Agent", MainFrame.getUserAgent())
+            entry("User-Agent", USER_AGENT)
         ));
 
         webServiceProxy.setResponseHandler((inputStream, contentType) -> {
@@ -146,7 +147,7 @@ public class MusicBrainz {
         var webServiceProxy = new WebServiceProxy("GET", artworkBaseURI.resolve(String.format("release/%s/front", releaseID)));
 
         webServiceProxy.setHeaders(mapOf(
-            entry("User-Agent", MainFrame.getUserAgent())
+            entry("User-Agent", USER_AGENT)
         ));
 
         webServiceProxy.setResponseHandler((inputStream, contentType) -> ImageIO.read(inputStream));

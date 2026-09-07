@@ -971,11 +971,6 @@ public class MainFrame extends JFrame implements Runnable {
         return instance;
     }
 
-    public static String getUserAgent() {
-        // TODO
-        return "Helios/1.0 (https://httprpc.org)";
-    }
-
     public static Connection openConnection() throws SQLException {
         return DriverManager.getConnection(String.format("jdbc:sqlite:%s?foreign_keys=true", dbFile.toAbsolutePath()));
     }
