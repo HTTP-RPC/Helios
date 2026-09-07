@@ -260,15 +260,50 @@ public class EditSongDialog extends ModalDialog {
             tag.setField(FieldKey.ALBUM, album);
             tag.setField(FieldKey.TITLE, title);
 
-            tag.setField(FieldKey.GENRE, genre);
-            tag.setField(FieldKey.YEAR, map(year, Object::toString));
+            if (!genre.isEmpty()) {
+                tag.setField(FieldKey.GENRE, genre);
+            } else {
+                tag.deleteField(FieldKey.GENRE);
+            }
 
-            tag.setField(FieldKey.TRACK, map(trackNumber, Object::toString));
-            tag.setField(FieldKey.TRACK_TOTAL, map(trackCount, Object::toString));
-            tag.setField(FieldKey.DISC_NO, map(discNumber, Object::toString));
-            tag.setField(FieldKey.DISC_TOTAL, map(discCount, Object::toString));
+            if (year != null) {
+                tag.setField(FieldKey.YEAR, map(year, Object::toString));
+            } else {
+                tag.deleteField(FieldKey.YEAR);
+            }
+
+            if (trackNumber != null) {
+                tag.setField(FieldKey.TRACK, map(trackNumber, Object::toString));
+            } else {
+                tag.deleteField(FieldKey.TRACK);
+            }
+
+            if (trackCount != null) {
+                tag.setField(FieldKey.TRACK_TOTAL, map(trackCount, Object::toString));
+            } else {
+                tag.deleteField(FieldKey.TRACK_TOTAL);
+            }
+
+            if (discNumber != null) {
+                tag.setField(FieldKey.DISC_NO, map(discNumber, Object::toString));
+            } else {
+                tag.deleteField(FieldKey.DISC_NO);
+            }
+
+            if (discCount != null) {
+                tag.setField(FieldKey.DISC_TOTAL, map(discCount, Object::toString));
+            } else {
+                tag.deleteField(FieldKey.DISC_TOTAL);
+            }
 
             tag.setField(FieldKey.IS_COMPILATION, map(compilation, Object::toString));
+            tag.setField(FieldKey.IS_CLASSICAL, map(classical, Object::toString));
+
+            if (!composer.isEmpty()) {
+                tag.setField(FieldKey.COMPOSER, composer);
+            } else {
+                tag.deleteField(FieldKey.COMPOSER);
+            }
         } catch (FieldDataInvalidException exception) {
             throw new RuntimeException(exception);
         }
