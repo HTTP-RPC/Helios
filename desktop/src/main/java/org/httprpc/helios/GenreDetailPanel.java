@@ -104,7 +104,15 @@ public class GenreDetailPanel extends StackPanel {
         setScrollableTracksViewportHeight(true);
     }
 
+    @SuppressWarnings("unchecked")
     private void editSelectedSong() {
-        // TODO
+        var song = ((BasicTableModel<Song>)songTable.getModel()).getRow(songTable.getSelectedRow());
+
+        var editSongDialog = new EditSongDialog(MainFrame.getInstance(), song);
+
+        editSongDialog.pack();
+        editSongDialog.setLocationRelativeTo(editSongDialog.getOwner());
+
+        editSongDialog.setVisible(true);
     }
 }
