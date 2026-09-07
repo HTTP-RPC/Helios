@@ -813,7 +813,7 @@ public class MainFrame extends JFrame implements Runnable {
                         System.out.println("...no artwork found");
                     }
                 } catch (IOException exception) {
-                    // No-op
+                    System.out.println(exception.getMessage());
                 }
             }
 
