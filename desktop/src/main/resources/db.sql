@@ -12,11 +12,14 @@ create table Song (
     trackCount integer,
     discNumber integer,
     discCount integer,
+    -- TODO compilation
     type text not null check (type in ('mp3', 'm4a')),
     unique (artist, album, title)
 );
 
 create index idx_genre on Song(genre);
+
+-- TODO Compilation index
 
 drop table if exists Playlist;
 
@@ -38,11 +41,11 @@ create table PlaylistSong (
 
 drop view if exists Artist;
 
-create view Artist as select distinct artist as name from Song;
+create view Artist as select distinct artist as name from Song; -- TODO where not compilation
 
 drop view if exists ArtistAlbum;
 
-create view ArtistAlbum as select distinct artist, album as name from Song;
+create view ArtistAlbum as select distinct artist, album as name from Song; -- TODO where not compilation
 
 drop view if exists ExpandedArtist;
 
@@ -55,14 +58,14 @@ drop view if exists Genre;
 
 create view Genre as select distinct genre as name from Song;
 
-drop view if exists AlbumGenre;
+drop view if exists GenreArtist;
 
-create view GenreAlbum as select distinct genre, album from Song;
+create view GenreArtist as select distinct genre, artist from Song;
 
 drop view if exists ExpandedGenre;
 
 create view ExpandedGenre as select name,
-    (select count(*) from GenreAlbum where genre = Genre.name) as albumCount,
+    (select count(*) from GenreArtist where genre = Genre.name) as artistCount,
     (select count(*) from Song where genre = Genre.name) as songCount
 from Genre;
 

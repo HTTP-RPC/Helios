@@ -84,6 +84,7 @@ public class Song {
     }
 
     @Column("genre")
+    @ForeignKey(Genre.class)
     public String getGenre() {
         return genre;
     }

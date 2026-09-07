@@ -8,21 +8,19 @@ import org.httprpc.sierra.UILoader;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.border.EmptyBorder;
 import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
 
 public class GenreDetailPanel extends StackPanel {
     private @Outlet JLabel nameLabel = null;
     private @Outlet JButton playAllButton = null;
 
-    private @Outlet JList<?> albumList = null;
+    // TODO
 
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(GenreDetailPanel.class.getName());
 
-    public GenreDetailPanel(Genre genre, Map<String, List<?>> albums) {
+    public GenreDetailPanel(Genre genre, List<Song> songs) {
         add(UILoader.load(this, "GenreDetailPanel.xml", resourceBundle));
 
         nameLabel.setText(genre.getName());

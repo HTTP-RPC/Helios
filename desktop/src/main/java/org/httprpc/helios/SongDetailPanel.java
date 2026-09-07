@@ -208,6 +208,7 @@ public class SongDetailPanel extends StackPanel {
             var mainFrame = MainFrame.getInstance();
 
             mainFrame.loadArtists();
+            mainFrame.loadGenres();
             mainFrame.loadPlaylists();
         }
     }

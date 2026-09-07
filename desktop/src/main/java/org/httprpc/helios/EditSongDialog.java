@@ -253,6 +253,7 @@ public class EditSongDialog extends ModalDialog {
         var mainFrame = MainFrame.getInstance();
 
         mainFrame.loadArtists();
+        mainFrame.loadGenres();
         mainFrame.loadPlaylists();
 
         dispose();

@@ -7,16 +7,16 @@ import org.httprpc.kilo.sql.Table;
 
 @Table("ExpandedGenre")
 public class ExpandedGenre extends Genre {
-    private Integer albumCount;
+    private Integer artistCount;
     private Integer songCount;
 
-    @Column("albumCount")
-    public Integer getAlbumCount() {
-        return albumCount;
+    @Column("artistCount")
+    public Integer getArtistCount() {
+        return artistCount;
     }
 
-    public void setAlbumCount(Integer albumCount) {
-        this.albumCount = albumCount;
+    public void setArtistCount(Integer artistCount) {
+        this.artistCount = artistCount;
     }
 
     @Column("songCount")

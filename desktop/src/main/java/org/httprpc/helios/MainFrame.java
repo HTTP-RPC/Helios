@@ -136,11 +136,11 @@ public class MainFrame extends JFrame implements Runnable {
 
         @Override
         protected String getCountText(ExpandedGenre value) {
-            var albumCount = coalesce(value.getAlbumCount(), () -> 0);
+            var artistCount = coalesce(value.getArtistCount(), () -> 0);
             var songCount = coalesce(value.getSongCount(), () -> 0);
 
             return String.format(resourceBundle.getString("countFormat"),
-                String.format(resourceBundle.getString(albumCount == 1 ? "singleArtistFormat" : "multipleArtistFormat"), albumCount),
+                String.format(resourceBundle.getString(artistCount == 1 ? "singleArtistFormat" : "multipleArtistFormat"), artistCount),
                 String.format(resourceBundle.getString(songCount == 1 ? "singleSongFormat" : "multipleSongFormat"), songCount));
         }
     }
@@ -235,6 +235,7 @@ public class MainFrame extends JFrame implements Runnable {
     private static final String SEARCH_KEY = "search";
     private static final String SETTINGS_KEY = "settings";
     private static final String ARTISTS_KEY = "artists";
+    private static final String GENRES_KEY = "genres";
     private static final String PLAYLISTS_KEY = "playlists";
 
     private static final String LOCATION_X_KEY = "locationX";
@@ -350,7 +351,15 @@ public class MainFrame extends JFrame implements Runnable {
             }
         });
 
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_2, shortcutModifier, false), PLAYLISTS_KEY);
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_2, shortcutModifier, false), GENRES_KEY);
+        actionMap.put(GENRES_KEY, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                collectionTabbedPane.setSelectedIndex(GENRE_TAB_INDEX);
+            }
+        });
+
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_3, shortcutModifier, false), PLAYLISTS_KEY);
         actionMap.put(PLAYLISTS_KEY, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent event) {
@@ -480,6 +489,7 @@ public class MainFrame extends JFrame implements Runnable {
         setSize(preferences.getInt(SIZE_WIDTH_KEY, getWidth()), preferences.getInt(SIZE_HEIGHT_KEY, getHeight()));
 
         loadArtists();
+        loadGenres();
         loadPlaylists();
 
         setVisible(true);
@@ -797,7 +807,7 @@ public class MainFrame extends JFrame implements Runnable {
     private void showSelectedCollection() {
         var collectionDetailPanel = switch (collectionTabbedPane.getSelectedIndex()) {
             case ARTIST_TAB_INDEX -> map(artistList.getSelectedValue(), artist -> new ArtistDetailPanel(artist, getAlbums(artist)));
-            case GENRE_TAB_INDEX -> map(genreList.getSelectedValue(), genre -> new GenreDetailPanel(genre, getAlbums(genre))); // TODO
+            case GENRE_TAB_INDEX -> map(genreList.getSelectedValue(), genre -> new GenreDetailPanel(genre, getSongs(genre)));
             case PLAYLIST_TAB_INDEX -> map(playlistList.getSelectedValue(), playlist -> new PlaylistDetailPanel(playlist, getSongs(playlist)));
             default -> throw new UnsupportedOperationException();
         };
@@ -806,7 +816,7 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     private Map<String, List<Song>> getAlbums(Artist artist) {
-        var queryBuilder = QueryBuilder.select(Song.class).filterByIndexEqualTo("artist").ordered(true);
+        var queryBuilder = QueryBuilder.select(Song.class).filterByForeignKey(Artist.class, "artist").ordered(true);
 
         try (var connection = MainFrame.openConnection();
             var statement = queryBuilder.prepare(connection);
@@ -819,9 +829,18 @@ public class MainFrame extends JFrame implements Runnable {
         }
     }
 
-    private Map<String, List<?>> getAlbums(Genre genre) {
-        // TODO
-        return (Map<String, List<?>>)listOf();
+    private List<Song> getSongs(Genre genre) {
+        var queryBuilder = QueryBuilder.select(Song.class).filterByForeignKey(Genre.class, "genre").ordered(true);
+
+        try (var connection = MainFrame.openConnection();
+            var statement = queryBuilder.prepare(connection);
+            var results = queryBuilder.executeQuery(statement, mapOf(
+                entry("genre", genre.getName())
+            ))) {
+            return sortBy(mapAll(results, BeanAdapter.toType(Song.class)), Song::getTitle);
+        } catch (SQLException exception) {
+            throw new RuntimeException(exception);
+        }
     }
 
     private List<Song> getSongs(Playlist playlist) {

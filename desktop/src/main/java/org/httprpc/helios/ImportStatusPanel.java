@@ -217,6 +217,9 @@ public class ImportStatusPanel extends StackPanel {
 
         setVisible(false);
 
-        MainFrame.getInstance().loadArtists();
+        var mainFrame = MainFrame.getInstance();
+
+        mainFrame.loadArtists();
+        mainFrame.loadGenres();
     }
 }
