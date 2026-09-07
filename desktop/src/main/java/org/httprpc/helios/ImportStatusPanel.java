@@ -144,25 +144,31 @@ public class ImportStatusPanel extends StackPanel {
             }
 
             try {
-                song.setTrackNumber(Integer.parseInt(tag.getFirst(FieldKey.TRACK)));
+                song.setTrackNumber(map(tag.getFirst(FieldKey.TRACK), Integer::parseInt));
             } catch (Exception exception) {
                 // No-op
             }
 
             try {
-                song.setTrackCount(Integer.parseInt(tag.getFirst(FieldKey.TRACK_TOTAL)));
+                song.setTrackCount(map(tag.getFirst(FieldKey.TRACK_TOTAL), Integer::parseInt));
             } catch (Exception exception) {
                 // No-op
             }
 
             try {
-                song.setDiscNumber(Integer.parseInt(tag.getFirst(FieldKey.DISC_NO)));
+                song.setDiscNumber(map(tag.getFirst(FieldKey.DISC_NO), Integer::parseInt));
             } catch (Exception exception) {
                 // No-op
             }
 
             try {
-                song.setDiscCount(Integer.parseInt(tag.getFirst(FieldKey.DISC_TOTAL)));
+                song.setDiscCount(map(tag.getFirst(FieldKey.DISC_TOTAL), Integer::parseInt));
+            } catch (Exception exception) {
+                // No-op
+            }
+
+            try {
+                song.setCompilation(coalesce(map(tag.getFirst(FieldKey.IS_COMPILATION), Boolean::parseBoolean), () -> false));
             } catch (Exception exception) {
                 // No-op
             }

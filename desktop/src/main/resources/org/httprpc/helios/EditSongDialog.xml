@@ -26,6 +26,10 @@
             <label text="of"/>
             <number-field name="discCountTextField" columns="2"/>
         </row-panel>
+
+        <spacer height="4"/>
+
+        <check-box name="compilationCheckBox" text="compilation"/>
     </form-panel>
 
     <separator/>

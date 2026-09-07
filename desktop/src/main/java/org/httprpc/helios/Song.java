@@ -27,6 +27,8 @@ public class Song {
     private Integer discNumber;
     private Integer discCount;
 
+    private Boolean compilation;
+
     private String type;
 
     @Name("id")
@@ -136,6 +138,15 @@ public class Song {
 
     public void setDiscCount(Integer discCount) {
         this.discCount = discCount;
+    }
+
+    @Column("compilation")
+    public Boolean isCompilation() {
+        return compilation;
+    }
+
+    public void setCompilation(Boolean compilation) {
+        this.compilation = compilation;
     }
 
     @Column("type")

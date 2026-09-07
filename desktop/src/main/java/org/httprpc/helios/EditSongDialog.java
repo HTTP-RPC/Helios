@@ -20,6 +20,7 @@ import org.jaudiotagger.tag.TagException;
 import org.sqlite.SQLiteErrorCode;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -51,6 +52,8 @@ public class EditSongDialog extends ModalDialog {
 
     private @Outlet NumberField discNumberTextField = null;
     private @Outlet NumberField discCountTextField = null;
+
+    private @Outlet JCheckBox compilationCheckBox = null;
 
     private @Outlet JButton cancelButton = null;
     private @Outlet JButton okButton = null;
@@ -110,6 +113,8 @@ public class EditSongDialog extends ModalDialog {
 
         discNumberTextField.setValue(song.getDiscNumber());
         discCountTextField.setValue(song.getDiscCount());
+
+        compilationCheckBox.setSelected(song.isCompilation());
     }
 
     private List<String> getSuggestions() {
@@ -158,6 +163,8 @@ public class EditSongDialog extends ModalDialog {
         var discNumber = map(discNumberTextField.getValue(), Number::intValue);
         var discCount = map(discCountTextField.getValue(), Number::intValue);
 
+        var compilation = compilationCheckBox.isSelected();
+
         var song = new Song();
 
         song.setID(this.song.getID());
@@ -176,6 +183,8 @@ public class EditSongDialog extends ModalDialog {
 
         song.setDiscNumber(discNumber);
         song.setDiscCount(discCount);
+
+        song.setCompilation(compilation);
 
         song.setType(this.song.getType());
 
