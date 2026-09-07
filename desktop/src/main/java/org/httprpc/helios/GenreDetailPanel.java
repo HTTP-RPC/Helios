@@ -57,6 +57,8 @@ public class GenreDetailPanel extends StackPanel {
     private @Outlet JLabel nameLabel = null;
     private @Outlet JButton playAllButton = null;
 
+    private @Outlet JButton editSelectedSongButton = null;
+
     private @Outlet JTable songTable = null;
 
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(GenreDetailPanel.class.getName());
@@ -67,6 +69,9 @@ public class GenreDetailPanel extends StackPanel {
         nameLabel.setText(genre.getName());
 
         playAllButton.addActionListener(event -> MainFrame.getInstance().playAll(songs));
+
+        editSelectedSongButton.addActionListener(event -> editSelectedSong());
+        editSelectedSongButton.setEnabled(false);
 
         var songTableHeader = songTable.getTableHeader();
 
@@ -85,9 +90,21 @@ public class GenreDetailPanel extends StackPanel {
         songTable.setDefaultRenderer(Object.class, genreCellRenderer);
         songTable.setRowHeight(genreCellRenderer.getPreferredSize().height);
 
+        songTable.getSelectionModel().addListSelectionListener(event -> {
+            if (event.getValueIsAdjusting()) {
+                return;
+            }
+
+            editSelectedSongButton.setEnabled(songTable.getSelectionModel().getMinSelectionIndex() != -1);
+        });
+
         setBorder(new EmptyBorder(8, 8, 8, 8));
 
         setScrollableTracksViewportWidth(true);
         setScrollableTracksViewportHeight(true);
+    }
+
+    private void editSelectedSong() {
+        // TODO
     }
 }

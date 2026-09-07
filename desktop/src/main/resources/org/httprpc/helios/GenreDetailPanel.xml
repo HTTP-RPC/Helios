@@ -9,9 +9,16 @@
             focusable="false"
             toolTipText="playAll"
             style="buttonType: borderless"/>
+
+        <spacer weight="1"/>
+
+        <button name="editSelectedSongButton" icon="icons/edit_24dp.svg; 18"
+            focusable="false"
+            toolTipText="editSelectedSong"
+            style="buttonType: borderless"/>
     </row-panel>
 
     <scroll-pane weight="1">
-        <table name="songTable"/>
+        <table name="songTable" rowSelectionMode="single-selection"/>
     </scroll-pane>
 </column-panel>
