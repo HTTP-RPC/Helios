@@ -40,16 +40,31 @@ drop view if exists Artist;
 
 create view Artist as select distinct artist as name from Song;
 
-drop view if exists Album;
+drop view if exists ArtistAlbum;
 
-create view Album as select distinct artist, album as name from Song;
+create view ArtistAlbum as select distinct artist, album as name from Song;
 
 drop view if exists ExpandedArtist;
 
 create view ExpandedArtist as select name,
-    (select count(*) from Album where artist = Artist.name) as albumCount,
+    (select count(*) from ArtistAlbum where artist = Artist.name) as albumCount,
     (select count(*) from Song where artist = Artist.name) as songCount
 from Artist;
+
+drop view if exists Genre;
+
+create view Genre as select distinct genre as name from Song;
+
+drop view if exists AlbumGenre;
+
+create view GenreAlbum as select distinct genre, album from Song;
+
+drop view if exists ExpandedGenre;
+
+create view ExpandedGenre as select name,
+    (select count(*) from GenreAlbum where genre = Genre.name) as albumCount,
+    (select count(*) from Song where genre = Genre.name) as songCount
+from Genre;
 
 drop view if exists ExpandedPlaylist;
 

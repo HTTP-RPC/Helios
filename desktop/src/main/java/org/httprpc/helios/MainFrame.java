@@ -128,6 +128,23 @@ public class MainFrame extends JFrame implements Runnable {
         }
     }
 
+    private static class GenreCellRenderer extends CollectionCellRenderer<ExpandedGenre> {
+        @Override
+        protected String getName(ExpandedGenre value) {
+            return value.getName();
+        }
+
+        @Override
+        protected String getCountText(ExpandedGenre value) {
+            var albumCount = coalesce(value.getAlbumCount(), () -> 0);
+            var songCount = coalesce(value.getSongCount(), () -> 0);
+
+            return String.format(resourceBundle.getString("countFormat"),
+                String.format(resourceBundle.getString(albumCount == 1 ? "singleArtistFormat" : "multipleArtistFormat"), albumCount),
+                String.format(resourceBundle.getString(songCount == 1 ? "singleSongFormat" : "multipleSongFormat"), songCount));
+        }
+    }
+
     private static class PlaylistCellRenderer extends CollectionCellRenderer<ExpandedPlaylist> {
         @Override
         protected String getName(ExpandedPlaylist value) {
@@ -182,6 +199,9 @@ public class MainFrame extends JFrame implements Runnable {
     private @Outlet JScrollPane artistScrollPane = null;
     private @Outlet JList<ExpandedArtist> artistList = null;
 
+    private @Outlet JScrollPane genreScrollPane = null;
+    private @Outlet JList<ExpandedGenre> genreList = null;
+
     private @Outlet JScrollPane playlistScrollPane = null;
     private @Outlet JList<ExpandedPlaylist> playlistList = null;
 
@@ -223,7 +243,8 @@ public class MainFrame extends JFrame implements Runnable {
     private static final String SIZE_HEIGHT_KEY = "sizeHeight";
 
     private static final int ARTIST_TAB_INDEX = 0;
-    private static final int PLAYLIST_TAB_INDEX = 1;
+    private static final int GENRE_TAB_INDEX = 1;
+    private static final int PLAYLIST_TAB_INDEX = 2;
 
     private static final Path rootDirectory = Path.of(System.getProperty("user.home"), ".helios");
     private static final Path dbFile = rootDirectory.resolve("music.db");
@@ -410,6 +431,21 @@ public class MainFrame extends JFrame implements Runnable {
             }
         });
 
+        genreScrollPane.setBorder(null);
+
+        genreList.setCellRenderer(new GenreCellRenderer());
+        genreList.setSelectionModel(new CollectionListSelectionModel());
+
+        genreList.addListSelectionListener(event -> {
+            if (event.getValueIsAdjusting()) {
+                return;
+            }
+
+            if (collectionTabbedPane.getSelectedIndex() == GENRE_TAB_INDEX) {
+                showSelectedCollection();
+            }
+        });
+
         playlistScrollPane.setBorder(null);
 
         playlistList.setCellRenderer(new PlaylistCellRenderer());
@@ -542,6 +578,31 @@ public class MainFrame extends JFrame implements Runnable {
                 artistList.setSelectedIndex(indexOf(artists, whereEqualTo(Artist::getName, selectedArtistName)));
             } else {
                 artistList.setSelectedIndex(0);
+            }
+        }
+    }
+
+    public void loadGenres() {
+        var queryBuilder = QueryBuilder.select(ExpandedGenre.class).ordered(true);
+
+        List<ExpandedGenre> genres;
+        try (var connection = openConnection();
+            var statement = queryBuilder.prepare(connection);
+            var results = queryBuilder.executeQuery(statement)) {
+            genres = listOf(mapAll(results, BeanAdapter.toType(ExpandedGenre.class)));
+        } catch (SQLException exception) {
+            throw new RuntimeException(exception);
+        }
+
+        var selectedGenreName = map(genreList.getSelectedValue(), Genre::getName);
+
+        genreList.setModel(new BasicListModel<>(genres));
+
+        if (!genres.isEmpty()) {
+            if (selectedGenreName != null) {
+                genreList.setSelectedIndex(indexOf(genres, whereEqualTo(Genre::getName, selectedGenreName)));
+            } else {
+                genreList.setSelectedIndex(0);
             }
         }
     }
@@ -736,6 +797,7 @@ public class MainFrame extends JFrame implements Runnable {
     private void showSelectedCollection() {
         var collectionDetailPanel = switch (collectionTabbedPane.getSelectedIndex()) {
             case ARTIST_TAB_INDEX -> map(artistList.getSelectedValue(), artist -> new ArtistDetailPanel(artist, getAlbums(artist)));
+            case GENRE_TAB_INDEX -> map(genreList.getSelectedValue(), genre -> new GenreDetailPanel(genre, getAlbums(genre))); // TODO
             case PLAYLIST_TAB_INDEX -> map(playlistList.getSelectedValue(), playlist -> new PlaylistDetailPanel(playlist, getSongs(playlist)));
             default -> throw new UnsupportedOperationException();
         };
@@ -755,6 +817,11 @@ public class MainFrame extends JFrame implements Runnable {
         } catch (SQLException exception) {
             throw new RuntimeException(exception);
         }
+    }
+
+    private Map<String, List<?>> getAlbums(Genre genre) {
+        // TODO
+        return (Map<String, List<?>>)listOf();
     }
 
     private List<Song> getSongs(Playlist playlist) {
