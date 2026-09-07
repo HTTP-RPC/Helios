@@ -60,9 +60,13 @@ public class MusicBrainz {
         var artistID = map(getArtist(artist), Artist::getID);
 
         if (artistID != null) {
+            System.out.println(String.format("...got artist ID %s", artistID));
+
             var releaseID = map(getRelease(artistID, album), Release::getID);
 
             if (releaseID != null) {
+                System.out.println(String.format("...got release ID %s", releaseID));
+
                 return getArtwork(releaseID);
             }
         }
