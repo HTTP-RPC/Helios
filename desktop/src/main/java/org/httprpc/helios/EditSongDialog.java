@@ -241,6 +241,7 @@ public class EditSongDialog extends ModalDialog {
         try {
             tag.setField(FieldKey.ARTIST, artist);
             tag.setField(FieldKey.ALBUM, album);
+            tag.setField(FieldKey.TITLE, title);
 
             tag.setField(FieldKey.GENRE, genre);
             tag.setField(FieldKey.YEAR, map(year, Object::toString));
@@ -249,6 +250,8 @@ public class EditSongDialog extends ModalDialog {
             tag.setField(FieldKey.TRACK_TOTAL, map(trackCount, Object::toString));
             tag.setField(FieldKey.DISC_NO, map(discNumber, Object::toString));
             tag.setField(FieldKey.DISC_TOTAL, map(discCount, Object::toString));
+
+            tag.setField(FieldKey.IS_COMPILATION, map(compilation, Object::toString));
         } catch (FieldDataInvalidException exception) {
             throw new RuntimeException(exception);
         }
