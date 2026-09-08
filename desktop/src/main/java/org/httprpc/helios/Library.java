@@ -7,13 +7,25 @@ import org.httprpc.kilo.WebServiceProxy;
 import org.httprpc.kilo.beans.BeanAdapter;
 import org.httprpc.kilo.io.TextDecoder;
 import org.httprpc.kilo.sql.QueryBuilder;
+import org.jaudiotagger.audio.AudioFile;
+import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.audio.exceptions.CannotReadException;
+import org.jaudiotagger.audio.exceptions.CannotWriteException;
+import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
+import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
+import org.jaudiotagger.tag.FieldDataInvalidException;
+import org.jaudiotagger.tag.FieldKey;
+import org.jaudiotagger.tag.TagException;
+import org.sqlite.SQLiteErrorCode;
 
 import javax.imageio.ImageIO;
+import javax.swing.UIManager;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -215,6 +227,20 @@ public class Library {
         }
     }
 
+    public static List<String> getGenreSuggestions() {
+        var queryBuilder = new QueryBuilder();
+
+        queryBuilder.append("select distinct genre from Song where genre is not null");
+
+        try (var connection = Library.openConnection();
+            var statement = queryBuilder.prepare(connection);
+            var results = queryBuilder.executeQuery(statement)) {
+            return listOf(mapAll(results, result -> (String)result.get("genre")));
+        } catch (SQLException exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+
     public static List<Song> findSongs(String text) {
         text = text.strip();
 
@@ -233,6 +259,121 @@ public class Library {
                 .thenComparing(Song::getAlbum)
                 .thenComparing(Song::getArtist));
         } catch (SQLException exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+
+    public static void updateSong(Song song, Song previousSong) {
+        var queryBuilder = QueryBuilder.update(Song.class).filterByPrimaryKey("id");
+
+        try (var connection = Library.openConnection();
+            var statement = queryBuilder.prepare(connection)) {
+            queryBuilder.executeUpdate(statement, new BeanAdapter(song));
+        } catch (SQLException exception) {
+            if (SQLiteErrorCode.getErrorCode(exception.getErrorCode()) == SQLiteErrorCode.SQLITE_CONSTRAINT) {
+                UIManager.getLookAndFeel().provideErrorFeedback(null);
+
+                return;
+            }
+
+            throw new RuntimeException(exception);
+        }
+
+        var contentPath = Library.getContentPath(song);
+        var previousContentPath = Library.getContentPath(previousSong);
+
+        if (!contentPath.equals(previousContentPath)) {
+            try {
+                var albumContentPath = contentPath.getParent();
+
+                Files.createDirectories(albumContentPath);
+
+                var temporaryContentPath = albumContentPath.resolve(String.format("%s.tmp", Library.escape(song.getTitle())));
+
+                Files.copy(previousContentPath, temporaryContentPath, StandardCopyOption.REPLACE_EXISTING);
+
+                Library.deleteSong(previousContentPath);
+
+                Files.move(temporaryContentPath, contentPath, StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException exception) {
+                throw new RuntimeException(exception);
+            }
+        }
+
+        AudioFile audioFile;
+        try {
+            try {
+                audioFile = AudioFileIO.read(contentPath.toFile());
+            } catch (CannotReadException | TagException | InvalidAudioFrameException | ReadOnlyFileException exception) {
+                throw new IOException(exception);
+            }
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
+        }
+
+        var tag = audioFile.getTag();
+
+        try {
+            tag.setField(FieldKey.ARTIST, song.getArtist());
+            tag.setField(FieldKey.ALBUM, song.getAlbum());
+            tag.setField(FieldKey.TITLE, song.getTitle());
+
+            var genre = song.getGenre();
+
+            if (genre != null) {
+                tag.setField(FieldKey.GENRE, genre);
+            } else {
+                tag.deleteField(FieldKey.GENRE);
+            }
+
+            var year = song.getYear();
+
+            if (year != null) {
+                tag.setField(FieldKey.YEAR, map(year, Object::toString));
+            } else {
+                tag.deleteField(FieldKey.YEAR);
+            }
+
+            var trackNumber = song.getTrackNumber();
+
+            if (trackNumber != null) {
+                tag.setField(FieldKey.TRACK, map(trackNumber, Object::toString));
+            } else {
+                tag.deleteField(FieldKey.TRACK);
+            }
+
+            var trackCount = song.getTrackCount();
+
+            if (trackCount != null) {
+                tag.setField(FieldKey.TRACK_TOTAL, map(trackCount, Object::toString));
+            } else {
+                tag.deleteField(FieldKey.TRACK_TOTAL);
+            }
+
+            var discNumber = song.getDiscNumber();
+
+            if (discNumber != null) {
+                tag.setField(FieldKey.DISC_NO, map(discNumber, Object::toString));
+            } else {
+                tag.deleteField(FieldKey.DISC_NO);
+            }
+
+            var discCount = song.getDiscCount();
+
+            if (discCount != null) {
+                tag.setField(FieldKey.DISC_TOTAL, map(discCount, Object::toString));
+            } else {
+                tag.deleteField(FieldKey.DISC_TOTAL);
+            }
+
+            tag.setField(FieldKey.IS_COMPILATION, String.valueOf(song.isCompilation() ? 1 : 0));
+        } catch (FieldDataInvalidException exception) {
+            throw new RuntimeException(exception);
+        }
+
+        try {
+            AudioFileIO.write(audioFile);
+        } catch (CannotWriteException exception) {
             throw new RuntimeException(exception);
         }
     }
