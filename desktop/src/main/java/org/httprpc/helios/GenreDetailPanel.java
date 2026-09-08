@@ -72,6 +72,13 @@ public class GenreDetailPanel extends StackPanel {
 
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(GenreDetailPanel.class.getName());
 
+    private static final FlatSVGIcon playlistIcon;
+    static {
+        playlistIcon = new FlatSVGIcon(GenreDetailPanel.class.getResource("icons/music_note_24dp.svg")).derive(18, 18);
+
+        playlistIcon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> UIManager.getColor("Button.foreground")));
+    }
+
     public GenreDetailPanel(Genre genre, List<Song> songs) {
         add(UILoader.load(this, "GenreDetailPanel.xml", resourceBundle));
 
@@ -122,10 +129,6 @@ public class GenreDetailPanel extends StackPanel {
             var playlists = MainFrame.getInstance().getPlaylists();
 
             if (!playlists.isEmpty()) {
-                var playlistIcon = new FlatSVGIcon(SongDetailPanel.class.getResource("icons/music_note_24dp.svg")).derive(18, 18);
-
-                playlistIcon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> UIManager.getColor("Button.foreground")));
-
                 for (var playlist : playlists) {
                     var menuItem = new JMenuItem(playlist.getName(), playlistIcon);
 
