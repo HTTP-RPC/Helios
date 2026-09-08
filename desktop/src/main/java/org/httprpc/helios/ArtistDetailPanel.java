@@ -38,7 +38,7 @@ public class ArtistDetailPanel extends StackPanel {
             var name = entry.getKey();
             var songs = entry.getValue();
 
-            songs.sort(Comparator.comparing(song -> coalesce(song.getTrackNumber(), () -> 0)));
+            songs.sort(Comparator.comparing(song -> coalesce(song.getTrackNumber(), () -> Integer.MAX_VALUE)));
 
             var albumDetailPanel = new AlbumDetailPanel(artist, name, songs);
 

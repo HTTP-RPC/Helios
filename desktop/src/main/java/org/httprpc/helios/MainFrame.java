@@ -912,7 +912,7 @@ public class MainFrame extends JFrame implements Runnable {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("artist", artist.getName())
             ))) {
-            return groupBy(filter(mapAll(results, BeanAdapter.toType(Song.class)), whereFalse(Song::isCompilation)), Song::getAlbum);
+            return groupBy(mapAll(results, BeanAdapter.toType(Song.class)), Song::getAlbum);
         } catch (SQLException exception) {
             throw new RuntimeException(exception);
         }
