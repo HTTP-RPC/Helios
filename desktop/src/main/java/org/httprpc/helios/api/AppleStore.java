@@ -76,9 +76,9 @@ public class AppleStore {
         var results = BeanAdapter.coerce(webServiceProxy.invoke(), Response.class).getResults();
 
         return firstOf(filter(results, result -> {
-            var collectionName = result.getCollectionName();
+            var collectionName = map(result.getCollectionName(), String::toLowerCase);
 
-            return collectionName != null && collectionName.toLowerCase().startsWith(name);
+            return collectionName != null && (collectionName.startsWith(name) || name.startsWith(collectionName));
         }));
     }
 
