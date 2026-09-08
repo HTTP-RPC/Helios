@@ -55,43 +55,6 @@ public class SongDetailPanel extends StackPanel {
 
         addToPlaylistButton.setVisible(false);
 
-        var playlists = MainFrame.getInstance().getPlaylists();
-
-        if (!playlists.isEmpty()) {
-            var popupMenu = addToPlaylistButton.getComponentPopupMenu();
-
-            popupMenu.addPopupMenuListener(new PopupMenuListener() {
-                @Override
-                public void popupMenuWillBecomeVisible(PopupMenuEvent event) {
-                    // No-op
-                }
-
-                @Override
-                public void popupMenuWillBecomeInvisible(PopupMenuEvent event) {
-                    hideButtons();
-                }
-
-                @Override
-                public void popupMenuCanceled(PopupMenuEvent event) {
-                    // No-op
-                }
-            });
-
-            var playlistIcon = new FlatSVGIcon(SongDetailPanel.class.getResource("icons/music_note_24dp.svg")).derive(18, 18);
-
-            playlistIcon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> UIManager.getColor("Button.foreground")));
-
-            for (var playlist : playlists) {
-                var menuItem = new JMenuItem(playlist.getName(), playlistIcon);
-
-                menuItem.addActionListener(event -> addToPlaylist(playlist));
-
-                addToPlaylistButton.add(menuItem);
-            }
-        } else {
-            addToPlaylistButton.setEnabled(false);
-        }
-
         editSongButton.addActionListener(event -> editSong());
         editSongButton.setVisible(false);
 
@@ -223,7 +186,47 @@ public class SongDetailPanel extends StackPanel {
 
         playSongButton.setVisible(true);
 
+        var playlists = MainFrame.getInstance().getPlaylists();
+
+        if (!playlists.isEmpty()) {
+            var popupMenu = addToPlaylistButton.getComponentPopupMenu();
+
+            popupMenu.addPopupMenuListener(new PopupMenuListener() {
+                @Override
+                public void popupMenuWillBecomeVisible(PopupMenuEvent event) {
+                    // No-op
+                }
+
+                @Override
+                public void popupMenuWillBecomeInvisible(PopupMenuEvent event) {
+                    hideButtons();
+                }
+
+                @Override
+                public void popupMenuCanceled(PopupMenuEvent event) {
+                    // No-op
+                }
+            });
+
+            var playlistIcon = new FlatSVGIcon(SongDetailPanel.class.getResource("icons/music_note_24dp.svg")).derive(18, 18);
+
+            playlistIcon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> UIManager.getColor("Button.foreground")));
+
+            for (var playlist : playlists) {
+                var menuItem = new JMenuItem(playlist.getName(), playlistIcon);
+
+                menuItem.addActionListener(event -> addToPlaylist(playlist));
+
+                addToPlaylistButton.add(menuItem);
+            }
+
+            addToPlaylistButton.setEnabled(true);
+        } else {
+            addToPlaylistButton.setEnabled(false);
+        }
+
         addToPlaylistButton.setVisible(true);
+
         editSongButton.setVisible(true);
         deleteSongButton.setVisible(true);
     }
@@ -233,7 +236,10 @@ public class SongDetailPanel extends StackPanel {
 
         playSongButton.setVisible(false);
 
+        addToPlaylistButton.removeAll();
+
         addToPlaylistButton.setVisible(false);
+
         editSongButton.setVisible(false);
         deleteSongButton.setVisible(false);
     }
