@@ -174,6 +174,12 @@ public class ImportStatusPanel extends StackPanel {
             }
 
             try {
+                song.setSoundtrack(coalesce(map(tag.getFirst(FieldKey.IS_SOUNDTRACK), Integer::parseInt), () -> 0) > 0);
+            } catch (Exception exception) {
+                song.setSoundtrack(false);
+            }
+
+            try {
                 song.setCompilation(coalesce(map(tag.getFirst(FieldKey.IS_COMPILATION), Integer::parseInt), () -> 0) > 0);
             } catch (Exception exception) {
                 song.setCompilation(false);

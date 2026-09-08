@@ -27,6 +27,7 @@ public class Song {
     private Integer discNumber;
     private Integer discCount;
 
+    private Boolean soundtrack;
     private Boolean compilation;
     private Boolean classical;
 
@@ -141,6 +142,15 @@ public class Song {
 
     public void setDiscCount(Integer discCount) {
         this.discCount = discCount;
+    }
+
+    @Column("soundtrack")
+    public Boolean isSoundtrack() {
+        return soundtrack;
+    }
+
+    public void setSoundtrack(Boolean soundtrack) {
+        this.soundtrack = soundtrack;
     }
 
     @Column("compilation")

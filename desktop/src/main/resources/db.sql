@@ -12,6 +12,7 @@ create table Song (
     trackCount integer,
     discNumber integer,
     discCount integer,
+    soundtrack boolean not null,
     compilation boolean not null,
     classical boolean not null,
     composer text collate nocase,
@@ -20,7 +21,10 @@ create table Song (
 );
 
 create index idx_genre on Song(genre);
+
+create index idx_soundtrack on Song(soundtrack);
 create index idx_compilation on Song(compilation);
+create index idx_classical on Song(classical);
 
 drop table if exists Playlist;
 
@@ -42,11 +46,17 @@ create table PlaylistSong (
 
 drop view if exists Artist;
 
-create view Artist as select distinct artist as name from Song where compilation = false;
+create view Artist as select distinct artist as name from Song
+where soundtrack = false
+and compilation = false
+and classical = false;
 
 drop view if exists ArtistAlbum;
 
-create view ArtistAlbum as select distinct artist, album from Song where compilation = false;
+create view ArtistAlbum as select distinct artist, album from Song
+where soundtrack = false
+and compilation = false
+and classical = false;
 
 drop view if exists ExpandedArtist;
 

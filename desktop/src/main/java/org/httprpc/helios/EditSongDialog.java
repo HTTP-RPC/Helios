@@ -53,6 +53,7 @@ public class EditSongDialog extends ModalDialog {
     private @Outlet NumberField discNumberTextField = null;
     private @Outlet NumberField discCountTextField = null;
 
+    private @Outlet JCheckBox soundtrackCheckBox = null;
     private @Outlet JCheckBox compilationCheckBox = null;
     private @Outlet JCheckBox classicalCheckBox = null;
 
@@ -117,6 +118,7 @@ public class EditSongDialog extends ModalDialog {
         discNumberTextField.setValue(song.getDiscNumber());
         discCountTextField.setValue(song.getDiscCount());
 
+        soundtrackCheckBox.setSelected(song.isSoundtrack());
         compilationCheckBox.setSelected(song.isCompilation());
         classicalCheckBox.setSelected(song.isClassical());
 
@@ -169,6 +171,7 @@ public class EditSongDialog extends ModalDialog {
         var discNumber = map(discNumberTextField.getValue(), Number::intValue);
         var discCount = map(discCountTextField.getValue(), Number::intValue);
 
+        var soundtrack = soundtrackCheckBox.isSelected();
         var compilation = compilationCheckBox.isSelected();
         var classical = classicalCheckBox.isSelected();
 
@@ -196,6 +199,7 @@ public class EditSongDialog extends ModalDialog {
         song.setDiscNumber(discNumber);
         song.setDiscCount(discCount);
 
+        song.setSoundtrack(soundtrack);
         song.setCompilation(compilation);
         song.setClassical(classical);
 
@@ -296,6 +300,7 @@ public class EditSongDialog extends ModalDialog {
                 tag.deleteField(FieldKey.DISC_TOTAL);
             }
 
+            tag.setField(FieldKey.IS_SOUNDTRACK, String.valueOf(soundtrack ? 1 : 0));
             tag.setField(FieldKey.IS_COMPILATION, String.valueOf(compilation ? 1 : 0));
             tag.setField(FieldKey.IS_CLASSICAL, String.valueOf(classical ? 1 : 0));
 
