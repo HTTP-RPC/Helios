@@ -667,7 +667,9 @@ public class Library {
     }
 
     private static Path getContentPath(Song song) {
-        return getContentPath(song.getArtist(), song.getAlbum()).resolve(escape(song.getTitle()));
+        var fileName = String.format("%s.%s", song.getTitle(), song.getType());
+
+        return getContentPath(song.getArtist(), song.getAlbum()).resolve(escape(fileName));
     }
 
     private static Path getPath(String artist, String album) {
