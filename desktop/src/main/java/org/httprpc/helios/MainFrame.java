@@ -266,7 +266,7 @@ public class MainFrame extends JFrame implements Runnable {
     private static final Preferences preferences = Preferences.userRoot().node(MainFrame.class.getName());
 
     private static final Comparator<Song> genreComparator = Comparator.comparing(Song::getAlbum)
-        .thenComparing(Song::getArtist)
+        .thenComparing(song -> song.isCompilation() ? "" : song.getArtist())
         .thenComparing(song -> coalesce(song.getTrackNumber(), () -> 0));
 
     private static final Comparator<Song> playlistComparator = Comparator.comparing(Song::getArtist)
