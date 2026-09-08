@@ -9,15 +9,6 @@ import org.httprpc.sierra.RowPanel;
 import org.httprpc.sierra.StackPanel;
 import org.httprpc.sierra.TaskExecutor;
 import org.httprpc.sierra.UILoader;
-import org.jaudiotagger.audio.AudioFile;
-import org.jaudiotagger.audio.AudioFileIO;
-import org.jaudiotagger.audio.exceptions.CannotReadException;
-import org.jaudiotagger.audio.exceptions.CannotWriteException;
-import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
-import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
-import org.jaudiotagger.tag.FieldDataInvalidException;
-import org.jaudiotagger.tag.TagException;
-import org.jaudiotagger.tag.images.StandardArtwork;
 
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
@@ -33,11 +24,10 @@ import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
@@ -45,7 +35,6 @@ import java.util.concurrent.Executors;
 public class AlbumDetailPanel extends StackPanel {
     private Artist artist;
     private String name;
-    private List<Song> songs;
 
     private @Outlet JLabel nameLabel = null;
     private @Outlet JButton playAlbumButton = null;
@@ -77,7 +66,6 @@ public class AlbumDetailPanel extends StackPanel {
     public AlbumDetailPanel(Artist artist, String name, List<Song> songs) {
         this.artist = artist;
         this.name = name;
-        this.songs = songs;
 
         add(UILoader.load(this, "AlbumDetailPanel.xml", resourceBundle));
 
@@ -185,16 +173,7 @@ public class AlbumDetailPanel extends StackPanel {
         var result = fileChooser.showOpenDialog(getTopLevelAncestor());
 
         if (result == JFileChooser.APPROVE_OPTION) {
-            var path = fileChooser.getSelectedFile().toPath();
-
-            BufferedImage artwork;
-            try (var inputStream = Files.newInputStream(path)) {
-                artwork = ImageIO.read(inputStream);
-            } catch (IOException exception) {
-                artwork = null;
-            }
-
-            updateArtwork(artwork);
+            updateArtwork(fileChooser.getSelectedFile().toPath());
         }
     }
 
@@ -210,77 +189,28 @@ public class AlbumDetailPanel extends StackPanel {
         }
     }
 
-    private void updateArtwork(BufferedImage artwork) {
+    private void updateArtwork(Path path) {
+        BufferedImage artwork;
+        if (path != null) {
+            try (var inputStream = Files.newInputStream(path)) {
+                artwork = ImageIO.read(inputStream);
+            } catch (IOException exception) {
+                throw new RuntimeException(exception);
+            }
+        } else {
+            artwork = null;
+        }
+
         artworkImagePane.setImage(artwork);
 
         editArtworkButton.setEnabled(false);
         deleteArtworkButton.setEnabled(false);
 
         taskExecutor.execute(() -> {
-            byte[] binaryData;
             if (artwork != null) {
-                var artworkPath = Library.getArtworkPath(artist.getName(), name);
-
-                try (var outputStream = Files.newOutputStream(artworkPath,
-                    StandardOpenOption.CREATE,
-                    StandardOpenOption.TRUNCATE_EXISTING)) {
-                    ImageIO.write(artwork, "jpeg", outputStream);
-                } catch (IOException exception) {
-                    throw new RuntimeException(exception);
-                }
-
-                try (var outputStream = new ByteArrayOutputStream()) {
-                    ImageIO.write(artwork, "jpeg", outputStream);
-
-                    binaryData = outputStream.toByteArray();
-                } catch (IOException exception) {
-                    throw new RuntimeException(exception);
-                }
+                Library.updateAlbumArtwork(artist.getName(), name, artwork);
             } else {
-                try {
-                    Files.deleteIfExists(Library.getArtworkPath(artist.getName(), name));
-                } catch (IOException exception) {
-                    throw new RuntimeException(exception);
-                }
-
-                binaryData = null;
-            }
-
-            for (var song : songs) {
-                var contentPath = Library.getContentPath(song);
-
-                try {
-                    AudioFile audioFile;
-                    try {
-                        audioFile = AudioFileIO.read(contentPath.toFile());
-                    } catch (CannotReadException | TagException | InvalidAudioFrameException | ReadOnlyFileException exception) {
-                        throw new IOException(exception);
-                    }
-
-                    var tag = audioFile.getTag();
-
-                    if (artwork != null) {
-                        var artworkField = new StandardArtwork();
-
-                        artworkField.setBinaryData(binaryData);
-
-                        try {
-                            tag.setField(artworkField);
-                        } catch (FieldDataInvalidException exception) {
-                            throw new IOException(exception);
-                        }
-                    } else {
-                        tag.deleteArtworkField();
-                    }
-
-                    try {
-                        AudioFileIO.write(audioFile);
-                    } catch (CannotWriteException exception) {
-                        throw new RuntimeException(exception);
-                    }
-                } catch (IOException exception) {
-                    throw new RuntimeException(exception);
-                }
+                Library.deleteAlbumArtwork(artist.getName(), name);
             }
 
             return null;

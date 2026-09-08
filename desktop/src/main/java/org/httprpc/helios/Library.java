@@ -16,12 +16,14 @@ import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.tag.FieldDataInvalidException;
 import org.jaudiotagger.tag.FieldKey;
 import org.jaudiotagger.tag.TagException;
+import org.jaudiotagger.tag.images.StandardArtwork;
 import org.sqlite.SQLiteErrorCode;
 
 import javax.imageio.ImageIO;
 import javax.swing.UIManager;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -257,7 +259,7 @@ public class Library {
 
         queryBuilder.append("select distinct genre from Song where genre is not null");
 
-        try (var connection = Library.openConnection();
+        try (var connection = openConnection();
             var statement = queryBuilder.prepare(connection);
             var results = queryBuilder.executeQuery(statement)) {
             return listOf(mapAll(results, result -> (String)result.get("genre")));
@@ -275,7 +277,7 @@ public class Library {
 
         var queryBuilder = QueryBuilder.select(Song.class).filterByIndexLike("title");
 
-        try (var connection = Library.openConnection();
+        try (var connection = openConnection();
             var statement = queryBuilder.prepare(connection);
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("title", String.format("%%%s%%", text))
@@ -408,19 +410,19 @@ public class Library {
 
             var queryBuilder = QueryBuilder.insert(Song.class).onConflictDoUpdate();
 
-            try (var connection = Library.openConnection();
+            try (var connection = openConnection();
                 var statement = queryBuilder.prepare(connection)) {
                 queryBuilder.executeUpdate(statement, new BeanAdapter(song));
             } catch (SQLException exception) {
                 throw new RuntimeException(exception);
             }
 
-            var contentPath = Library.getContentPath(song);
+            var contentPath = getContentPath(song);
 
             Files.createDirectories(contentPath.getParent());
             Files.copy(path, contentPath, StandardCopyOption.REPLACE_EXISTING);
 
-            var artworkPath = Library.getArtworkPath(artist, album);
+            var artworkPath = getArtworkPath(artist, album);
 
             if (!Files.exists(artworkPath, LinkOption.NOFOLLOW_LINKS)) {
                 var artwork = tag.getFirstArtwork();
@@ -444,7 +446,7 @@ public class Library {
     public static void updateSong(Song song, Song previousSong) {
         var queryBuilder = QueryBuilder.update(Song.class).filterByPrimaryKey("id");
 
-        try (var connection = Library.openConnection();
+        try (var connection = openConnection();
             var statement = queryBuilder.prepare(connection)) {
             queryBuilder.executeUpdate(statement, new BeanAdapter(song));
         } catch (SQLException exception) {
@@ -457,8 +459,8 @@ public class Library {
             throw new RuntimeException(exception);
         }
 
-        var contentPath = Library.getContentPath(song);
-        var previousContentPath = Library.getContentPath(previousSong);
+        var contentPath = getContentPath(song);
+        var previousContentPath = getContentPath(previousSong);
 
         if (!contentPath.equals(previousContentPath)) {
             try {
@@ -466,11 +468,11 @@ public class Library {
 
                 Files.createDirectories(albumContentPath);
 
-                var temporaryContentPath = albumContentPath.resolve(String.format("%s.tmp", Library.escape(song.getTitle())));
+                var temporaryContentPath = albumContentPath.resolve(String.format("%s.tmp", escape(song.getTitle())));
 
                 Files.copy(previousContentPath, temporaryContentPath, StandardCopyOption.REPLACE_EXISTING);
 
-                Library.deleteSong(previousContentPath);
+                deleteSong(previousContentPath);
 
                 Files.move(temporaryContentPath, contentPath, StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException exception) {
@@ -559,7 +561,7 @@ public class Library {
     public static void deleteSong(Song song) {
         var queryBuilder = QueryBuilder.delete(Song.class).filterByPrimaryKey("id");
 
-        try (var connection = Library.openConnection();
+        try (var connection = openConnection();
             var statement = queryBuilder.prepare(connection)) {
             queryBuilder.executeUpdate(statement, mapOf(
                 entry("id", song.getID())
@@ -568,13 +570,13 @@ public class Library {
             throw new RuntimeException(exception);
         }
 
-        deleteSong(Library.getContentPath(song));
+        deleteSong(getContentPath(song));
     }
 
     public static boolean addPlaylist(Playlist playlist) {
         var queryBuilder = QueryBuilder.insert(Playlist.class);
 
-        try (var connection = Library.openConnection();
+        try (var connection = openConnection();
             var statement = queryBuilder.prepare(connection)) {
             queryBuilder.executeUpdate(statement, new BeanAdapter(playlist));
         } catch (SQLException exception) {
@@ -591,7 +593,7 @@ public class Library {
     public static boolean updatePlaylist(Playlist playlist) {
         var queryBuilder = QueryBuilder.update(Playlist.class).filterByPrimaryKey("id");
 
-        try (var connection = Library.openConnection();
+        try (var connection = openConnection();
             var statement = queryBuilder.prepare(connection)) {
             queryBuilder.executeUpdate(statement, new BeanAdapter(playlist));
         } catch (SQLException exception) {
@@ -608,7 +610,7 @@ public class Library {
     public static void deletePlaylist(Playlist playlist) {
         var queryBuilder = QueryBuilder.delete(Playlist.class).filterByPrimaryKey("id");
 
-        try (var connection = Library.openConnection();
+        try (var connection = openConnection();
             var statement = queryBuilder.prepare(connection)) {
             queryBuilder.executeUpdate(statement, mapOf(
                 entry("id", playlist.getID())
@@ -621,7 +623,7 @@ public class Library {
     public static void addToPlaylist(Playlist playlist, Song song) {
         var queryBuilder = QueryBuilder.insert(PlaylistSong.class);
 
-        try (var connection = Library.openConnection();
+        try (var connection = openConnection();
             var statement = queryBuilder.prepare(connection)) {
             queryBuilder.executeUpdate(statement, mapOf(
                 entry("playlistID", playlist.getID()),
@@ -639,7 +641,7 @@ public class Library {
             .filterByForeignKey(Playlist.class, "playlistID")
             .filterByForeignKey(Song.class, "songID");
 
-        try (var connection = Library.openConnection();
+        try (var connection = openConnection();
             var statement = queryBuilder.prepare(connection)) {
             var playlistID = playlist.getID();
 
@@ -657,16 +659,18 @@ public class Library {
     }
 
     public static Path getArtworkPath(String artist, String album) {
-        return getAlbumPath(artist, album).resolve("artwork.jpg");
+        return getPath(artist, album).resolve("artwork.jpg");
     }
 
-    public static Path getContentPath(Song song) {
-        var fileName = String.format("%s.%s", song.getTitle(), song.getType());
-
-        return getAlbumPath(song.getArtist(), song.getAlbum()).resolve("content").resolve(escape(fileName));
+    private static Path getContentPath(String artist, String album) {
+        return getPath(artist, album).resolve("content");
     }
 
-    private static Path getAlbumPath(String artist, String album) {
+    private static Path getContentPath(Song song) {
+        return getContentPath(song.getArtist(), song.getAlbum()).resolve(escape(song.getTitle()));
+    }
+
+    private static Path getPath(String artist, String album) {
         return rootDirectory.resolve("music").resolve(escape(artist)).resolve(escape(album));
     }
 
@@ -787,6 +791,97 @@ public class Library {
                     }
                 }
             }
+        }
+    }
+
+    public static void updateAlbumArtwork(String artist, String album, BufferedImage artwork) {
+        var artworkPath = getArtworkPath(artist, album);
+
+        try (var outputStream = Files.newOutputStream(artworkPath,
+            StandardOpenOption.CREATE,
+            StandardOpenOption.TRUNCATE_EXISTING)) {
+            ImageIO.write(artwork, "jpeg", outputStream);
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
+        }
+
+        byte[] binaryData;
+        try (var outputStream = new ByteArrayOutputStream()) {
+            ImageIO.write(artwork, "jpeg", outputStream);
+
+            binaryData = outputStream.toByteArray();
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
+        }
+
+        try (var contentPaths = Files.list(getContentPath(artist, album))) {
+            for (var contentPath : iterableOf(contentPaths)) {
+                try {
+                    AudioFile audioFile;
+                    try {
+                        audioFile = AudioFileIO.read(contentPath.toFile());
+                    } catch (CannotReadException | TagException | InvalidAudioFrameException | ReadOnlyFileException exception) {
+                        throw new IOException(exception);
+                    }
+
+                    var tag = audioFile.getTag();
+
+                    var artworkField = new StandardArtwork();
+
+                    artworkField.setBinaryData(binaryData);
+
+                    try {
+                        tag.setField(artworkField);
+                    } catch (FieldDataInvalidException exception) {
+                        throw new IOException(exception);
+                    }
+
+                    try {
+                        AudioFileIO.write(audioFile);
+                    } catch (CannotWriteException exception) {
+                        throw new RuntimeException(exception);
+                    }
+                } catch (IOException exception) {
+                    throw new RuntimeException(exception);
+                }
+            }
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+
+    public static void deleteAlbumArtwork(String artist, String album) {
+        try {
+            Files.deleteIfExists(getArtworkPath(artist, album));
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
+        }
+
+        try (var contentPaths = Files.list(getContentPath(artist, album))) {
+            for (var contentPath : iterableOf(contentPaths)) {
+                try {
+                    AudioFile audioFile;
+                    try {
+                        audioFile = AudioFileIO.read(contentPath.toFile());
+                    } catch (CannotReadException | TagException | InvalidAudioFrameException | ReadOnlyFileException exception) {
+                        throw new IOException(exception);
+                    }
+
+                    var tag = audioFile.getTag();
+
+                    tag.deleteArtworkField();
+
+                    try {
+                        AudioFileIO.write(audioFile);
+                    } catch (CannotWriteException exception) {
+                        throw new RuntimeException(exception);
+                    }
+                } catch (IOException exception) {
+                    throw new RuntimeException(exception);
+                }
+            }
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
         }
     }
 }
