@@ -149,34 +149,62 @@ public class ImportStatusPanel extends StackPanel {
                 }
             }
 
-            try {
-                song.setTrackNumber(map(tag.getFirst(FieldKey.TRACK), Integer::parseInt));
-            } catch (Exception exception) {
-                // No-op
+            var trackNumber = map(tag.getFirst(FieldKey.TRACK), String::strip);
+
+            if (trackNumber != null) {
+                try {
+                    song.setTrackNumber(Integer.parseInt(trackNumber));
+                } catch (Exception exception) {
+                    // No-op
+                }
             }
 
-            try {
-                song.setTrackCount(map(tag.getFirst(FieldKey.TRACK_TOTAL), Integer::parseInt));
-            } catch (Exception exception) {
-                // No-op
+            var trackCount = map(tag.getFirst(FieldKey.TRACK_TOTAL), String::strip);
+
+            if (trackCount != null) {
+                try {
+                    song.setTrackCount(Integer.parseInt(trackCount));
+                } catch (Exception exception) {
+                    // No-op
+                }
             }
 
-            try {
-                song.setDiscNumber(map(tag.getFirst(FieldKey.DISC_NO), Integer::parseInt));
-            } catch (Exception exception) {
-                // No-op
+            var discNumber = map(tag.getFirst(FieldKey.DISC_NO), String::strip);
+
+            if (discNumber != null) {
+                try {
+                    song.setDiscNumber(Integer.parseInt(discNumber));
+                } catch (Exception exception) {
+                    // No-op
+                }
             }
 
-            try {
-                song.setDiscCount(map(tag.getFirst(FieldKey.DISC_TOTAL), Integer::parseInt));
-            } catch (Exception exception) {
-                // No-op
+            var discCount = map(tag.getFirst(FieldKey.DISC_TOTAL), String::strip);
+
+            if (discCount != null) {
+                try {
+                    song.setDiscCount(Integer.parseInt(discCount));
+                } catch (Exception exception) {
+                    // No-op
+                }
             }
 
-            try {
-                song.setCompilation(coalesce(map(tag.getFirst(FieldKey.IS_COMPILATION), Integer::parseInt), () -> 0) > 0);
-            } catch (Exception exception) {
+            var compilation = map(tag.getFirst(FieldKey.IS_COMPILATION), String::strip);
+
+            if (compilation != null) {
+                try {
+                    song.setCompilation(Integer.parseInt(compilation) > 0);
+                } catch (Exception exception) {
+                    // No-op
+                }
+            }
+
+            if (song.isCompilation() == null) {
                 song.setCompilation(false);
+            }
+
+            if (song.isCompilation() && song.getGenre() == null) {
+                return;
             }
 
             var type = audioFile.getExt();

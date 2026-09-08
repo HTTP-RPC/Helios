@@ -55,11 +55,13 @@ from Artist;
 
 drop view if exists Genre;
 
-create view Genre as select distinct genre as name from Song;
+create view Genre as select distinct genre as name from Song
+where genre is not null;
 
 drop view if exists GenreArtist;
 
-create view GenreArtist as select distinct genre, artist from Song;
+create view GenreArtist as select distinct genre, artist from Song
+where genre is not null;
 
 drop view if exists ExpandedGenre;
 

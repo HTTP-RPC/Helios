@@ -120,7 +120,7 @@ public class EditSongDialog extends ModalDialog {
     private List<String> getGenreSuggestions() {
         var queryBuilder = new QueryBuilder();
 
-        queryBuilder.append("select distinct genre from Song");
+        queryBuilder.append("select distinct genre from Song where genre is not null");
 
         try (var connection = MainFrame.openConnection();
             var statement = queryBuilder.prepare(connection);
@@ -164,6 +164,11 @@ public class EditSongDialog extends ModalDialog {
         var discCount = map(discCountTextField.getValue(), Number::intValue);
 
         var compilation = compilationCheckBox.isSelected();
+
+        if (compilation && genre.isEmpty()) {
+            alertRequired("genre", genreSuggestionPicker);
+            return;
+        }
 
         var song = new Song();
 
