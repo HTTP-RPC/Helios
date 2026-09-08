@@ -609,13 +609,13 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     public void loadArtists() {
-        var queryBuilder = QueryBuilder.select(ExpandedArtist.class).ordered(true);
+        var queryBuilder = QueryBuilder.select(ExpandedArtist.class);
 
         List<ExpandedArtist> artists;
         try (var connection = openConnection();
             var statement = queryBuilder.prepare(connection);
             var results = queryBuilder.executeQuery(statement)) {
-            artists = listOf(mapAll(results, BeanAdapter.toType(ExpandedArtist.class)));
+            artists = sortBy(mapAll(results, BeanAdapter.toType(ExpandedArtist.class)), Artist::getSortableName);
         } catch (SQLException exception) {
             throw new RuntimeException(exception);
         }
@@ -634,13 +634,13 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     public void loadGenres() {
-        var queryBuilder = QueryBuilder.select(ExpandedGenre.class).ordered(true);
+        var queryBuilder = QueryBuilder.select(ExpandedGenre.class);
 
         List<ExpandedGenre> genres;
         try (var connection = openConnection();
             var statement = queryBuilder.prepare(connection);
             var results = queryBuilder.executeQuery(statement)) {
-            genres = listOf(mapAll(results, BeanAdapter.toType(ExpandedGenre.class)));
+            genres = sortBy(mapAll(results, BeanAdapter.toType(ExpandedGenre.class)), Genre::getSortableName);
         } catch (SQLException exception) {
             throw new RuntimeException(exception);
         }
@@ -659,12 +659,12 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     public void loadPlaylists() {
-        var queryBuilder = QueryBuilder.select(ExpandedPlaylist.class).ordered(true);
+        var queryBuilder = QueryBuilder.select(ExpandedPlaylist.class);
 
         try (var connection = openConnection();
             var statement = queryBuilder.prepare(connection);
             var results = queryBuilder.executeQuery(statement)) {
-            playlists = listOf(mapAll(results, BeanAdapter.toType(ExpandedPlaylist.class)));
+            playlists = sortBy(mapAll(results, BeanAdapter.toType(ExpandedPlaylist.class)), Playlist::getSortableName);
         } catch (SQLException exception) {
             throw new RuntimeException(exception);
         }
@@ -905,21 +905,21 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     private Map<String, List<Song>> getAlbums(Artist artist) {
-        var queryBuilder = QueryBuilder.select(Song.class).filterByForeignKey(Artist.class, "artist").ordered(true);
+        var queryBuilder = QueryBuilder.select(Song.class).filterByForeignKey(Artist.class, "artist");
 
         try (var connection = MainFrame.openConnection();
             var statement = queryBuilder.prepare(connection);
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("artist", artist.getName())
             ))) {
-            return groupBy(mapAll(results, BeanAdapter.toType(Song.class)), Song::getAlbum);
+            return groupBy(sortBy(mapAll(results, BeanAdapter.toType(Song.class)), Song::getSortableAlbum), Song::getAlbum);
         } catch (SQLException exception) {
             throw new RuntimeException(exception);
         }
     }
 
     private List<Song> getSongs(Genre genre) {
-        var queryBuilder = QueryBuilder.select(Song.class).filterByForeignKey(Genre.class, "genre").ordered(true);
+        var queryBuilder = QueryBuilder.select(Song.class).filterByForeignKey(Genre.class, "genre");
 
         try (var connection = MainFrame.openConnection();
             var statement = queryBuilder.prepare(connection);
@@ -935,15 +935,14 @@ public class MainFrame extends JFrame implements Runnable {
     private List<Song> getSongs(Playlist playlist) {
         var queryBuilder = QueryBuilder.select(Song.class)
             .join(PlaylistSong.class, Song.class)
-            .filterByForeignKey(PlaylistSong.class, Playlist.class, "playlistID")
-            .ordered(true);
+            .filterByForeignKey(PlaylistSong.class, Playlist.class, "playlistID");
 
         try (var connection = MainFrame.openConnection();
             var statement = queryBuilder.prepare(connection);
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("playlistID", playlist.getID())
             ))) {
-            return sortBy(mapAll(results, BeanAdapter.toType(Song.class)),playlistComparator);
+            return sortBy(mapAll(results, BeanAdapter.toType(Song.class)), playlistComparator);
         } catch (SQLException exception) {
             throw new RuntimeException(exception);
         }

@@ -6,16 +6,22 @@ import org.httprpc.kilo.Name;
 import org.httprpc.kilo.sql.Column;
 import org.httprpc.kilo.sql.ForeignKey;
 import org.httprpc.kilo.sql.Identifier;
-import org.httprpc.kilo.sql.Index;
 import org.httprpc.kilo.sql.PrimaryKey;
 import org.httprpc.kilo.sql.Table;
+
+import static org.httprpc.kilo.util.Optionals.*;
 
 @Table("Song")
 public class Song {
     private Integer id;
+
     private String artist;
+    private String sortableArtist;
     private String album;
+    private String sortableAlbum;
     private String title;
+    private String sortableTitle;
+
     private Integer time;
 
     private String genre;
@@ -44,7 +50,6 @@ public class Song {
 
     @Column("artist")
     @ForeignKey(Artist.class)
-    @Index(1)
     @Identifier(1)
     public String getArtist() {
         return artist;
@@ -52,10 +57,15 @@ public class Song {
 
     public void setArtist(String artist) {
         this.artist = artist;
+
+        sortableArtist = map(artist, Library::getSortableValue);
+    }
+
+    public String getSortableArtist() {
+        return sortableArtist;
     }
 
     @Column("album")
-    @Index(2)
     @Identifier(2)
     public String getAlbum() {
         return album;
@@ -63,10 +73,15 @@ public class Song {
 
     public void setAlbum(String album) {
         this.album = album;
+
+        sortableAlbum = map(album, Library::getSortableValue);
+    }
+
+    public String getSortableAlbum() {
+        return sortableAlbum;
     }
 
     @Column("title")
-    @Index(3)
     @Identifier(3)
     public String getTitle() {
         return title;
@@ -74,6 +89,12 @@ public class Song {
 
     public void setTitle(String title) {
         this.title = title;
+
+        sortableTitle = map(title, Library::getSortableValue);
+    }
+
+    public String getSortableTitle() {
+        return sortableTitle;
     }
 
     @Column("time")
