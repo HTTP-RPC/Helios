@@ -2,12 +2,9 @@
 
 package org.httprpc.helios;
 
-import org.httprpc.kilo.beans.BeanAdapter;
-import org.httprpc.kilo.sql.QueryBuilder;
 import org.httprpc.sierra.BasicListModel;
 import org.httprpc.sierra.ColumnPanel;
 import org.httprpc.sierra.Outlet;
-import org.httprpc.sierra.TaskExecutor;
 import org.httprpc.sierra.UILoader;
 
 import javax.swing.JLabel;
@@ -19,12 +16,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.Color;
 import java.awt.Component;
-import java.util.Comparator;
 import java.util.ResourceBundle;
-import java.util.concurrent.Executors;
-
-import static org.httprpc.kilo.util.Collections.*;
-import static org.httprpc.kilo.util.Iterables.*;
 
 public class SearchDialog extends ModalDialog {
     private static class ResultCellRenderer extends ColumnPanel implements ListCellRenderer<Song> {
@@ -78,14 +70,6 @@ public class SearchDialog extends ModalDialog {
 
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(SearchDialog.class.getName());
 
-    private static final TaskExecutor taskExecutor = new TaskExecutor(Executors.newSingleThreadExecutor(runnable -> {
-        var thread = new Thread(runnable);
-
-        thread.setDaemon(true);
-
-        return thread;
-    }));
-
     public SearchDialog(MainFrame owner) {
         super(owner);
 
@@ -121,36 +105,11 @@ public class SearchDialog extends ModalDialog {
         setResizable(false);
     }
 
-    public Song getSelectedSong() {
-        return selectedSong;
+    private void search() {
+        resultList.setModel(new BasicListModel<>(Library.findSongs(titleTextField.getText())));
     }
 
-    private void search() {
-        var text = titleTextField.getText().strip();
-
-        if (text.isEmpty()) {
-            resultList.setModel(new BasicListModel<>(listOf()));
-
-            return;
-        }
-
-        taskExecutor.execute(() -> {
-            // TODO Move to Library
-            var queryBuilder = QueryBuilder.select(Song.class).filterByIndexLike("title");
-
-            try (var connection = Library.openConnection();
-                var statement = queryBuilder.prepare(connection);
-                var results = queryBuilder.executeQuery(statement, mapOf(
-                    entry("title", String.format("%%%s%%", text))
-                ))) {
-                return sortBy(mapAll(results, BeanAdapter.toType(Song.class)), Comparator.comparing(Song::getTitle)
-                    .thenComparing(Song::getAlbum)
-                    .thenComparing(Song::getArtist));
-            }
-        }, (results, exception) -> {
-            if (exception == null) {
-                resultList.setModel(new BasicListModel<>(results));
-            }
-        });
+    public Song getSelectedSong() {
+        return selectedSong;
     }
 }

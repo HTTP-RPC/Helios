@@ -215,6 +215,30 @@ public class Library {
         }
     }
 
+    public static List<Song> findSongs(String text) {
+        text = text.strip();
+
+        if (text.isEmpty()) {
+            return listOf();
+        }
+
+        var queryBuilder = QueryBuilder.select(Song.class).filterByIndexLike("title");
+
+        try (var connection = Library.openConnection();
+            var statement = queryBuilder.prepare(connection);
+            var results = queryBuilder.executeQuery(statement, mapOf(
+                entry("title", String.format("%%%s%%", text))
+            ))) {
+            return sortBy(mapAll(results, BeanAdapter.toType(Song.class)), Comparator.comparing(Song::getTitle)
+                .thenComparing(Song::getAlbum)
+                .thenComparing(Song::getArtist));
+        } catch (SQLException exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+
+    // TODO Make this private
+    @Deprecated
     public static Connection openConnection() throws SQLException {
         return DriverManager.getConnection(String.format("jdbc:sqlite:%s?foreign_keys=true", dbFile.toAbsolutePath()));
     }
@@ -233,6 +257,7 @@ public class Library {
         return getAlbumPath(song.getArtist(), song.getAlbum()).resolve("content").resolve(escape(fileName));
     }
 
+    // TODO Make this private
     public static String escape(String component) {
         var n = component.length();
 
