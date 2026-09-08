@@ -265,13 +265,13 @@ public class MainFrame extends JFrame implements Runnable {
 
     private static final Preferences preferences = Preferences.userRoot().node(MainFrame.class.getName());
 
-    private static final Comparator<Song> genreComparator = Comparator.comparing(Song::getAlbum)
-        .thenComparing(song -> song.isCompilation() ? "" : song.getArtist())
+    private static final Comparator<Song> genreComparator = Comparator.comparing(Song::getSortableAlbum)
+        .thenComparing(song -> song.isCompilation() ? "" : song.getSortableArtist())
         .thenComparing(song -> coalesce(song.getTrackNumber(), () -> 0));
 
-    private static final Comparator<Song> playlistComparator = Comparator.comparing(Song::getArtist)
-        .thenComparing(Song::getTitle)
-        .thenComparing(Song::getAlbum);
+    private static final Comparator<Song> playlistComparator = Comparator.comparing(Song::getSortableArtist)
+        .thenComparing(Song::getSortableTitle)
+        .thenComparing(Song::getSortableAlbum);
 
     private static final Predicate<Path> dsStoreFilter = path -> !path.getFileName().toString().equals(".DS_Store");
 
