@@ -265,6 +265,14 @@ public class MainFrame extends JFrame implements Runnable {
 
     private static final Preferences preferences = Preferences.userRoot().node(MainFrame.class.getName());
 
+    private static final Comparator<Song> genreComparator = Comparator.comparing(Song::getAlbum)
+        .thenComparing(Song::getArtist)
+        .thenComparing(song -> coalesce(song.getTrackNumber(), () -> 0));
+
+    private static final Comparator<Song> playlistComparator = Comparator.comparing(Song::getArtist)
+        .thenComparing(Song::getAlbum)
+        .thenComparing(Song::getTitle);
+
     private static final Predicate<Path> dsStoreFilter = path -> !path.getFileName().toString().equals(".DS_Store");
 
     private static final TaskExecutor taskExecutor = new TaskExecutor(Executors.newSingleThreadExecutor(runnable -> {
@@ -918,9 +926,7 @@ public class MainFrame extends JFrame implements Runnable {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("genre", genre.getName())
             ))) {
-            return sortBy(mapAll(results, BeanAdapter.toType(Song.class)), Comparator.comparing(Song::getAlbum)
-                .thenComparing(Song::getArtist)
-                .thenComparing(song -> coalesce(song.getTrackNumber(), () -> 0)));
+            return sortBy(mapAll(results, BeanAdapter.toType(Song.class)), genreComparator);
         } catch (SQLException exception) {
             throw new RuntimeException(exception);
         }
@@ -937,9 +943,7 @@ public class MainFrame extends JFrame implements Runnable {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("playlistID", playlist.getID())
             ))) {
-            return sortBy(mapAll(results, BeanAdapter.toType(Song.class)), Comparator.comparing(Song::getArtist)
-                .thenComparing(Song::getAlbum)
-                .thenComparing(Song::getTitle));
+            return sortBy(mapAll(results, BeanAdapter.toType(Song.class)),playlistComparator);
         } catch (SQLException exception) {
             throw new RuntimeException(exception);
         }
