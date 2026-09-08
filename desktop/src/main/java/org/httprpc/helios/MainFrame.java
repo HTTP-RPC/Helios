@@ -270,8 +270,8 @@ public class MainFrame extends JFrame implements Runnable {
         .thenComparing(song -> coalesce(song.getTrackNumber(), () -> 0));
 
     private static final Comparator<Song> playlistComparator = Comparator.comparing(Song::getArtist)
-        .thenComparing(Song::getAlbum)
-        .thenComparing(Song::getTitle);
+        .thenComparing(Song::getTitle)
+        .thenComparing(Song::getAlbum);
 
     private static final Predicate<Path> dsStoreFilter = path -> !path.getFileName().toString().equals(".DS_Store");
 
