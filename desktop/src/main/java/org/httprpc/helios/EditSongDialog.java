@@ -236,8 +236,7 @@ public class EditSongDialog extends ModalDialog {
         try {
             try {
                 audioFile = AudioFileIO.read(contentPath.toFile());
-            } catch (CannotReadException | TagException | InvalidAudioFrameException |
-                ReadOnlyFileException exception) {
+            } catch (CannotReadException | TagException | InvalidAudioFrameException | ReadOnlyFileException exception) {
                 throw new IOException(exception);
             }
         } catch (IOException exception) {

@@ -12,9 +12,14 @@
 
         <spacer weight="1"/>
 
-        <button name="editSelectedSongButton" icon="icons/edit_24dp.svg; 18"
+        <button name="addToPlaylistButton" icon="icons/add_24dp.svg; 20"
             focusable="false"
-            toolTipText="editSelectedSong"
+            toolTipText="addToPlaylist"
+            style="buttonType: borderless"/>
+
+        <button name="editSongButton" icon="icons/edit_24dp.svg; 18"
+            focusable="false"
+            toolTipText="editSong"
             style="buttonType: borderless"/>
     </row-panel>
 

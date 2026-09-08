@@ -57,7 +57,8 @@ public class GenreDetailPanel extends StackPanel {
     private @Outlet JLabel nameLabel = null;
     private @Outlet JButton playAllButton = null;
 
-    private @Outlet JButton editSelectedSongButton = null;
+    private @Outlet JButton addToPlaylistButton = null;
+    private @Outlet JButton editSongButton = null;
 
     private @Outlet JTable songTable = null;
 
@@ -70,8 +71,11 @@ public class GenreDetailPanel extends StackPanel {
 
         playAllButton.addActionListener(event -> MainFrame.getInstance().playAll(songs));
 
-        editSelectedSongButton.addActionListener(event -> editSelectedSong());
-        editSelectedSongButton.setEnabled(false);
+        addToPlaylistButton.addActionListener(event -> addToPlaylist());
+        addToPlaylistButton.setEnabled(false);
+
+        editSongButton.addActionListener(event -> editSong());
+        editSongButton.setEnabled(false);
 
         var songTableHeader = songTable.getTableHeader();
 
@@ -95,7 +99,13 @@ public class GenreDetailPanel extends StackPanel {
                 return;
             }
 
-            editSelectedSongButton.setEnabled(songTable.getSelectionModel().getMinSelectionIndex() != -1);
+            if (songTable.getSelectionModel().getMinSelectionIndex() == -1) {
+                addToPlaylistButton.setEnabled(false);
+                editSongButton.setEnabled(false);
+            } else {
+                addToPlaylistButton.setEnabled(true);
+                editSongButton.setEnabled(true);
+            }
         });
 
         setBorder(new EmptyBorder(8, 8, 8, 8));
@@ -104,8 +114,12 @@ public class GenreDetailPanel extends StackPanel {
         setScrollableTracksViewportHeight(true);
     }
 
+    private void addToPlaylist() {
+        // TODO
+    }
+
     @SuppressWarnings("unchecked")
-    private void editSelectedSong() {
+    private void editSong() {
         var song = ((BasicTableModel<Song>)songTable.getModel()).getRow(songTable.getSelectedRow());
 
         var editSongDialog = new EditSongDialog(MainFrame.getInstance(), song);

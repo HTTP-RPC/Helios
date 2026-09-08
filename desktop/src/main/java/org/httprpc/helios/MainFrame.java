@@ -1008,7 +1008,7 @@ public class MainFrame extends JFrame implements Runnable {
         for (var i = 0; i < n; i++) {
             var c = component.charAt(i);
 
-            if (c == '\\' || c == '/' || c == ':' || c == '.') {
+            if (c == '\\' || c == '/' || c == ':') {
                 c = '_';
             }
 
