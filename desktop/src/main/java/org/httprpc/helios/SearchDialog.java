@@ -136,14 +136,12 @@ public class SearchDialog extends ModalDialog {
 
         taskExecutor.execute(() -> {
             // TODO Move to Library
-            var queryBuilder = QueryBuilder.select(Song.class).filterByIndexLike("artist", "album", "song");
+            var queryBuilder = QueryBuilder.select(Song.class).filterByIndexLike("title");
 
             try (var connection = Library.openConnection();
                 var statement = queryBuilder.prepare(connection);
                 var results = queryBuilder.executeQuery(statement, mapOf(
-                    entry("artist", "%"),
-                    entry("album", "%"),
-                    entry("song", String.format("%%%s%%", text))
+                    entry("title", String.format("%%%s%%", text))
                 ))) {
                 return sortBy(mapAll(results, BeanAdapter.toType(Song.class)), Comparator.comparing(Song::getTitle)
                     .thenComparing(Song::getAlbum)
