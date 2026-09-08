@@ -91,7 +91,7 @@ public class AlbumDetailPanel extends StackPanel {
         deleteArtworkButton.addActionListener(event -> deleteArtwork());
         deleteArtworkButton.setVisible(false);
 
-        deleteArtworkButton.setEnabled(Files.exists(MainFrame.getArtworkPath(artist.getName(), name)));
+        deleteArtworkButton.setEnabled(Files.exists(Library.getArtworkPath(artist.getName(), name)));
 
         artworkPanel.addMouseListener(new MouseAdapter() {
             @Override
@@ -124,7 +124,7 @@ public class AlbumDetailPanel extends StackPanel {
         });
 
         taskExecutor.execute(() -> {
-            try (var inputStream = Files.newInputStream(MainFrame.getArtworkPath(artist.getName(), name))) {
+            try (var inputStream = Files.newInputStream(Library.getArtworkPath(artist.getName(), name))) {
                 return ImageIO.read(inputStream);
             } catch (IOException exception) {
                 return null;
@@ -219,7 +219,7 @@ public class AlbumDetailPanel extends StackPanel {
         taskExecutor.execute(() -> {
             byte[] binaryData;
             if (artwork != null) {
-                var artworkPath = MainFrame.getArtworkPath(artist.getName(), name);
+                var artworkPath = Library.getArtworkPath(artist.getName(), name);
 
                 try (var outputStream = Files.newOutputStream(artworkPath,
                     StandardOpenOption.CREATE,
@@ -238,7 +238,7 @@ public class AlbumDetailPanel extends StackPanel {
                 }
             } else {
                 try {
-                    Files.deleteIfExists(MainFrame.getArtworkPath(artist.getName(), name));
+                    Files.deleteIfExists(Library.getArtworkPath(artist.getName(), name));
                 } catch (IOException exception) {
                     throw new RuntimeException(exception);
                 }
@@ -247,7 +247,7 @@ public class AlbumDetailPanel extends StackPanel {
             }
 
             for (var song : songs) {
-                var contentPath = MainFrame.getContentPath(song);
+                var contentPath = Library.getContentPath(song);
 
                 try {
                     AudioFile audioFile;

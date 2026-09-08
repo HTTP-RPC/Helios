@@ -213,19 +213,19 @@ public class ImportStatusPanel extends StackPanel {
 
             var queryBuilder = QueryBuilder.insert(Song.class).onConflictDoUpdate();
 
-            try (var connection = MainFrame.openConnection();
+            try (var connection = Library.openConnection();
                 var statement = queryBuilder.prepare(connection)) {
                 queryBuilder.executeUpdate(statement, new BeanAdapter(song));
             } catch (SQLException exception) {
                 throw new RuntimeException(exception);
             }
 
-            var contentPath = MainFrame.getContentPath(song);
+            var contentPath = Library.getContentPath(song);
 
             Files.createDirectories(contentPath.getParent());
             Files.copy(path, contentPath, StandardCopyOption.REPLACE_EXISTING);
 
-            var artworkPath = MainFrame.getArtworkPath(artist, album);
+            var artworkPath = Library.getArtworkPath(artist, album);
 
             if (!Files.exists(artworkPath, LinkOption.NOFOLLOW_LINKS)) {
                 var artwork = tag.getFirstArtwork();

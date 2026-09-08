@@ -158,7 +158,7 @@ public class SongDetailPanel extends StackPanel {
     private void addToPlaylist(Playlist playlist) {
         var queryBuilder = QueryBuilder.insert(PlaylistSong.class);
 
-        try (var connection = MainFrame.openConnection();
+        try (var connection = Library.openConnection();
             var statement = queryBuilder.prepare(connection)) {
             queryBuilder.executeUpdate(statement, mapOf(
                 entry("playlistID", playlist.getID()),
@@ -192,7 +192,7 @@ public class SongDetailPanel extends StackPanel {
         if (result == JOptionPane.YES_OPTION) {
             var queryBuilder = QueryBuilder.delete(Song.class).filterByPrimaryKey("id");
 
-            try (var connection = MainFrame.openConnection();
+            try (var connection = Library.openConnection();
                 var statement = queryBuilder.prepare(connection)) {
                 queryBuilder.executeUpdate(statement, mapOf(
                     entry("id", song.getID())
@@ -201,7 +201,7 @@ public class SongDetailPanel extends StackPanel {
                 throw new RuntimeException(exception);
             }
 
-            MainFrame.deleteSong(MainFrame.getContentPath(song));
+            Library.deleteSong(Library.getContentPath(song));
 
             var mainFrame = MainFrame.getInstance();
 

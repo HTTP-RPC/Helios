@@ -181,7 +181,7 @@ public class PlaylistDetailPanel extends StackPanel {
                 .filterByForeignKey(Playlist.class, "playlistID")
                 .filterByForeignKey(Song.class, "songID");
 
-            try (var connection = MainFrame.openConnection();
+            try (var connection = Library.openConnection();
                 var statement = queryBuilder.prepare(connection)) {
                 var playlistID = playlist.getID();
 
@@ -241,7 +241,7 @@ public class PlaylistDetailPanel extends StackPanel {
 
             playlist.setName(name);
 
-            try (var connection = MainFrame.openConnection();
+            try (var connection = Library.openConnection();
                 var statement = queryBuilder.prepare(connection)) {
                 queryBuilder.executeUpdate(statement, new BeanAdapter(playlist));
 
@@ -277,7 +277,7 @@ public class PlaylistDetailPanel extends StackPanel {
         if (result == JOptionPane.YES_OPTION) {
             var queryBuilder = QueryBuilder.delete(Playlist.class).filterByPrimaryKey("id");
 
-            try (var connection = MainFrame.openConnection();
+            try (var connection = Library.openConnection();
                 var statement = queryBuilder.prepare(connection)) {
                 queryBuilder.executeUpdate(statement, mapOf(
                     entry("id", playlist.getID())

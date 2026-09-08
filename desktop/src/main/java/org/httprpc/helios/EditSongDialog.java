@@ -122,7 +122,7 @@ public class EditSongDialog extends ModalDialog {
 
         queryBuilder.append("select distinct genre from Song where genre is not null");
 
-        try (var connection = MainFrame.openConnection();
+        try (var connection = Library.openConnection();
             var statement = queryBuilder.prepare(connection);
             var results = queryBuilder.executeQuery(statement)) {
             return listOf(mapAll(results, result -> (String)result.get("genre")));
@@ -198,7 +198,7 @@ public class EditSongDialog extends ModalDialog {
 
         var queryBuilder = QueryBuilder.update(Song.class).filterByPrimaryKey("id");
 
-        try (var connection = MainFrame.openConnection();
+        try (var connection = Library.openConnection();
             var statement = queryBuilder.prepare(connection)) {
             queryBuilder.executeUpdate(statement, new BeanAdapter(song));
         } catch (SQLException exception) {
@@ -211,8 +211,8 @@ public class EditSongDialog extends ModalDialog {
             throw new RuntimeException(exception);
         }
 
-        var contentPath = MainFrame.getContentPath(song);
-        var previousContentPath = MainFrame.getContentPath(this.song);
+        var contentPath = Library.getContentPath(song);
+        var previousContentPath = Library.getContentPath(this.song);
 
         if (!contentPath.equals(previousContentPath)) {
             try {
@@ -220,11 +220,11 @@ public class EditSongDialog extends ModalDialog {
 
                 Files.createDirectories(albumContentPath);
 
-                var temporaryContentPath = albumContentPath.resolve(String.format("%s.tmp", MainFrame.escape(song.getTitle())));
+                var temporaryContentPath = albumContentPath.resolve(String.format("%s.tmp", Library.escape(song.getTitle())));
 
                 Files.copy(previousContentPath, temporaryContentPath, StandardCopyOption.REPLACE_EXISTING);
 
-                MainFrame.deleteSong(previousContentPath);
+                Library.deleteSong(previousContentPath);
 
                 Files.move(temporaryContentPath, contentPath, StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException exception) {

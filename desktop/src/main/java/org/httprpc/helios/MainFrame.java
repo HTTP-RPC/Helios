@@ -5,10 +5,6 @@ package org.httprpc.helios;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
-import org.httprpc.helios.api.AppleStore;
-import org.httprpc.kilo.beans.BeanAdapter;
-import org.httprpc.kilo.io.TextDecoder;
-import org.httprpc.kilo.sql.QueryBuilder;
 import org.httprpc.sierra.ActivityIndicator;
 import org.httprpc.sierra.BasicListModel;
 import org.httprpc.sierra.ColumnPanel;
@@ -18,7 +14,6 @@ import org.httprpc.sierra.StackPanel;
 import org.httprpc.sierra.TaskExecutor;
 import org.httprpc.sierra.UILoader;
 
-import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JButton;
@@ -55,17 +50,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
-import java.util.function.Predicate;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
@@ -265,22 +253,9 @@ public class MainFrame extends JFrame implements Runnable {
         pauseIcon.setColorFilter(playButtonColorFilter);
     }
 
-    private static final Path rootDirectory = Path.of(System.getProperty("user.home"), ".helios");
-    private static final Path dbFile = rootDirectory.resolve("music.db");
-
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(MainFrame.class.getName());
 
     private static final Preferences preferences = Preferences.userRoot().node(MainFrame.class.getName());
-
-    private static final Comparator<Song> genreComparator = Comparator.comparing(Song::getSortableAlbum)
-        .thenComparing(song -> song.isCompilation() ? "" : song.getSortableArtist())
-        .thenComparing(song -> coalesce(song.getTrackNumber(), () -> 0));
-
-    private static final Comparator<Song> playlistComparator = Comparator.comparing(Song::getSortableArtist)
-        .thenComparing(Song::getSortableTitle)
-        .thenComparing(Song::getSortableAlbum);
-
-    private static final Predicate<Path> dsStoreFilter = path -> !path.getFileName().toString().equals(".DS_Store");
 
     private static final TaskExecutor taskExecutor = new TaskExecutor(Executors.newSingleThreadExecutor(runnable -> {
         var thread = new Thread(runnable);
@@ -611,16 +586,7 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     public void loadArtists() {
-        var queryBuilder = QueryBuilder.select(ExpandedArtist.class);
-
-        List<ExpandedArtist> artists;
-        try (var connection = openConnection();
-            var statement = queryBuilder.prepare(connection);
-            var results = queryBuilder.executeQuery(statement)) {
-            artists = sortBy(mapAll(results, BeanAdapter.toType(ExpandedArtist.class)), Artist::getSortableName);
-        } catch (SQLException exception) {
-            throw new RuntimeException(exception);
-        }
+        var artists = Library.getArtists();
 
         var selectedArtistName = map(artistList.getSelectedValue(), Artist::getName);
 
@@ -636,16 +602,7 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     public void loadGenres() {
-        var queryBuilder = QueryBuilder.select(ExpandedGenre.class);
-
-        List<ExpandedGenre> genres;
-        try (var connection = openConnection();
-            var statement = queryBuilder.prepare(connection);
-            var results = queryBuilder.executeQuery(statement)) {
-            genres = sortBy(mapAll(results, BeanAdapter.toType(ExpandedGenre.class)), Genre::getSortableName);
-        } catch (SQLException exception) {
-            throw new RuntimeException(exception);
-        }
+        var genres = Library.getGenres();
 
         var selectedGenreName = map(genreList.getSelectedValue(), Genre::getName);
 
@@ -661,15 +618,7 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     public void loadPlaylists() {
-        var queryBuilder = QueryBuilder.select(ExpandedPlaylist.class);
-
-        try (var connection = openConnection();
-            var statement = queryBuilder.prepare(connection);
-            var results = queryBuilder.executeQuery(statement)) {
-            playlists = sortBy(mapAll(results, BeanAdapter.toType(ExpandedPlaylist.class)), Playlist::getSortableName);
-        } catch (SQLException exception) {
-            throw new RuntimeException(exception);
-        }
+        var playlists = Library.getPlaylists();
 
         var selectedPlaylistName = map(playlistList.getSelectedValue(), Playlist::getName);
 
@@ -792,44 +741,10 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     private void getAlbumArtwork() {
-        var queryBuilder = QueryBuilder.select(ArtistAlbum.class).ordered(true);
-
-        List<ArtistAlbum> artistAlbums;
-        try (var connection = openConnection();
-            var statement = queryBuilder.prepare(connection);
-            var results = queryBuilder.executeQuery(statement)) {
-            artistAlbums = listOf(mapAll(results, BeanAdapter.toType(ArtistAlbum.class)));
-        } catch (SQLException exception) {
-            throw new RuntimeException(exception);
-        }
-
         albumArtworkActivityIndicator.start();
 
         taskExecutor.execute(() -> {
-            for (var artistAlbum : artistAlbums) {
-                var artist = artistAlbum.getArtist();
-                var album = artistAlbum.getAlbum();
-
-                var artworkPath = getArtworkPath(artist, album);
-
-                if (Files.exists(artworkPath)) {
-                    continue;
-                }
-
-                try {
-                    var artwork = AppleStore.getAlbumArtwork(artist, album);
-
-                    if (artwork != null) {
-                        try (var outputStream = Files.newOutputStream(artworkPath,
-                            StandardOpenOption.CREATE,
-                            StandardOpenOption.TRUNCATE_EXISTING)) {
-                            ImageIO.write(artwork, "jpeg", outputStream);
-                        }
-                    }
-                } catch (IOException exception) {
-                    // No-op
-                }
-            }
+            Library.getAlbumArtwork();
 
             return null;
         }, (result, exception) -> {
@@ -897,58 +812,15 @@ public class MainFrame extends JFrame implements Runnable {
 
     private void showSelectedCollection() {
         var collectionDetailPanel = switch (collectionTabbedPane.getSelectedIndex()) {
-            case ARTIST_TAB_INDEX -> map(artistList.getSelectedValue(), artist -> new ArtistDetailPanel(artist, getAlbums(artist)));
-            case GENRE_TAB_INDEX -> map(genreList.getSelectedValue(), genre -> new GenreDetailPanel(genre, getSongs(genre)));
-            case PLAYLIST_TAB_INDEX -> map(playlistList.getSelectedValue(), playlist -> new PlaylistDetailPanel(playlist, getSongs(playlist)));
+            case ARTIST_TAB_INDEX -> map(artistList.getSelectedValue(), artist -> new ArtistDetailPanel(artist, Library.getAlbums(artist)));
+            case GENRE_TAB_INDEX -> map(genreList.getSelectedValue(), genre -> new GenreDetailPanel(genre, Library.getSongs(genre)));
+            case PLAYLIST_TAB_INDEX -> map(playlistList.getSelectedValue(), playlist -> new PlaylistDetailPanel(playlist, Library.getSongs(playlist)));
             default -> throw new UnsupportedOperationException();
         };
 
         collectionScrollPane.setViewportView(collectionDetailPanel);
     }
 
-    private Map<String, List<Song>> getAlbums(Artist artist) {
-        var queryBuilder = QueryBuilder.select(Song.class).filterByForeignKey(Artist.class, "artist");
-
-        try (var connection = MainFrame.openConnection();
-            var statement = queryBuilder.prepare(connection);
-            var results = queryBuilder.executeQuery(statement, mapOf(
-                entry("artist", artist.getName())
-            ))) {
-            return groupBy(sortBy(mapAll(results, BeanAdapter.toType(Song.class)), Song::getSortableAlbum), Song::getAlbum);
-        } catch (SQLException exception) {
-            throw new RuntimeException(exception);
-        }
-    }
-
-    private List<Song> getSongs(Genre genre) {
-        var queryBuilder = QueryBuilder.select(Song.class).filterByForeignKey(Genre.class, "genre");
-
-        try (var connection = MainFrame.openConnection();
-            var statement = queryBuilder.prepare(connection);
-            var results = queryBuilder.executeQuery(statement, mapOf(
-                entry("genre", genre.getName())
-            ))) {
-            return sortBy(mapAll(results, BeanAdapter.toType(Song.class)), genreComparator);
-        } catch (SQLException exception) {
-            throw new RuntimeException(exception);
-        }
-    }
-
-    private List<Song> getSongs(Playlist playlist) {
-        var queryBuilder = QueryBuilder.select(Song.class)
-            .join(PlaylistSong.class, Song.class)
-            .filterByForeignKey(PlaylistSong.class, Playlist.class, "playlistID");
-
-        try (var connection = MainFrame.openConnection();
-            var statement = queryBuilder.prepare(connection);
-            var results = queryBuilder.executeQuery(statement, mapOf(
-                entry("playlistID", playlist.getID())
-            ))) {
-            return sortBy(mapAll(results, BeanAdapter.toType(Song.class)), playlistComparator);
-        } catch (SQLException exception) {
-            throw new RuntimeException(exception);
-        }
-    }
 
     public static void main(String[] args) throws Exception {
         if (preferences.getBoolean(DARK_MODE_KEY, true)) {
@@ -957,23 +829,7 @@ public class MainFrame extends JFrame implements Runnable {
             FlatLightLaf.setup();
         }
 
-        Files.createDirectories(rootDirectory);
-
-        if (!Files.exists(dbFile)) {
-            String sql;
-            try (var inputStream = MainFrame.class.getResourceAsStream("/db.sql")) {
-                var textDecoder = new TextDecoder();
-
-                sql = textDecoder.read(inputStream);
-            } catch (IOException exception) {
-                throw new RuntimeException(exception);
-            }
-
-            try (var connection = openConnection();
-                var statement = connection.createStatement()) {
-                statement.executeUpdate(sql);
-            }
-        }
+        Library.initialize();
 
         instance = new MainFrame();
 
@@ -982,101 +838,5 @@ public class MainFrame extends JFrame implements Runnable {
 
     public static MainFrame getInstance() {
         return instance;
-    }
-
-    public static Connection openConnection() throws SQLException {
-        return DriverManager.getConnection(String.format("jdbc:sqlite:%s?foreign_keys=true", dbFile.toAbsolutePath()));
-    }
-
-    public static Path getAlbumPath(String artist, String album) {
-        return rootDirectory.resolve("music").resolve(escape(artist)).resolve(escape(album));
-    }
-
-    public static Path getArtworkPath(String artist, String album) {
-        return getAlbumPath(artist, album).resolve("artwork.jpg");
-    }
-
-    public static Path getContentPath(Song song) {
-        var fileName = String.format("%s.%s", song.getTitle(), song.getType());
-
-        return getAlbumPath(song.getArtist(), song.getAlbum()).resolve("content").resolve(escape(fileName));
-    }
-
-    public static String escape(String component) {
-        var n = component.length();
-
-        var componentBuilder = new StringBuilder(n);
-
-        for (var i = 0; i < n; i++) {
-            var c = component.charAt(i);
-
-            if (c == '\\' || c == '/' || c == ':') {
-                c = '_';
-            }
-
-            componentBuilder.append(c);
-        }
-
-        return componentBuilder.toString();
-    }
-
-    public static void deleteArtist(Path artistPath) {
-        try {
-            deleteAll(artistPath);
-        } catch (IOException exception) {
-            throw new RuntimeException(exception);
-        }
-    }
-
-    public static void deleteAlbum(Path albumPath) {
-        try {
-            deleteAll(albumPath);
-        } catch (IOException exception) {
-            throw new RuntimeException(exception);
-        }
-
-        var artistPath = albumPath.getParent();
-
-        try (var stream = Files.list(artistPath)) {
-            if (isEmpty(filter(iterableOf(stream), dsStoreFilter))) {
-                deleteArtist(artistPath);
-            }
-        } catch (IOException exception) {
-            throw new RuntimeException(exception);
-        }
-    }
-
-    public static void deleteSong(Path contentPath) {
-        try {
-            Files.deleteIfExists(contentPath);
-        } catch (IOException exception) {
-            throw new RuntimeException(exception);
-        }
-
-        var albumContentPath = contentPath.getParent();
-
-        try (var stream = Files.list(albumContentPath)) {
-            if (isEmpty(filter(iterableOf(stream), dsStoreFilter))) {
-                deleteAlbum(albumContentPath.getParent());
-            }
-        } catch (IOException exception) {
-            throw new RuntimeException(exception);
-        }
-    }
-
-    private static void deleteAll(Path root) throws IOException {
-        if (!Files.exists(root)) {
-            return;
-        }
-
-        if (Files.isDirectory(root)) {
-            try (var stream = Files.list(root)) {
-                for (var path : iterableOf(stream)) {
-                    deleteAll(path);
-                }
-            }
-        }
-
-        Files.delete(root);
     }
 }

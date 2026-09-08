@@ -150,7 +150,7 @@ public class GenreDetailPanel extends StackPanel {
 
         var queryBuilder = QueryBuilder.insert(PlaylistSong.class);
 
-        try (var connection = MainFrame.openConnection();
+        try (var connection = Library.openConnection();
             var statement = queryBuilder.prepare(connection)) {
             queryBuilder.executeUpdate(statement, mapOf(
                 entry("playlistID", playlist.getID()),

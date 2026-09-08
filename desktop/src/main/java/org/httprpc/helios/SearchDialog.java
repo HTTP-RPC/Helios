@@ -135,9 +135,10 @@ public class SearchDialog extends ModalDialog {
         }
 
         taskExecutor.execute(() -> {
+            // TODO Move to Library
             var queryBuilder = QueryBuilder.select(Song.class).filterByIndexLike("artist", "album", "song");
 
-            try (var connection = MainFrame.openConnection();
+            try (var connection = Library.openConnection();
                 var statement = queryBuilder.prepare(connection);
                 var results = queryBuilder.executeQuery(statement, mapOf(
                     entry("artist", "%"),
