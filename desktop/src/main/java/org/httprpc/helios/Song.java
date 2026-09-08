@@ -27,11 +27,7 @@ public class Song {
     private Integer discNumber;
     private Integer discCount;
 
-    private Boolean soundtrack;
     private Boolean compilation;
-    private Boolean classical;
-
-    private String composer;
 
     private String type;
 
@@ -144,15 +140,6 @@ public class Song {
         this.discCount = discCount;
     }
 
-    @Column("soundtrack")
-    public Boolean isSoundtrack() {
-        return soundtrack;
-    }
-
-    public void setSoundtrack(Boolean soundtrack) {
-        this.soundtrack = soundtrack;
-    }
-
     @Column("compilation")
     public Boolean isCompilation() {
         return compilation;
@@ -160,24 +147,6 @@ public class Song {
 
     public void setCompilation(Boolean compilation) {
         this.compilation = compilation;
-    }
-
-    @Column("classical")
-    public Boolean isClassical() {
-        return classical;
-    }
-
-    public void setClassical(Boolean classical) {
-        this.classical = classical;
-    }
-
-    @Column("composer")
-    public String getComposer() {
-        return composer;
-    }
-
-    public void setComposer(String composer) {
-        this.composer = composer;
     }
 
     @Column("type")

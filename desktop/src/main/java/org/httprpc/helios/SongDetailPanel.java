@@ -150,7 +150,7 @@ public class SongDetailPanel extends StackPanel {
             }
         });
 
-        if (song.isSoundtrack() || song.isCompilation() || song.isClassical()) {
+        if (song.isCompilation()) {
             titleLabel.setEnabled(false);
             timeLabel.setEnabled(false);
         }

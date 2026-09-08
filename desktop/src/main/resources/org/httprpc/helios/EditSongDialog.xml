@@ -29,13 +29,7 @@
 
         <spacer height="4"/>
 
-        <column-panel>
-            <check-box name="soundtrackCheckBox" text="soundtrack"/>
-            <check-box name="compilationCheckBox" text="compilation"/>
-            <check-box name="classicalCheckBox" text="classical"/>
-        </column-panel>
-
-        <text-field name="composerTextField" label="composer" columns="24"/>
+        <check-box name="compilationCheckBox" text="compilation"/>
     </form-panel>
 
     <separator/>
