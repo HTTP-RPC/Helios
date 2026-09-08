@@ -82,7 +82,7 @@ public class GenreDetailPanel extends StackPanel {
         songTable.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, null);
 
         songTable.setModel(new BasicTableModel<>(Song.class, songs,
-            listOf("title", "artist", "album"),
+            listOf("album", "title", "artist"),
             resourceBundle));
 
         var genreCellRenderer = new GenreCellRenderer();

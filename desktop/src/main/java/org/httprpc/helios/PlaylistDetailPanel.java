@@ -139,7 +139,7 @@ public class PlaylistDetailPanel extends StackPanel {
         songTable.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, null);
 
         songTable.setModel(new BasicTableModel<>(Song.class, songs,
-            listOf("title", "artist", "album"),
+            listOf("artist", "title", "album"),
             resourceBundle));
 
         var playlistCellRenderer = new PlaylistCellRenderer();

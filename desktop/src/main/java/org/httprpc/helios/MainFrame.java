@@ -60,6 +60,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -903,8 +904,7 @@ public class MainFrame extends JFrame implements Runnable {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("artist", artist.getName())
             ))) {
-            // TODO Filter out compilations
-            return groupBy(mapAll(results, BeanAdapter.toType(Song.class)), Song::getAlbum);
+            return groupBy(filter(mapAll(results, BeanAdapter.toType(Song.class)), whereFalse(Song::isCompilation)), Song::getAlbum);
         } catch (SQLException exception) {
             throw new RuntimeException(exception);
         }
@@ -918,7 +918,9 @@ public class MainFrame extends JFrame implements Runnable {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("genre", genre.getName())
             ))) {
-            return sortBy(mapAll(results, BeanAdapter.toType(Song.class)), Song::getTitle);
+            return sortBy(mapAll(results, BeanAdapter.toType(Song.class)), Comparator.comparing(Song::getAlbum)
+                .thenComparing(Song::getArtist)
+                .thenComparing(song -> coalesce(song.getTrackNumber(), () -> 0)));
         } catch (SQLException exception) {
             throw new RuntimeException(exception);
         }
@@ -935,7 +937,9 @@ public class MainFrame extends JFrame implements Runnable {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("playlistID", playlist.getID())
             ))) {
-            return sortBy(mapAll(results, BeanAdapter.toType(Song.class)), Song::getTitle);
+            return sortBy(mapAll(results, BeanAdapter.toType(Song.class)), Comparator.comparing(Song::getArtist)
+                .thenComparing(Song::getAlbum)
+                .thenComparing(Song::getTitle));
         } catch (SQLException exception) {
             throw new RuntimeException(exception);
         }
