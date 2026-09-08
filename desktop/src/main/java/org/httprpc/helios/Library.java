@@ -536,9 +536,107 @@ public class Library {
         }
     }
 
-    // TODO Make this private
-    @Deprecated
-    public static Connection openConnection() throws SQLException {
+    public static void deleteSong(Song song) {
+        var queryBuilder = QueryBuilder.delete(Song.class).filterByPrimaryKey("id");
+
+        try (var connection = Library.openConnection();
+            var statement = queryBuilder.prepare(connection)) {
+            queryBuilder.executeUpdate(statement, mapOf(
+                entry("id", song.getID())
+            ));
+        } catch (SQLException exception) {
+            throw new RuntimeException(exception);
+        }
+
+        deleteSong(Library.getContentPath(song));
+    }
+
+    public static void addToPlaylist(Playlist playlist, Song song) {
+        var queryBuilder = QueryBuilder.insert(PlaylistSong.class);
+
+        try (var connection = Library.openConnection();
+            var statement = queryBuilder.prepare(connection)) {
+            queryBuilder.executeUpdate(statement, mapOf(
+                entry("playlistID", playlist.getID()),
+                entry("songID", song.getID())
+            ));
+        } catch (SQLException exception) {
+            if (SQLiteErrorCode.getErrorCode(exception.getErrorCode()) != SQLiteErrorCode.SQLITE_CONSTRAINT) {
+                throw new RuntimeException(exception);
+            }
+        }
+    }
+
+    public static void removeFromPlaylist(Playlist playlist, List<Song> songs) {
+        var queryBuilder = QueryBuilder.delete(PlaylistSong.class)
+            .filterByForeignKey(Playlist.class, "playlistID")
+            .filterByForeignKey(Song.class, "songID");
+
+        try (var connection = Library.openConnection();
+            var statement = queryBuilder.prepare(connection)) {
+            var playlistID = playlist.getID();
+
+            for (var song : songs) {
+                queryBuilder.addBatch(statement, mapOf(
+                    entry("playlistID", playlistID),
+                    entry("songID", song.getID())
+                ));
+            }
+
+            statement.executeBatch();
+        } catch (SQLException exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+
+    public static boolean addPlaylist(Playlist playlist) {
+        var queryBuilder = QueryBuilder.insert(Playlist.class);
+
+        try (var connection = Library.openConnection();
+            var statement = queryBuilder.prepare(connection)) {
+            queryBuilder.executeUpdate(statement, new BeanAdapter(playlist));
+        } catch (SQLException exception) {
+            if (SQLiteErrorCode.getErrorCode(exception.getErrorCode()) == SQLiteErrorCode.SQLITE_CONSTRAINT) {
+                return false;
+            }
+
+            throw new RuntimeException(exception);
+        }
+
+        return true;
+    }
+
+    public static boolean updatePlaylist(Playlist playlist) {
+        var queryBuilder = QueryBuilder.update(Playlist.class).filterByPrimaryKey("id");
+
+        try (var connection = Library.openConnection();
+            var statement = queryBuilder.prepare(connection)) {
+            queryBuilder.executeUpdate(statement, new BeanAdapter(playlist));
+        } catch (SQLException exception) {
+            if (SQLiteErrorCode.getErrorCode(exception.getErrorCode()) == SQLiteErrorCode.SQLITE_CONSTRAINT) {
+                return false;
+            }
+
+            throw new RuntimeException(exception);
+        }
+
+        return true;
+    }
+
+    public static void deletePlaylist(Playlist playlist) {
+        var queryBuilder = QueryBuilder.delete(Playlist.class).filterByPrimaryKey("id");
+
+        try (var connection = Library.openConnection();
+            var statement = queryBuilder.prepare(connection)) {
+            queryBuilder.executeUpdate(statement, mapOf(
+                entry("id", playlist.getID())
+            ));
+        } catch (SQLException exception) {
+            throw new RuntimeException(exception);
+        }
+    }
+
+    private static Connection openConnection() throws SQLException {
         return DriverManager.getConnection(String.format("jdbc:sqlite:%s?foreign_keys=true", dbFile.toAbsolutePath()));
     }
 
@@ -556,7 +654,7 @@ public class Library {
         return getAlbumPath(song.getArtist(), song.getAlbum()).resolve("content").resolve(escape(fileName));
     }
 
-    // TODO Make this private
+    // TODO Make this private?
     public static String escape(String component) {
         var n = component.length();
 

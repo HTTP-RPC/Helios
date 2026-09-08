@@ -3,13 +3,11 @@
 package org.httprpc.helios;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
-import org.httprpc.kilo.sql.QueryBuilder;
 import org.httprpc.sierra.BasicTableModel;
 import org.httprpc.sierra.MenuButton;
 import org.httprpc.sierra.Outlet;
 import org.httprpc.sierra.StackPanel;
 import org.httprpc.sierra.UILoader;
-import org.sqlite.SQLiteErrorCode;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -22,7 +20,6 @@ import javax.swing.table.TableCellRenderer;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.KeyboardFocusManager;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -148,19 +145,7 @@ public class GenreDetailPanel extends StackPanel {
     private void addToPlaylist(Playlist playlist) {
         var song = ((BasicTableModel<Song>)songTable.getModel()).getRow(songTable.getSelectedRow());
 
-        var queryBuilder = QueryBuilder.insert(PlaylistSong.class);
-
-        try (var connection = Library.openConnection();
-            var statement = queryBuilder.prepare(connection)) {
-            queryBuilder.executeUpdate(statement, mapOf(
-                entry("playlistID", playlist.getID()),
-                entry("songID", song.getID())
-            ));
-        } catch (SQLException exception) {
-            if (SQLiteErrorCode.getErrorCode(exception.getErrorCode()) != SQLiteErrorCode.SQLITE_CONSTRAINT) {
-                throw new RuntimeException(exception);
-            }
-        }
+        Library.addToPlaylist(playlist, song);
 
         MainFrame.getInstance().loadPlaylists();
     }

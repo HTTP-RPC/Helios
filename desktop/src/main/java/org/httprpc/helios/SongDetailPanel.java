@@ -3,12 +3,10 @@
 package org.httprpc.helios;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
-import org.httprpc.kilo.sql.QueryBuilder;
 import org.httprpc.sierra.MenuButton;
 import org.httprpc.sierra.Outlet;
 import org.httprpc.sierra.StackPanel;
 import org.httprpc.sierra.UILoader;
-import org.sqlite.SQLiteErrorCode;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -21,7 +19,6 @@ import javax.swing.event.PopupMenuListener;
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.sql.SQLException;
 import java.time.Duration;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -156,19 +153,7 @@ public class SongDetailPanel extends StackPanel {
     }
 
     private void addToPlaylist(Playlist playlist) {
-        var queryBuilder = QueryBuilder.insert(PlaylistSong.class);
-
-        try (var connection = Library.openConnection();
-            var statement = queryBuilder.prepare(connection)) {
-            queryBuilder.executeUpdate(statement, mapOf(
-                entry("playlistID", playlist.getID()),
-                entry("songID", song.getID())
-            ));
-        } catch (SQLException exception) {
-            if (SQLiteErrorCode.getErrorCode(exception.getErrorCode()) != SQLiteErrorCode.SQLITE_CONSTRAINT) {
-                throw new RuntimeException(exception);
-            }
-        }
+        Library.addToPlaylist(playlist, song);
 
         MainFrame.getInstance().loadPlaylists();
     }
@@ -190,18 +175,7 @@ public class SongDetailPanel extends StackPanel {
             JOptionPane.WARNING_MESSAGE);
 
         if (result == JOptionPane.YES_OPTION) {
-            var queryBuilder = QueryBuilder.delete(Song.class).filterByPrimaryKey("id");
-
-            try (var connection = Library.openConnection();
-                var statement = queryBuilder.prepare(connection)) {
-                queryBuilder.executeUpdate(statement, mapOf(
-                    entry("id", song.getID())
-                ));
-            } catch (SQLException exception) {
-                throw new RuntimeException(exception);
-            }
-
-            Library.deleteSong(Library.getContentPath(song));
+            Library.deleteSong(song);
 
             var mainFrame = MainFrame.getInstance();
 

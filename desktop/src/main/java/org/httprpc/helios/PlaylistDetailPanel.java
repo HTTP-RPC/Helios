@@ -2,13 +2,10 @@
 
 package org.httprpc.helios;
 
-import org.httprpc.kilo.beans.BeanAdapter;
-import org.httprpc.kilo.sql.QueryBuilder;
 import org.httprpc.sierra.BasicTableModel;
 import org.httprpc.sierra.Outlet;
 import org.httprpc.sierra.StackPanel;
 import org.httprpc.sierra.UILoader;
-import org.sqlite.SQLiteErrorCode;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -26,7 +23,7 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -177,29 +174,15 @@ public class PlaylistDetailPanel extends StackPanel {
             JOptionPane.WARNING_MESSAGE);
 
         if (result == JOptionPane.YES_OPTION) {
-            var queryBuilder = QueryBuilder.delete(PlaylistSong.class)
-                .filterByForeignKey(Playlist.class, "playlistID")
-                .filterByForeignKey(Song.class, "songID");
+            var selectedRows = songTable.getSelectedRows();
 
-            try (var connection = Library.openConnection();
-                var statement = queryBuilder.prepare(connection)) {
-                var playlistID = playlist.getID();
+            var selectedSongs = new ArrayList<Song>(selectedRows.length);
 
-                var selectedRows = songTable.getSelectedRows();
-
-                for (var i = 0; i < selectedRows.length; i++) {
-                    var song = songs.get(selectedRows[i]);
-
-                    queryBuilder.addBatch(statement, mapOf(
-                        entry("playlistID", playlistID),
-                        entry("songID", song.getID())
-                    ));
-                }
-
-                statement.executeBatch();
-            } catch (SQLException exception) {
-                throw new RuntimeException(exception);
+            for (var i = 0; i < selectedRows.length; i++) {
+                selectedSongs.add(this.songs.get(selectedRows[i]));
             }
+
+            Library.removeFromPlaylist(playlist, selectedSongs);
 
             MainFrame.getInstance().loadPlaylists();
         }
@@ -232,32 +215,16 @@ public class PlaylistDetailPanel extends StackPanel {
         if (name.isEmpty()) {
             revertPlaylistNameChange();
         } else {
-            QueryBuilder queryBuilder;
-            if (playlist.getID() == null) {
-                queryBuilder = QueryBuilder.insert(Playlist.class);
-            } else {
-                queryBuilder = QueryBuilder.update(Playlist.class).filterByPrimaryKey("id");
-            }
-
             playlist.setName(name);
 
-            try (var connection = Library.openConnection();
-                var statement = queryBuilder.prepare(connection)) {
-                queryBuilder.executeUpdate(statement, new BeanAdapter(playlist));
-
+            if ((playlist.getID() == null) ? Library.addPlaylist(playlist) : Library.updatePlaylist(playlist)) {
                 MainFrame.getInstance().loadPlaylists();
 
                 endPlaylistNameEdit();
-            } catch (SQLException exception) {
-                if (SQLiteErrorCode.getErrorCode(exception.getErrorCode()) == SQLiteErrorCode.SQLITE_CONSTRAINT) {
-                    nameTextField.selectAll();
+            } else {
+                nameTextField.selectAll();
 
-                    UIManager.getLookAndFeel().provideErrorFeedback(nameTextField);
-
-                    return;
-                }
-
-                throw new RuntimeException(exception);
+                UIManager.getLookAndFeel().provideErrorFeedback(nameTextField);
             }
         }
     }
@@ -275,16 +242,7 @@ public class PlaylistDetailPanel extends StackPanel {
             JOptionPane.WARNING_MESSAGE);
 
         if (result == JOptionPane.YES_OPTION) {
-            var queryBuilder = QueryBuilder.delete(Playlist.class).filterByPrimaryKey("id");
-
-            try (var connection = Library.openConnection();
-                var statement = queryBuilder.prepare(connection)) {
-                queryBuilder.executeUpdate(statement, mapOf(
-                    entry("id", playlist.getID())
-                ));
-            } catch (SQLException exception) {
-                throw new RuntimeException(exception);
-            }
+            Library.deletePlaylist(playlist);
 
             MainFrame.getInstance().loadPlaylists();
         }
