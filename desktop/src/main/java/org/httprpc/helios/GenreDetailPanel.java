@@ -63,7 +63,7 @@ public class GenreDetailPanel extends StackPanel {
     }
 
     private @Outlet JLabel nameLabel = null;
-    private @Outlet JButton playAllButton = null;
+    private @Outlet JButton playButton = null;
 
     private @Outlet MenuButton addToPlaylistButton = null;
     private @Outlet JButton editSongButton = null;
@@ -84,7 +84,11 @@ public class GenreDetailPanel extends StackPanel {
 
         nameLabel.setText(genre.getName());
 
-        playAllButton.addActionListener(event -> MainFrame.getInstance().playAll(songs));
+        playButton.addActionListener(event -> {
+            var i = songTable.getSelectedRow();
+
+            MainFrame.getInstance().playAll(i == -1 ? songs : songs.subList(i, songs.size()));
+        });
 
         addToPlaylistButton.setEnabled(false);
 
@@ -113,7 +117,7 @@ public class GenreDetailPanel extends StackPanel {
                 return;
             }
 
-            if (songTable.getSelectionModel().getMinSelectionIndex() != -1) {
+            if (songTable.getSelectedRow() != -1) {
                 enableButtons();
             } else {
                 disableButtons();

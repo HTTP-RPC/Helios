@@ -70,7 +70,7 @@ public class PlaylistDetailPanel extends StackPanel {
     private List<Song> songs;
 
     private @Outlet JTextField nameTextField = null;
-    private @Outlet JButton playAllButton = null;
+    private @Outlet JButton playButton = null;
 
     private @Outlet JButton removeFromPlaylistButton = null;
     private @Outlet JButton editNameButton = null;
@@ -117,7 +117,11 @@ public class PlaylistDetailPanel extends StackPanel {
             }
         });
 
-        playAllButton.addActionListener(event -> MainFrame.getInstance().playAll(songs));
+        playButton.addActionListener(event -> {
+            var i = songTable.getSelectedRow();
+
+            MainFrame.getInstance().playAll(i == -1 ? songs : songs.subList(i, songs.size()));
+        });
 
         removeFromPlaylistButton.addActionListener(event -> removeFromPlaylist());
         removeFromPlaylistButton.setEnabled(false);
@@ -152,7 +156,7 @@ public class PlaylistDetailPanel extends StackPanel {
                 return;
             }
 
-            removeFromPlaylistButton.setEnabled(songTable.getSelectionModel().getMinSelectionIndex() != -1);
+            removeFromPlaylistButton.setEnabled(songTable.getSelectedRow() != -1);
         });
 
         setBorder(new EmptyBorder(8, 8, 8, 8));
