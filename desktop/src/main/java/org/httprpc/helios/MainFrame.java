@@ -618,7 +618,7 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     public void loadPlaylists() {
-        var playlists = Library.getPlaylists();
+        playlists = Library.getPlaylists();
 
         var selectedPlaylistName = map(playlistList.getSelectedValue(), Playlist::getName);
 
