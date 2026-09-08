@@ -903,6 +903,7 @@ public class MainFrame extends JFrame implements Runnable {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("artist", artist.getName())
             ))) {
+            // TODO Filter out compilations
             return groupBy(mapAll(results, BeanAdapter.toType(Song.class)), Song::getAlbum);
         } catch (SQLException exception) {
             throw new RuntimeException(exception);
@@ -993,7 +994,7 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     public static String escape(String component) {
-        return component.replace('\\', '/').replace('/', '_');
+        return component.replace('\\', '_').replace('/', '_').replace(':', '_');
     }
 
     public static void deleteArtist(Path artistPath) {
