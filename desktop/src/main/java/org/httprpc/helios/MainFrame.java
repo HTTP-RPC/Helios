@@ -1002,7 +1002,21 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     public static String escape(String component) {
-        return component.replace('\\', '_').replace('/', '_').replace(':', '_');
+        var n = component.length();
+
+        var componentBuilder = new StringBuilder(n);
+
+        for (var i = 0; i < n; i++) {
+            var c = component.charAt(i);
+
+            if (c == '\\' || c == '/' || c == ':' || c == '.') {
+                c = '_';
+            }
+
+            componentBuilder.append(c);
+        }
+
+        return componentBuilder.toString();
     }
 
     public static void deleteArtist(Path artistPath) {
