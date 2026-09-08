@@ -640,10 +640,6 @@ public class Library {
         return DriverManager.getConnection(String.format("jdbc:sqlite:%s?foreign_keys=true", dbFile.toAbsolutePath()));
     }
 
-    public static Path getAlbumPath(String artist, String album) {
-        return rootDirectory.resolve("music").resolve(escape(artist)).resolve(escape(album));
-    }
-
     public static Path getArtworkPath(String artist, String album) {
         return getAlbumPath(artist, album).resolve("artwork.jpg");
     }
@@ -654,8 +650,11 @@ public class Library {
         return getAlbumPath(song.getArtist(), song.getAlbum()).resolve("content").resolve(escape(fileName));
     }
 
-    // TODO Make this private?
-    public static String escape(String component) {
+    private static Path getAlbumPath(String artist, String album) {
+        return rootDirectory.resolve("music").resolve(escape(artist)).resolve(escape(album));
+    }
+
+    private static String escape(String component) {
         var n = component.length();
 
         var componentBuilder = new StringBuilder(n);
