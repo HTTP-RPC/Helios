@@ -152,6 +152,26 @@ public class Library {
         }
     }
 
+    public static String getSortableValue(String value) {
+        var sortableValue = value.toLowerCase().strip();
+
+        for (var article : articles) {
+            var n = article.length();
+
+            if (sortableValue.startsWith(article)
+                && n < value.length()
+                && Character.isWhitespace(value.charAt(n))) {
+                return sortableValue.substring(n).strip();
+            }
+        }
+
+        return sortableValue;
+    }
+
+    private static Connection openConnection() throws SQLException {
+        return DriverManager.getConnection(String.format("jdbc:sqlite:%s?foreign_keys=true", dbFile.toAbsolutePath()));
+    }
+
     public static List<ExpandedArtist> getArtists() {
         var queryBuilder = QueryBuilder.select(ExpandedArtist.class);
 
@@ -551,44 +571,6 @@ public class Library {
         deleteSong(Library.getContentPath(song));
     }
 
-    public static void addToPlaylist(Playlist playlist, Song song) {
-        var queryBuilder = QueryBuilder.insert(PlaylistSong.class);
-
-        try (var connection = Library.openConnection();
-            var statement = queryBuilder.prepare(connection)) {
-            queryBuilder.executeUpdate(statement, mapOf(
-                entry("playlistID", playlist.getID()),
-                entry("songID", song.getID())
-            ));
-        } catch (SQLException exception) {
-            if (SQLiteErrorCode.getErrorCode(exception.getErrorCode()) != SQLiteErrorCode.SQLITE_CONSTRAINT) {
-                throw new RuntimeException(exception);
-            }
-        }
-    }
-
-    public static void removeFromPlaylist(Playlist playlist, List<Song> songs) {
-        var queryBuilder = QueryBuilder.delete(PlaylistSong.class)
-            .filterByForeignKey(Playlist.class, "playlistID")
-            .filterByForeignKey(Song.class, "songID");
-
-        try (var connection = Library.openConnection();
-            var statement = queryBuilder.prepare(connection)) {
-            var playlistID = playlist.getID();
-
-            for (var song : songs) {
-                queryBuilder.addBatch(statement, mapOf(
-                    entry("playlistID", playlistID),
-                    entry("songID", song.getID())
-                ));
-            }
-
-            statement.executeBatch();
-        } catch (SQLException exception) {
-            throw new RuntimeException(exception);
-        }
-    }
-
     public static boolean addPlaylist(Playlist playlist) {
         var queryBuilder = QueryBuilder.insert(Playlist.class);
 
@@ -636,8 +618,42 @@ public class Library {
         }
     }
 
-    private static Connection openConnection() throws SQLException {
-        return DriverManager.getConnection(String.format("jdbc:sqlite:%s?foreign_keys=true", dbFile.toAbsolutePath()));
+    public static void addToPlaylist(Playlist playlist, Song song) {
+        var queryBuilder = QueryBuilder.insert(PlaylistSong.class);
+
+        try (var connection = Library.openConnection();
+            var statement = queryBuilder.prepare(connection)) {
+            queryBuilder.executeUpdate(statement, mapOf(
+                entry("playlistID", playlist.getID()),
+                entry("songID", song.getID())
+            ));
+        } catch (SQLException exception) {
+            if (SQLiteErrorCode.getErrorCode(exception.getErrorCode()) != SQLiteErrorCode.SQLITE_CONSTRAINT) {
+                throw new RuntimeException(exception);
+            }
+        }
+    }
+
+    public static void removeFromPlaylist(Playlist playlist, List<Song> songs) {
+        var queryBuilder = QueryBuilder.delete(PlaylistSong.class)
+            .filterByForeignKey(Playlist.class, "playlistID")
+            .filterByForeignKey(Song.class, "songID");
+
+        try (var connection = Library.openConnection();
+            var statement = queryBuilder.prepare(connection)) {
+            var playlistID = playlist.getID();
+
+            for (var song : songs) {
+                queryBuilder.addBatch(statement, mapOf(
+                    entry("playlistID", playlistID),
+                    entry("songID", song.getID())
+                ));
+            }
+
+            statement.executeBatch();
+        } catch (SQLException exception) {
+            throw new RuntimeException(exception);
+        }
     }
 
     public static Path getArtworkPath(String artist, String album) {
@@ -672,15 +688,25 @@ public class Library {
         return componentBuilder.toString();
     }
 
-    public static void deleteArtist(Path artistPath) {
+    public static void deleteSong(Path contentPath) {
         try {
-            deleteAll(artistPath);
+            Files.deleteIfExists(contentPath);
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
+        }
+
+        var albumContentPath = contentPath.getParent();
+
+        try (var stream = Files.list(albumContentPath)) {
+            if (isEmpty(filter(iterableOf(stream), dsStoreFilter))) {
+                deleteAlbum(albumContentPath.getParent());
+            }
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }
     }
 
-    public static void deleteAlbum(Path albumPath) {
+    private static void deleteAlbum(Path albumPath) {
         try {
             deleteAll(albumPath);
         } catch (IOException exception) {
@@ -698,19 +724,9 @@ public class Library {
         }
     }
 
-    public static void deleteSong(Path contentPath) {
+    private static void deleteArtist(Path artistPath) {
         try {
-            Files.deleteIfExists(contentPath);
-        } catch (IOException exception) {
-            throw new RuntimeException(exception);
-        }
-
-        var albumContentPath = contentPath.getParent();
-
-        try (var stream = Files.list(albumContentPath)) {
-            if (isEmpty(filter(iterableOf(stream), dsStoreFilter))) {
-                deleteAlbum(albumContentPath.getParent());
-            }
+            deleteAll(artistPath);
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }
@@ -730,22 +746,6 @@ public class Library {
         }
 
         Files.delete(root);
-    }
-
-    public static String getSortableValue(String value) {
-        var sortableValue = value.toLowerCase().strip();
-
-        for (var article : articles) {
-            var n = article.length();
-
-            if (sortableValue.startsWith(article)
-                && n < value.length()
-                && Character.isWhitespace(value.charAt(n))) {
-                return sortableValue.substring(n).strip();
-            }
-        }
-
-        return sortableValue;
     }
 
     public static void getAlbumArtwork() throws IOException {
