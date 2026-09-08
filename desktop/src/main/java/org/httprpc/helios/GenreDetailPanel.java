@@ -2,19 +2,27 @@
 
 package org.httprpc.helios;
 
+import com.formdev.flatlaf.extras.FlatSVGIcon;
+import org.httprpc.kilo.sql.QueryBuilder;
 import org.httprpc.sierra.BasicTableModel;
+import org.httprpc.sierra.MenuButton;
 import org.httprpc.sierra.Outlet;
 import org.httprpc.sierra.StackPanel;
 import org.httprpc.sierra.UILoader;
+import org.sqlite.SQLiteErrorCode;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JTable;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.TableCellRenderer;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.KeyboardFocusManager;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -57,7 +65,7 @@ public class GenreDetailPanel extends StackPanel {
     private @Outlet JLabel nameLabel = null;
     private @Outlet JButton playAllButton = null;
 
-    private @Outlet JButton addToPlaylistButton = null;
+    private @Outlet MenuButton addToPlaylistButton = null;
     private @Outlet JButton editSongButton = null;
 
     private @Outlet JTable songTable = null;
@@ -71,7 +79,6 @@ public class GenreDetailPanel extends StackPanel {
 
         playAllButton.addActionListener(event -> MainFrame.getInstance().playAll(songs));
 
-        addToPlaylistButton.addActionListener(event -> addToPlaylist());
         addToPlaylistButton.setEnabled(false);
 
         editSongButton.addActionListener(event -> editSong());
@@ -99,12 +106,10 @@ public class GenreDetailPanel extends StackPanel {
                 return;
             }
 
-            if (songTable.getSelectionModel().getMinSelectionIndex() == -1) {
-                addToPlaylistButton.setEnabled(false);
-                editSongButton.setEnabled(false);
+            if (songTable.getSelectionModel().getMinSelectionIndex() != -1) {
+                enableButtons();
             } else {
-                addToPlaylistButton.setEnabled(true);
-                editSongButton.setEnabled(true);
+                disableButtons();
             }
         });
 
@@ -112,10 +117,45 @@ public class GenreDetailPanel extends StackPanel {
 
         setScrollableTracksViewportWidth(true);
         setScrollableTracksViewportHeight(true);
+
+        SwingUtilities.invokeLater(() -> {
+            var playlists = MainFrame.getInstance().getPlaylists();
+
+            if (!playlists.isEmpty()) {
+                var playlistIcon = new FlatSVGIcon(SongDetailPanel.class.getResource("icons/music_note_24dp.svg")).derive(18, 18);
+
+                playlistIcon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> UIManager.getColor("Button.foreground")));
+
+                for (var playlist : playlists) {
+                    var menuItem = new JMenuItem(playlist.getName(), playlistIcon);
+
+                    menuItem.addActionListener(event -> addToPlaylist(playlist));
+
+                    addToPlaylistButton.add(menuItem);
+                }
+            }
+        });
     }
 
-    private void addToPlaylist() {
-        // TODO
+    @SuppressWarnings("unchecked")
+    private void addToPlaylist(Playlist playlist) {
+        var song = ((BasicTableModel<Song>)songTable.getModel()).getRow(songTable.getSelectedRow());
+
+        var queryBuilder = QueryBuilder.insert(PlaylistSong.class);
+
+        try (var connection = MainFrame.openConnection();
+            var statement = queryBuilder.prepare(connection)) {
+            queryBuilder.executeUpdate(statement, mapOf(
+                entry("playlistID", playlist.getID()),
+                entry("songID", song.getID())
+            ));
+        } catch (SQLException exception) {
+            if (SQLiteErrorCode.getErrorCode(exception.getErrorCode()) != SQLiteErrorCode.SQLITE_CONSTRAINT) {
+                throw new RuntimeException(exception);
+            }
+        }
+
+        MainFrame.getInstance().loadPlaylists();
     }
 
     @SuppressWarnings("unchecked")
@@ -128,5 +168,15 @@ public class GenreDetailPanel extends StackPanel {
         editSongDialog.setLocationRelativeTo(editSongDialog.getOwner());
 
         editSongDialog.setVisible(true);
+    }
+
+    private void enableButtons() {
+        addToPlaylistButton.setEnabled(addToPlaylistButton.getComponentPopupMenu().getComponentCount() > 0);
+        editSongButton.setEnabled(true);
+    }
+
+    private void disableButtons() {
+        addToPlaylistButton.setEnabled(false);
+        editSongButton.setEnabled(false);
     }
 }

@@ -14,6 +14,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
@@ -22,6 +23,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.SQLException;
 import java.time.Duration;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import static org.httprpc.kilo.util.Collections.*;
@@ -39,7 +41,16 @@ public class SongDetailPanel extends StackPanel {
 
     private @Outlet JLabel timeLabel  = null;
 
+    private List<ExpandedPlaylist> playlists = listOf();
+
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(SongDetailPanel.class.getName());
+
+    private static final FlatSVGIcon playlistIcon;
+    static {
+        playlistIcon = new FlatSVGIcon(SongDetailPanel.class.getResource("icons/music_note_24dp.svg")).derive(18, 18);
+
+        playlistIcon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> UIManager.getColor("Button.foreground")));
+    }
 
     public SongDetailPanel(Song song) {
         this.song = song;
@@ -99,6 +110,23 @@ public class SongDetailPanel extends StackPanel {
             }
         });
 
+        addToPlaylistButton.getComponentPopupMenu().addPopupMenuListener(new PopupMenuListener() {
+            @Override
+            public void popupMenuWillBecomeVisible(PopupMenuEvent event) {
+                // No-op
+            }
+
+            @Override
+            public void popupMenuWillBecomeInvisible(PopupMenuEvent event) {
+                hideButtons();
+            }
+
+            @Override
+            public void popupMenuCanceled(PopupMenuEvent event) {
+                // No-op
+            }
+        });
+
         editSongButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseExited(MouseEvent event) {
@@ -119,6 +147,8 @@ public class SongDetailPanel extends StackPanel {
         }
 
         setBackground(UIManager.getColor("Component.borderColor"));
+
+        SwingUtilities.invokeLater(() -> playlists = MainFrame.getInstance().getPlaylists());
     }
 
     private void playSong() {
@@ -186,32 +216,7 @@ public class SongDetailPanel extends StackPanel {
 
         playSongButton.setVisible(true);
 
-        var playlists = MainFrame.getInstance().getPlaylists();
-
         if (!playlists.isEmpty()) {
-            var popupMenu = addToPlaylistButton.getComponentPopupMenu();
-
-            popupMenu.addPopupMenuListener(new PopupMenuListener() {
-                @Override
-                public void popupMenuWillBecomeVisible(PopupMenuEvent event) {
-                    // No-op
-                }
-
-                @Override
-                public void popupMenuWillBecomeInvisible(PopupMenuEvent event) {
-                    hideButtons();
-                }
-
-                @Override
-                public void popupMenuCanceled(PopupMenuEvent event) {
-                    // No-op
-                }
-            });
-
-            var playlistIcon = new FlatSVGIcon(SongDetailPanel.class.getResource("icons/music_note_24dp.svg")).derive(18, 18);
-
-            playlistIcon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> UIManager.getColor("Button.foreground")));
-
             for (var playlist : playlists) {
                 var menuItem = new JMenuItem(playlist.getName(), playlistIcon);
 

@@ -12,7 +12,7 @@
 
         <spacer weight="1"/>
 
-        <button name="addToPlaylistButton" icon="icons/add_24dp.svg; 20"
+        <menu-button name="addToPlaylistButton" icon="icons/add_24dp.svg; 20"
             focusable="false"
             toolTipText="addToPlaylist"
             style="buttonType: borderless"/>

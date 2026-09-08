@@ -225,9 +225,6 @@ public class MainFrame extends JFrame implements Runnable {
 
     private List<Song> queue = new ArrayList<>();
 
-    private FlatSVGIcon playIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/play_arrow_24dp.svg"));
-    private FlatSVGIcon pauseIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/pause_24dp.svg"));
-
     private static MainFrame instance = null;
 
     public static final String DARK_MODE_KEY = "darkMode";
@@ -258,6 +255,16 @@ public class MainFrame extends JFrame implements Runnable {
     private static final int GENRE_TAB_INDEX = 1;
     private static final int PLAYLIST_TAB_INDEX = 2;
 
+    private static final FlatSVGIcon playIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/play_arrow_24dp.svg"));
+    private static final FlatSVGIcon pauseIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/pause_24dp.svg"));
+
+    static {
+        var playButtonColorFilter = new FlatSVGIcon.ColorFilter(color -> UIManager.getColor("Button.foreground"));
+
+        playIcon.setColorFilter(playButtonColorFilter);
+        pauseIcon.setColorFilter(playButtonColorFilter);
+    }
+
     private static final Path rootDirectory = Path.of(System.getProperty("user.home"), ".helios");
     private static final Path dbFile = rootDirectory.resolve("music.db");
 
@@ -287,11 +294,6 @@ public class MainFrame extends JFrame implements Runnable {
         super(resourceBundle.getString("title"));
 
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-
-        var playButtonColorFilter = new FlatSVGIcon.ColorFilter(color -> UIManager.getColor("Button.foreground"));
-
-        playIcon.setColorFilter(playButtonColorFilter);
-        pauseIcon.setColorFilter(playButtonColorFilter);
 
         var inputMap = rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         var actionMap = rootPane.getActionMap();
