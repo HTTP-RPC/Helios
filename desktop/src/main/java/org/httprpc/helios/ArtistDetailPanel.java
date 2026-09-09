@@ -11,14 +11,12 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
-import static org.httprpc.kilo.util.Optionals.*;
 
 public class ArtistDetailPanel extends StackPanel {
     private @Outlet JLabel nameLabel = null;
@@ -38,8 +36,6 @@ public class ArtistDetailPanel extends StackPanel {
         for (var entry : albums.entrySet()) {
             var name = entry.getKey();
             var songs = entry.getValue();
-
-            songs.sort(Comparator.comparing(song -> coalesce(song.getTrackNumber(), () -> Integer.MAX_VALUE)));
 
             var albumDetailPanel = new AlbumDetailPanel(artist, name, songs);
 

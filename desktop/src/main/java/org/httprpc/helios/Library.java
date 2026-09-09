@@ -126,8 +126,13 @@ public class Library {
 
     private static final Predicate<Path> dsStoreFilter = path -> !path.getFileName().toString().equals(".DS_Store");
 
+    private static final Comparator<Song> artistComparator = Comparator.comparing(Song::getSortableAlbum)
+        .thenComparing(song -> coalesce(song.getDiscNumber(), () -> 0))
+        .thenComparing(song -> coalesce(song.getTrackNumber(), () -> 0));
+
     private static final Comparator<Song> genreComparator = Comparator.comparing(Song::getSortableAlbum)
         .thenComparing(song -> song.isCompilation() ? "" : song.getSortableArtist())
+        .thenComparing(song -> coalesce(song.getDiscNumber(), () -> 0))
         .thenComparing(song -> coalesce(song.getTrackNumber(), () -> 0));
 
     private static final Comparator<Song> playlistComparator = Comparator.comparing(Song::getSortableArtist)
@@ -229,7 +234,7 @@ public class Library {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("artist", artist.getName())
             ))) {
-            return groupBy(sortBy(mapAll(results, BeanAdapter.toType(Song.class)), Song::getSortableAlbum), Song::getAlbum);
+            return groupBy(sortBy(mapAll(results, BeanAdapter.toType(Song.class)), artistComparator), Song::getAlbum);
         } catch (SQLException exception) {
             throw new RuntimeException(exception);
         }

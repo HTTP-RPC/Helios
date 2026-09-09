@@ -15,6 +15,7 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JSeparator;
 import javax.swing.UIManager;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -131,13 +132,25 @@ public class AlbumDetailPanel extends StackPanel {
         String genre = null;
         Integer year = null;
 
-        for (var song : songs) {
-            songListPanel.add(new SongDetailPanel(song));
+        Integer lastDiscNumber = null;
 
+        for (var song : songs) {
             genre = coalesce(genre, song::getGenre);
             year = coalesce(year, song::getYear);
 
+            var discNumber = song.getDiscNumber();
+
+            if (discNumber != null) {
+                if (lastDiscNumber != null && discNumber > lastDiscNumber) {
+                    songListPanel.add(new JSeparator());
+                }
+
+                lastDiscNumber = discNumber;
+            }
+
             compilation |= song.isCompilation();
+
+            songListPanel.add(new SongDetailPanel(song));
         }
 
         genreLabel.setText(genre);
