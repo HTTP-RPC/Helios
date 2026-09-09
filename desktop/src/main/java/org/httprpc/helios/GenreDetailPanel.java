@@ -12,6 +12,7 @@ import org.httprpc.sierra.UILoader;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -64,6 +65,7 @@ public class GenreDetailPanel extends StackPanel {
 
     private @Outlet MenuButton addToPlaylistButton = null;
     private @Outlet JButton editSongButton = null;
+    private @Outlet JButton deleteSongButton = null;
 
     private @Outlet JTable songTable = null;
 
@@ -91,6 +93,9 @@ public class GenreDetailPanel extends StackPanel {
 
         editSongButton.addActionListener(event -> editSong());
         editSongButton.setEnabled(false);
+
+        deleteSongButton.addActionListener(event -> deleteSong());
+        deleteSongButton.setEnabled(false);
 
         var songTableHeader = songTable.getTableHeader();
 
@@ -162,13 +167,36 @@ public class GenreDetailPanel extends StackPanel {
         editSongDialog.setVisible(true);
     }
 
+    @SuppressWarnings("unchecked")
+    private void deleteSong() {
+        var song = ((BasicTableModel<Song>)songTable.getModel()).getRow(songTable.getSelectedRow());
+
+        var result = JOptionPane.showConfirmDialog(getTopLevelAncestor(),
+            String.format(resourceBundle.getString("confirmDeleteMessageFormat"), song.getTitle()),
+            resourceBundle.getString("deleteSong"),
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.WARNING_MESSAGE);
+
+        if (result == JOptionPane.YES_OPTION) {
+            Library.deleteSong(song);
+
+            var mainFrame = MainFrame.getInstance();
+
+            mainFrame.loadArtists();
+            mainFrame.loadGenres();
+            mainFrame.loadPlaylists();
+        }
+    }
+
     private void enableButtons() {
         addToPlaylistButton.setEnabled(addToPlaylistButton.getComponentPopupMenu().getComponentCount() > 0);
         editSongButton.setEnabled(true);
+        deleteSongButton.setEnabled(true);
     }
 
     private void disableButtons() {
         addToPlaylistButton.setEnabled(false);
         editSongButton.setEnabled(false);
+        deleteSongButton.setEnabled(false);
     }
 }
