@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
 import static org.httprpc.kilo.util.Optionals.*;
 
@@ -32,7 +33,7 @@ public class ArtistDetailPanel extends StackPanel {
 
         nameLabel.setText(artist.getName());
 
-        playAllButton.addActionListener(event -> MainFrame.getInstance().playAll(flatten(albums.entrySet(), Map.Entry::getValue)));
+        playAllButton.addActionListener(event -> MainFrame.getInstance().playAll(listOf(flatten(albums.entrySet(), Map.Entry::getValue))));
 
         for (var entry : albums.entrySet()) {
             var name = entry.getKey();

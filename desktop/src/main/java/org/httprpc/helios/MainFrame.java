@@ -804,11 +804,13 @@ public class MainFrame extends JFrame implements Runnable {
         settingsDialog.setVisible(true);
     }
 
-    public void playAll(Iterable<Song> songs) {
+    public void playAll(List<Song> songs) {
         queue.clear();
 
-        for (var song : songs) {
-            queue.add(song);
+        queue.addAll(songs);
+
+        if (shuffleButton.isSelected()) {
+            java.util.Collections.shuffle(queue);
         }
 
         play();
