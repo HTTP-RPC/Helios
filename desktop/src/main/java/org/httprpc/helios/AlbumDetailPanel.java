@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
 
+import static org.httprpc.kilo.util.Optionals.*;
+
 public class AlbumDetailPanel extends StackPanel {
     private Artist artist;
     private String name;
@@ -52,6 +54,8 @@ public class AlbumDetailPanel extends StackPanel {
     private @Outlet JLabel yearLabel = null;
 
     private @Outlet ColumnPanel songListPanel = null;
+
+    private boolean compilation = false;
 
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(AlbumDetailPanel.class.getName());
 
@@ -119,32 +123,25 @@ public class AlbumDetailPanel extends StackPanel {
             }
         }, (artwork, exception) -> artworkImagePane.setImage(artwork));
 
-        for (var song : songs) {
-            var genre = song.getGenre();
-
-            if (genre != null) {
-                genreLabel.setText(genre);
-                break;
-            }
-        }
-
-        for (var song : songs) {
-            var year = song.getYear();
-
-            if (year != null) {
-                yearLabel.setText(String.valueOf(year));
-                break;
-            }
-        }
-
         songListPanel.setBorder(new CompoundBorder(
             new MatteBorder(1, 0, 0, 0, UIManager.getColor("Component.borderColor")),
             new EmptyBorder(2, 0, 0, 0)
         ));
 
+        String genre = null;
+        Integer year = null;
+
         for (var song : songs) {
             songListPanel.add(new SongDetailPanel(song));
+
+            genre = coalesce(genre, song::getGenre);
+            year = coalesce(year, song::getYear);
+
+            compilation |= song.isCompilation();
         }
+
+        genreLabel.setText(genre);
+        yearLabel.setText(map(year, String::valueOf));
     }
 
     private void editArtwork() {
@@ -221,6 +218,10 @@ public class AlbumDetailPanel extends StackPanel {
     }
 
     private void showButtons() {
+        if (compilation) {
+            return;
+        }
+
         artworkButtonPanel.setOpaque(true);
 
         editArtworkButton.setVisible(true);

@@ -786,8 +786,6 @@ public class Library {
                 continue;
             }
 
-            System.out.println(String.format("Downloading artwork for %s / %s", artist, album));
-
             var artistID = map(ArtworkAPI.getArtist(artist.toLowerCase()), ArtworkAPI.Result::getArtistID);
 
             if (artistID != null) {
