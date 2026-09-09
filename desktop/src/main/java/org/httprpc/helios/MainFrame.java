@@ -784,27 +784,51 @@ public class MainFrame extends JFrame implements Runnable {
             return;
         }
 
-        var artist = selectedSong.getArtist();
+        if (!selectedSong.isCompilation()) {
+            var artist = selectedSong.getArtist();
 
-        var artistListModel = artistList.getModel();
+            var artistListModel = artistList.getModel();
 
-        var n = artistListModel.getSize();
+            var n = artistListModel.getSize();
 
-        for (var i = 0; i < n; i++) {
-            if (artistListModel.getElementAt(i).getName().equals(artist)) {
-                artistList.setSelectedIndex(i);
+            for (var i = 0; i < n; i++) {
+                if (artistListModel.getElementAt(i).getName().equals(artist)) {
+                    artistList.setSelectedIndex(i);
 
-                SwingUtilities.invokeLater(() -> {
-                    if (collectionScrollPane.getViewport().getView() instanceof ArtistDetailPanel artistDetailPanel) {
-                        artistDetailPanel.scrollToSong(selectedSong);
-                    }
-                });
+                    SwingUtilities.invokeLater(() -> {
+                        if (collectionScrollPane.getViewport().getView() instanceof ArtistDetailPanel artistDetailPanel) {
+                            artistDetailPanel.scrollToSong(selectedSong);
+                        }
+                    });
 
-                break;
+                    break;
+                }
             }
-        }
 
-        collectionTabbedPane.setSelectedIndex(ARTIST_TAB_INDEX);
+            collectionTabbedPane.setSelectedIndex(ARTIST_TAB_INDEX);
+        } else {
+            var genre = selectedSong.getGenre();
+
+            var genreListModel = genreList.getModel();
+
+            var n = genreListModel.getSize();
+
+            for (var i = 0; i < n; i++) {
+                if (genreListModel.getElementAt(i).getName().equals(genre)) {
+                    genreList.setSelectedIndex(i);
+
+                    SwingUtilities.invokeLater(() -> {
+                        if (collectionScrollPane.getViewport().getView() instanceof GenreDetailPanel genreDetailPanel) {
+                            genreDetailPanel.scrollToSong(selectedSong);
+                        }
+                    });
+
+                    break;
+                }
+            }
+
+            collectionTabbedPane.setSelectedIndex(GENRE_TAB_INDEX);
+        }
     }
 
     private void showSettingsDialog() {

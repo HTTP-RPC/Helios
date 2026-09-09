@@ -199,4 +199,24 @@ public class GenreDetailPanel extends StackPanel {
         editSongButton.setEnabled(false);
         deleteSongButton.setEnabled(false);
     }
+
+    @SuppressWarnings("unchecked")
+    public void scrollToSong(Song song) {
+        var songID = song.getID();
+
+        var songTableModel = (BasicTableModel<Song>)songTable.getModel();
+
+        var n = songTableModel.getRowCount();
+
+        for (var i = 0; i < n; i++) {
+            if (songID.equals(songTableModel.getRow(i).getID())) {
+                songTable.getSelectionModel().setSelectionInterval(i, i);
+                songTable.scrollRectToVisible(songTable.getCellRect(i, 1, true));
+
+                songTable.requestFocus();
+
+                break;
+            }
+        }
+    }
 }

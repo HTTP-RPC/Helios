@@ -7,7 +7,7 @@
         leadingIcon="icons/search_24dp.svg; 18"
         showClearButton="true"/>
 
-    <scroll-pane size="320, 240">
+    <scroll-pane size="480, 320">
         <list name="resultList" selectionMode="single-selection"/>
     </scroll-pane>
 </column-panel>
