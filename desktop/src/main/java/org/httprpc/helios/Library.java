@@ -406,6 +406,14 @@ public class Library {
                 return;
             }
 
+            if (!song.isCompilation()) {
+                var albumArtist = coalesce(tag.getFirst(FieldKey.ALBUM_ARTIST), () -> "").strip();
+
+                if (!albumArtist.isEmpty()) {
+                    song.setArtist(albumArtist);
+                }
+            }
+
             var type = audioFile.getExt();
 
             song.setType(type);
