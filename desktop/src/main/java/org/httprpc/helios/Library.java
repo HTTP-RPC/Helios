@@ -72,7 +72,7 @@ public class Library {
             var webServiceProxy = new WebServiceProxy("GET", apiBaseURI.resolve("search"));
 
             webServiceProxy.setArguments(mapOf(
-                entry("term", name),
+                entry("term", name.toLowerCase()),
                 entry("entity", "musicArtist"),
                 entry("country", Locale.getDefault().getCountry().toLowerCase()),
                 entry("limit", 1)
@@ -95,10 +95,16 @@ public class Library {
 
             var results = BeanAdapter.coerce(webServiceProxy.invoke(), Response.class).getResults();
 
+            var lowerCaseName = name.toLowerCase();
+
             return firstOf(filter(results, result -> {
                 var collectionName = map(result.getCollectionName(), String::toLowerCase);
 
-                return collectionName != null && (collectionName.startsWith(name) || name.startsWith(collectionName));
+                if (collectionName == null) {
+                    return false;
+                }
+
+                return collectionName.startsWith(lowerCaseName) || lowerCaseName.startsWith(collectionName);
             }));
         }
 
@@ -792,10 +798,10 @@ public class Library {
             System.out.println(String.format("Downloading artwork for %s / %s", artist, album));
 
             try {
-                var artistID = map(ArtworkAPI.getArtist(artist.toLowerCase()), ArtworkAPI.Result::getArtistID);
+                var artistID = map(ArtworkAPI.getArtist(artist), ArtworkAPI.Result::getArtistID);
 
                 if (artistID != null) {
-                    var artworkURL100 = map(ArtworkAPI.getCollection(artistID, album.toLowerCase()), ArtworkAPI.Result::getArtworkURL100);
+                    var artworkURL100 = map(ArtworkAPI.getCollection(artistID, album), ArtworkAPI.Result::getArtworkURL100);
 
                     if (artworkURL100 != null) {
                         var artwork = ArtworkAPI.getArtwork(artworkURL100);
