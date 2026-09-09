@@ -12,20 +12,22 @@
 
         <spacer weight="1"/>
 
-        <menu-button name="addToPlaylistButton" icon="icons/add_24dp.svg; 20"
-            focusable="false"
-            toolTipText="addToPlaylist"
-            style="buttonType: borderless"/>
+        <row-panel spacing="2">
+            <menu-button name="addToPlaylistButton" icon="icons/add_24dp.svg; 18"
+                focusable="false"
+                toolTipText="addToPlaylist"
+                style="buttonType: borderless"/>
 
-        <button name="editSongButton" icon="icons/edit_24dp.svg; 18"
-            focusable="false"
-            toolTipText="editSong"
-            style="buttonType: borderless"/>
+            <button name="editSongButton" icon="icons/edit_24dp.svg; 16"
+                focusable="false"
+                toolTipText="editSong"
+                style="buttonType: borderless"/>
 
-        <button name="deleteSongButton" icon="icons/delete_24dp.svg; 20"
-            focusable="false"
-            toolTipText="deleteSong"
-            style="buttonType: borderless"/>
+            <button name="deleteSongButton" icon="icons/delete_24dp.svg; 18"
+                focusable="false"
+                toolTipText="deleteSong"
+                style="buttonType: borderless"/>
+        </row-panel>
     </row-panel>
 
     <scroll-pane weight="1">
