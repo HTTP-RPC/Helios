@@ -426,7 +426,7 @@ public class Library {
 
             var artworkPath = getArtworkPath(artist, album);
 
-            if (!Files.exists(artworkPath, LinkOption.NOFOLLOW_LINKS)) {
+            if (!song.isCompilation() && !Files.exists(artworkPath, LinkOption.NOFOLLOW_LINKS)) {
                 var artwork = tag.getFirstArtwork();
 
                 if (artwork != null) {

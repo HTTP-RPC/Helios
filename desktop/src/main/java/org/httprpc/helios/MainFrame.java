@@ -741,6 +741,8 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     private void getAlbumArtwork() {
+        getAlbumArtworkButton.setEnabled(false);
+
         albumArtworkActivityIndicator.start();
 
         taskExecutor.execute(() -> {
@@ -748,6 +750,8 @@ public class MainFrame extends JFrame implements Runnable {
 
             return null;
         }, (result, exception) -> {
+            getAlbumArtworkButton.setEnabled(true);
+
             albumArtworkActivityIndicator.stop();
 
             loadArtists();
