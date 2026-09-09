@@ -793,7 +793,10 @@ public class MainFrame extends JFrame implements Runnable {
 
             for (var i = 0; i < n; i++) {
                 if (artistListModel.getElementAt(i).getName().equals(artist)) {
+                    collectionTabbedPane.setSelectedIndex(ARTIST_TAB_INDEX);
+
                     artistList.setSelectedIndex(i);
+                    artistList.ensureIndexIsVisible(i);
 
                     SwingUtilities.invokeLater(() -> {
                         if (collectionScrollPane.getViewport().getView() instanceof ArtistDetailPanel artistDetailPanel) {
@@ -804,8 +807,6 @@ public class MainFrame extends JFrame implements Runnable {
                     break;
                 }
             }
-
-            collectionTabbedPane.setSelectedIndex(ARTIST_TAB_INDEX);
         } else {
             var genre = selectedSong.getGenre();
 
@@ -815,7 +816,10 @@ public class MainFrame extends JFrame implements Runnable {
 
             for (var i = 0; i < n; i++) {
                 if (genreListModel.getElementAt(i).getName().equals(genre)) {
+                    collectionTabbedPane.setSelectedIndex(GENRE_TAB_INDEX);
+
                     genreList.setSelectedIndex(i);
+                    genreList.ensureIndexIsVisible(i);
 
                     SwingUtilities.invokeLater(() -> {
                         if (collectionScrollPane.getViewport().getView() instanceof GenreDetailPanel genreDetailPanel) {
@@ -826,8 +830,6 @@ public class MainFrame extends JFrame implements Runnable {
                     break;
                 }
             }
-
-            collectionTabbedPane.setSelectedIndex(GENRE_TAB_INDEX);
         }
     }
 
