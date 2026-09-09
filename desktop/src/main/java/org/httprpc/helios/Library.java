@@ -64,7 +64,7 @@ public class Library {
             String getArtworkURL100();
         }
 
-        static final int REQUEST_DELAY = 5000;
+        static final int REQUEST_DELAY = 3500;
 
         static final URI apiBaseURI = URI.create("https://itunes.apple.com/");
 
@@ -127,6 +127,9 @@ public class Library {
     private static final Comparator<Song> playlistComparator = Comparator.comparing(Song::getSortableArtist)
         .thenComparing(Song::getSortableTitle)
         .thenComparing(Song::getSortableAlbum);
+
+    private static final Comparator<ArtistAlbum> artistAlbumComparator = Comparator.comparing(ArtistAlbum::getSortableArtist)
+        .thenComparing(ArtistAlbum::getSortableAlbum);
 
     private static List<String> articles;
     static {
@@ -764,14 +767,14 @@ public class Library {
         Files.delete(root);
     }
 
-    public static void getAlbumArtwork() throws IOException {
-        var queryBuilder = QueryBuilder.select(ArtistAlbum.class).ordered(true);
+    public static void getAlbumArtwork() {
+        var queryBuilder = QueryBuilder.select(ArtistAlbum.class);
 
         List<ArtistAlbum> artistAlbums;
         try (var connection = openConnection();
             var statement = queryBuilder.prepare(connection);
             var results = queryBuilder.executeQuery(statement)) {
-            artistAlbums = listOf(mapAll(results, BeanAdapter.toType(ArtistAlbum.class)));
+            artistAlbums = sortBy(mapAll(results, BeanAdapter.toType(ArtistAlbum.class)), artistAlbumComparator);
         } catch (SQLException exception) {
             throw new RuntimeException(exception);
         }
@@ -786,22 +789,28 @@ public class Library {
                 continue;
             }
 
-            var artistID = map(ArtworkAPI.getArtist(artist.toLowerCase()), ArtworkAPI.Result::getArtistID);
+            System.out.println(String.format("Downloading artwork for %s / %s", artist, album));
 
-            if (artistID != null) {
-                var artworkURL100 = map(ArtworkAPI.getCollection(artistID, album.toLowerCase()), ArtworkAPI.Result::getArtworkURL100);
+            try {
+                var artistID = map(ArtworkAPI.getArtist(artist.toLowerCase()), ArtworkAPI.Result::getArtistID);
 
-                if (artworkURL100 != null) {
-                    var artwork = ArtworkAPI.getArtwork(artworkURL100);
+                if (artistID != null) {
+                    var artworkURL100 = map(ArtworkAPI.getCollection(artistID, album.toLowerCase()), ArtworkAPI.Result::getArtworkURL100);
 
-                    if (artwork != null) {
-                        try (var outputStream = Files.newOutputStream(artworkPath,
-                            StandardOpenOption.CREATE,
-                            StandardOpenOption.TRUNCATE_EXISTING)) {
-                            ImageIO.write(artwork, "jpeg", outputStream);
+                    if (artworkURL100 != null) {
+                        var artwork = ArtworkAPI.getArtwork(artworkURL100);
+
+                        if (artwork != null) {
+                            try (var outputStream = Files.newOutputStream(artworkPath,
+                                StandardOpenOption.CREATE,
+                                StandardOpenOption.TRUNCATE_EXISTING)) {
+                                ImageIO.write(artwork, "jpeg", outputStream);
+                            }
                         }
                     }
                 }
+            } catch (IOException exception) {
+                System.out.println(exception.getMessage());
             }
 
             try {
