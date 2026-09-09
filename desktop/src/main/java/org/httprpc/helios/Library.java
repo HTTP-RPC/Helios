@@ -64,6 +64,8 @@ public class Library {
             String getArtworkURL100();
         }
 
+        static final int REQUEST_DELAY = 5000;
+
         static final URI apiBaseURI = URI.create("https://itunes.apple.com/");
 
         static Result getArtist(String name) throws IOException {
@@ -776,6 +778,8 @@ public class Library {
                 continue;
             }
 
+            System.out.println(String.format("Downloading artwork for %s / %s", artist, album));
+
             var artistID = map(ArtworkAPI.getArtist(artist.toLowerCase()), ArtworkAPI.Result::getArtistID);
 
             if (artistID != null) {
@@ -792,6 +796,12 @@ public class Library {
                         }
                     }
                 }
+            }
+
+            try {
+                Thread.sleep(ArtworkAPI.REQUEST_DELAY);
+            } catch (InterruptedException exception) {
+                throw new RuntimeException(exception);
             }
         }
     }
