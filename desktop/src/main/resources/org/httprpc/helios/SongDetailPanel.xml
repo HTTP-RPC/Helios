@@ -3,16 +3,14 @@
 <!DOCTYPE row-panel SYSTEM "sierra.dtd">
 
 <row-panel spacing="4" padding="2, 4, 2, 4">
-    <label name="titleLabel"/>
-
-    <button name="playSongButton" icon="icons/play_arrow_24dp.svg; 18"
-        focusable="false"
-        toolTipText="playSong"
-        style="buttonType: borderless"/>
-
-    <spacer weight="1"/>
+    <label name="titleLabel" weight="1"/>
 
     <row-panel spacing="2">
+        <button name="playSongButton" icon="icons/play_arrow_24dp.svg; 18"
+            focusable="false"
+            toolTipText="playSong"
+            style="buttonType: borderless"/>
+
         <menu-button name="addToPlaylistButton" icon="icons/add_24dp.svg; 18"
             focusable="false"
             toolTipText="addToPlaylist"
@@ -29,5 +27,5 @@
             style="buttonType: borderless"/>
     </row-panel>
 
-    <label name="timeLabel"/>
+    <label name="timeLabel" horizontalAlignment="trailing"/>
 </row-panel>

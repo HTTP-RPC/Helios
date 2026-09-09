@@ -69,6 +69,9 @@ public class SongDetailPanel extends StackPanel {
         deleteSongButton.addActionListener(event -> deleteSong());
         deleteSongButton.setVisible(false);
 
+        timeLabel.setText(String.format(resourceBundle.getString("timeFormat"), 60, 0));
+        timeLabel.setPreferredSize(timeLabel.getPreferredSize());
+
         var duration = Duration.ofSeconds(song.getTime());
 
         timeLabel.setText(String.format(resourceBundle.getString("timeFormat"),
