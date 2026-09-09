@@ -640,6 +640,10 @@ public class MainFrame extends JFrame implements Runnable {
 
         var n = queue.size();
 
+        if (nextSongIndex == n && repeatButton.isSelected()) {
+            nextSongIndex = 0;
+        }
+
         if (nextSongIndex < n) {
             var song = queue.get(nextSongIndex);
 
@@ -647,12 +651,6 @@ public class MainFrame extends JFrame implements Runnable {
                 song.getTitle(),
                 song.getArtist(),
                 song.getAlbum()));
-
-            nextSongIndex++;
-
-            if (nextSongIndex == n && repeatButton.isSelected()) {
-                nextSongIndex = 0;
-            }
         }
 
         playing = true;
@@ -668,15 +666,19 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     private void movePrevious() {
-        // TODO
+        nextSongIndex--;
+
+        play();
     }
 
     private void moveNext() {
-        // TODO
+        nextSongIndex++;
+
+        play();
     }
 
     private void showQueueDialog() {
-        var queueDialog = new QueueDialog(this, queue.subList(nextSongIndex, queue.size()));
+        var queueDialog = new QueueDialog(this, queue.subList(nextSongIndex + 1, queue.size()));
 
         queueDialog.pack();
         queueDialog.setLocationRelativeTo(this);
