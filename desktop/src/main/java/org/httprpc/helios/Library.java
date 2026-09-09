@@ -707,7 +707,7 @@ public class Library {
         return componentBuilder.toString();
     }
 
-    public static void deleteSong(Path contentPath) {
+    private static void deleteSong(Path contentPath) {
         try {
             Files.deleteIfExists(contentPath);
         } catch (IOException exception) {
