@@ -212,6 +212,7 @@ public class MainFrame extends JFrame implements Runnable {
     private List<ExpandedPlaylist> playlists = listOf();
 
     private List<Song> queue = new ArrayList<>();
+    private int nextSongIndex = 0;
 
     private static MainFrame instance = null;
 
@@ -637,14 +638,21 @@ public class MainFrame extends JFrame implements Runnable {
         playPauseButton.setIcon(pauseIcon);
         playPauseButton.setToolTipText(resourceBundle.getString("pause"));
 
-        // TODO
-        if (!queue.isEmpty()) {
-            var song = queue.removeFirst();
+        var n = queue.size();
+
+        if (nextSongIndex < n) {
+            var song = queue.get(nextSongIndex);
 
             setTitle(String.format(resourceBundle.getString("songTitleFormat"),
                 song.getTitle(),
                 song.getArtist(),
                 song.getAlbum()));
+
+            nextSongIndex++;
+
+            if (nextSongIndex == n && repeatButton.isSelected()) {
+                nextSongIndex = 0;
+            }
         }
 
         playing = true;
@@ -668,7 +676,7 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     private void showQueueDialog() {
-        var queueDialog = new QueueDialog(this, queue);
+        var queueDialog = new QueueDialog(this, queue.subList(nextSongIndex, queue.size()));
 
         queueDialog.pack();
         queueDialog.setLocationRelativeTo(this);
@@ -812,6 +820,8 @@ public class MainFrame extends JFrame implements Runnable {
         if (shuffleButton.isSelected()) {
             java.util.Collections.shuffle(queue);
         }
+
+        nextSongIndex = 0;
 
         play();
     }
