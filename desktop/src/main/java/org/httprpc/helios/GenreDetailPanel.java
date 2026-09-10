@@ -150,7 +150,7 @@ public class GenreDetailPanel extends StackPanel {
     private void addToPlaylist(Playlist playlist) {
         var song = ((BasicTableModel<Song>)songTable.getModel()).getRow(songTable.getSelectedRow());
 
-        Library.addToPlaylist(playlist, song);
+        MusicLibrary.addToPlaylist(playlist, song);
 
         MainFrame.getInstance().loadPlaylists();
     }
@@ -178,7 +178,7 @@ public class GenreDetailPanel extends StackPanel {
             JOptionPane.WARNING_MESSAGE);
 
         if (result == JOptionPane.YES_OPTION) {
-            Library.deleteSong(song);
+            MusicLibrary.deleteSong(song);
 
             var mainFrame = MainFrame.getInstance();
 

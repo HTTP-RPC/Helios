@@ -59,7 +59,7 @@ public class Song {
     public void setArtist(String artist) {
         this.artist = artist;
 
-        sortableArtist = map(artist, Library::getSortableValue);
+        sortableArtist = map(artist, MusicLibrary::getSortableValue);
     }
 
     public String getSortableArtist() {
@@ -75,7 +75,7 @@ public class Song {
     public void setAlbum(String album) {
         this.album = album;
 
-        sortableAlbum = map(album, Library::getSortableValue);
+        sortableAlbum = map(album, MusicLibrary::getSortableValue);
     }
 
     public String getSortableAlbum() {
@@ -92,7 +92,7 @@ public class Song {
     public void setTitle(String title) {
         this.title = title;
 
-        sortableTitle = map(title, Library::getSortableValue);
+        sortableTitle = map(title, MusicLibrary::getSortableValue);
     }
 
     public String getSortableTitle() {

@@ -182,7 +182,7 @@ public class PlaylistDetailPanel extends StackPanel {
                 selectedSongs.add(this.songs.get(selectedRows[i]));
             }
 
-            Library.removeFromPlaylist(playlist, selectedSongs);
+            MusicLibrary.removeFromPlaylist(playlist, selectedSongs);
 
             MainFrame.getInstance().loadPlaylists();
         }
@@ -217,7 +217,7 @@ public class PlaylistDetailPanel extends StackPanel {
         } else {
             playlist.setName(name);
 
-            if ((playlist.getID() == null) ? Library.addPlaylist(playlist) : Library.updatePlaylist(playlist)) {
+            if ((playlist.getID() == null) ? MusicLibrary.addPlaylist(playlist) : MusicLibrary.updatePlaylist(playlist)) {
                 MainFrame.getInstance().loadPlaylists();
 
                 endPlaylistNameEdit();
@@ -242,7 +242,7 @@ public class PlaylistDetailPanel extends StackPanel {
             JOptionPane.WARNING_MESSAGE);
 
         if (result == JOptionPane.YES_OPTION) {
-            Library.deletePlaylist(playlist);
+            MusicLibrary.deletePlaylist(playlist);
 
             MainFrame.getInstance().loadPlaylists();
         }

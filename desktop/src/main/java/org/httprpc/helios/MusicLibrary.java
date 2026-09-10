@@ -48,7 +48,7 @@ import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
 import static org.httprpc.kilo.util.Optionals.*;
 
-public class Library {
+public class MusicLibrary {
     private static class ArtworkAPI {
         interface Response {
             List<Result> getResults();
@@ -119,7 +119,7 @@ public class Library {
         }
     }
 
-    private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(Library.class.getName());
+    private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(MusicLibrary.class.getName());
 
     private static final Path rootDirectory = Path.of(System.getProperty("user.home"), ".helios");
     private static final Path dbFile = rootDirectory.resolve("music.db");
@@ -147,7 +147,7 @@ public class Library {
         articles = listOf(mapAll(iterableOf(resourceBundle.getString("articles").split(",")), article -> article.strip().toLowerCase()));
     }
 
-    private Library() {
+    private MusicLibrary() {
     }
 
     public static void initialize() throws Exception {

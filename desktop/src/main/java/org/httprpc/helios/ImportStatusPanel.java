@@ -62,7 +62,7 @@ public class ImportStatusPanel extends StackPanel {
 
         if (index < paths.size()) {
             taskExecutor.execute(() -> {
-                Library.addSong(paths.get(index));
+                MusicLibrary.addSong(paths.get(index));
 
                 return null;
             }, (result, exception) -> addNext());

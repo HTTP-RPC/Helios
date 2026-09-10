@@ -84,7 +84,7 @@ public class EditSongDialog extends ModalDialog {
         titleTextField.setText(song.getTitle());
 
         genreSuggestionPicker.setText(song.getGenre());
-        genreSuggestionPicker.setSuggestions(Library.getGenreSuggestions());
+        genreSuggestionPicker.setSuggestions(MusicLibrary.getGenreSuggestions());
 
         yearTextField.setValue(song.getYear());
 
@@ -162,7 +162,7 @@ public class EditSongDialog extends ModalDialog {
 
         song.setType(this.song.getType());
 
-        Library.updateSong(song, this.song);
+        MusicLibrary.updateSong(song, this.song);
 
         var mainFrame = MainFrame.getInstance();
 

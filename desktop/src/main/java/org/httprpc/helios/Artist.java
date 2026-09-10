@@ -22,7 +22,7 @@ public class Artist {
     public void setName(String name) {
         this.name = name;
 
-        sortableName = map(name, Library::getSortableValue);
+        sortableName = map(name, MusicLibrary::getSortableValue);
     }
 
     public String getSortableName() {

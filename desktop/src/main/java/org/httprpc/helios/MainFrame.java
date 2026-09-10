@@ -587,7 +587,7 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     public void loadArtists() {
-        var artists = Library.getArtists();
+        var artists = MusicLibrary.getArtists();
 
         var selectedArtistName = map(artistList.getSelectedValue(), Artist::getName);
 
@@ -603,7 +603,7 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     public void loadGenres() {
-        var genres = Library.getGenres();
+        var genres = MusicLibrary.getGenres();
 
         var selectedGenreName = map(genreList.getSelectedValue(), Genre::getName);
 
@@ -619,7 +619,7 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     public void loadPlaylists() {
-        playlists = Library.getPlaylists();
+        playlists = MusicLibrary.getPlaylists();
 
         var selectedPlaylistName = map(playlistList.getSelectedValue(), Playlist::getName);
 
@@ -758,7 +758,7 @@ public class MainFrame extends JFrame implements Runnable {
         albumArtworkActivityIndicator.start();
 
         taskExecutor.execute(() -> {
-            Library.getAlbumArtwork();
+            MusicLibrary.getAlbumArtwork();
 
             return null;
         }, (result, exception) -> {
@@ -858,9 +858,9 @@ public class MainFrame extends JFrame implements Runnable {
 
     private void showSelectedCollection() {
         var collectionDetailPanel = switch (collectionTabbedPane.getSelectedIndex()) {
-            case ARTIST_TAB_INDEX -> map(artistList.getSelectedValue(), artist -> new ArtistDetailPanel(artist, Library.getAlbums(artist)));
-            case GENRE_TAB_INDEX -> map(genreList.getSelectedValue(), genre -> new GenreDetailPanel(genre, Library.getSongs(genre)));
-            case PLAYLIST_TAB_INDEX -> map(playlistList.getSelectedValue(), playlist -> new PlaylistDetailPanel(playlist, Library.getSongs(playlist)));
+            case ARTIST_TAB_INDEX -> map(artistList.getSelectedValue(), artist -> new ArtistDetailPanel(artist, MusicLibrary.getAlbums(artist)));
+            case GENRE_TAB_INDEX -> map(genreList.getSelectedValue(), genre -> new GenreDetailPanel(genre, MusicLibrary.getSongs(genre)));
+            case PLAYLIST_TAB_INDEX -> map(playlistList.getSelectedValue(), playlist -> new PlaylistDetailPanel(playlist, MusicLibrary.getSongs(playlist)));
             default -> throw new UnsupportedOperationException();
         };
 
@@ -875,7 +875,7 @@ public class MainFrame extends JFrame implements Runnable {
             FlatLightLaf.setup();
         }
 
-        Library.initialize();
+        MusicLibrary.initialize();
 
         instance = new MainFrame();
 

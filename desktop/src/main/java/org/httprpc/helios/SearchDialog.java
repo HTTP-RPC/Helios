@@ -106,7 +106,7 @@ public class SearchDialog extends ModalDialog {
     }
 
     private void search() {
-        resultList.setModel(new BasicListModel<>(Library.findSongs(titleTextField.getText())));
+        resultList.setModel(new BasicListModel<>(MusicLibrary.findSongs(titleTextField.getText())));
     }
 
     public Song getSelectedSong() {

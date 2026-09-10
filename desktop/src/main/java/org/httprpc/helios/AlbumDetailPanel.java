@@ -84,7 +84,7 @@ public class AlbumDetailPanel extends StackPanel {
         deleteArtworkButton.addActionListener(event -> deleteArtwork());
         deleteArtworkButton.setVisible(false);
 
-        deleteArtworkButton.setEnabled(Files.exists(Library.getArtworkPath(artist.getName(), name)));
+        deleteArtworkButton.setEnabled(Files.exists(MusicLibrary.getArtworkPath(artist.getName(), name)));
 
         artworkPanel.addMouseListener(new MouseAdapter() {
             @Override
@@ -117,7 +117,7 @@ public class AlbumDetailPanel extends StackPanel {
         });
 
         taskExecutor.execute(() -> {
-            try (var inputStream = Files.newInputStream(Library.getArtworkPath(artist.getName(), name))) {
+            try (var inputStream = Files.newInputStream(MusicLibrary.getArtworkPath(artist.getName(), name))) {
                 return ImageIO.read(inputStream);
             } catch (IOException exception) {
                 return null;
@@ -218,9 +218,9 @@ public class AlbumDetailPanel extends StackPanel {
 
         taskExecutor.execute(() -> {
             if (artwork != null) {
-                Library.updateAlbumArtwork(artist.getName(), name, artwork);
+                MusicLibrary.updateAlbumArtwork(artist.getName(), name, artwork);
             } else {
-                Library.deleteAlbumArtwork(artist.getName(), name);
+                MusicLibrary.deleteAlbumArtwork(artist.getName(), name);
             }
 
             return null;
