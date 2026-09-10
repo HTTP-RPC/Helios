@@ -16,12 +16,13 @@ public class MacOSAudioPlayer implements AudioPlayer {
 
         Pointer sel_registerName(String str);
 
-        Pointer class_createInstance(Pointer type, int extraBytes);
-
         long objc_msgSend(Pointer self, Pointer op);
         long objc_msgSend(Pointer self, Pointer op, Object arg);
+        long objc_msgSend(Pointer self, Pointer op, Object arg1, Object arg2);
 
         void object_dispose(Pointer obj);
+
+        Pointer alloc = instance.sel_registerName("alloc");
     }
 
     public interface Foundation extends Library {
@@ -30,13 +31,13 @@ public class MacOSAudioPlayer implements AudioPlayer {
         interface NSString {
             Pointer type = ObjectiveCRuntime.instance.objc_getClass("NSString");
 
-            Pointer factory = ObjectiveCRuntime.instance.sel_registerName("stringWithUTF8String:");
+            Pointer stringWithUTF8String_ = ObjectiveCRuntime.instance.sel_registerName("stringWithUTF8String:");
         }
 
         interface NSURL {
             Pointer type = ObjectiveCRuntime.instance.objc_getClass("NSURL");
 
-            Pointer factory = ObjectiveCRuntime.instance.sel_registerName("URLWithString:");
+            Pointer URLWithString_ = ObjectiveCRuntime.instance.sel_registerName("URLWithString:");
         }
 
         int NS_UTF8_STRING_ENCODING = 4;
@@ -48,71 +49,74 @@ public class MacOSAudioPlayer implements AudioPlayer {
         interface AVAudioPlayer {
             Pointer type = ObjectiveCRuntime.instance.objc_getClass("AVAudioPlayer");
 
-            Pointer initializer = ObjectiveCRuntime.instance.sel_registerName("initWithContentsOfURL:error:");
+            Pointer initWithContentsOfURL_Error_ = ObjectiveCRuntime.instance.sel_registerName("initWithContentsOfURL:error:");
 
-            Pointer playAtTimeSelector = ObjectiveCRuntime.instance.sel_registerName("playAtTime:");
-            Pointer pauseSelector = ObjectiveCRuntime.instance.sel_registerName("pause");
-            Pointer stopSelector = ObjectiveCRuntime.instance.sel_registerName("stop");
-            Pointer playingSelector = ObjectiveCRuntime.instance.sel_registerName("playing");
-            Pointer currentTimeSelector = ObjectiveCRuntime.instance.sel_registerName("currentTime");
-            Pointer setCurrentTimeSelector = ObjectiveCRuntime.instance.sel_registerName("setCurrentTime");
-            Pointer durationSelector = ObjectiveCRuntime.instance.sel_registerName("duration");
+            Pointer playAtTime_ = ObjectiveCRuntime.instance.sel_registerName("playAtTime:");
+            Pointer pause = ObjectiveCRuntime.instance.sel_registerName("pause");
+            Pointer stop = ObjectiveCRuntime.instance.sel_registerName("stop");
+            Pointer playing = ObjectiveCRuntime.instance.sel_registerName("playing");
+            Pointer currentTime = ObjectiveCRuntime.instance.sel_registerName("currentTime");
+            Pointer setCurrentTime = ObjectiveCRuntime.instance.sel_registerName("setCurrentTime");
+            Pointer duration = ObjectiveCRuntime.instance.sel_registerName("duration");
         }
     }
 
-    private Pointer instance;
+    private Pointer audioPlayer;
 
     public MacOSAudioPlayer(Path contentPath) {
         var urlString = new Pointer(ObjectiveCRuntime.instance.objc_msgSend(Foundation.NSString.type,
-            Foundation.NSString.factory,
+            Foundation.NSString.stringWithUTF8String_,
             contentPath.toAbsolutePath().toString()));
 
         var url = new Pointer(ObjectiveCRuntime.instance.objc_msgSend(Foundation.NSURL.type,
-            Foundation.NSURL.factory,
+            Foundation.NSURL.URLWithString_,
             urlString));
 
-        instance = new Pointer(ObjectiveCRuntime.instance.objc_msgSend(ObjectiveCRuntime.instance.class_createInstance(AVFoundation.AVAudioPlayer.type, 0),
-            AVFoundation.AVAudioPlayer.initializer,
-            url));
+        var audioPlayer = new Pointer(ObjectiveCRuntime.instance.objc_msgSend(AVFoundation.AVAudioPlayer.type,
+            ObjectiveCRuntime.alloc));
+
+        this.audioPlayer = new Pointer(ObjectiveCRuntime.instance.objc_msgSend(audioPlayer,
+            AVFoundation.AVAudioPlayer.initWithContentsOfURL_Error_,
+            url, null));
     }
 
     @Override
     public void playFrom(double position) {
-        ObjectiveCRuntime.instance.objc_msgSend(instance, AVFoundation.AVAudioPlayer.playAtTimeSelector, position);
+        ObjectiveCRuntime.instance.objc_msgSend(audioPlayer, AVFoundation.AVAudioPlayer.playAtTime_, position);
     }
 
     @Override
     public void pause() {
-        ObjectiveCRuntime.instance.objc_msgSend(instance, AVFoundation.AVAudioPlayer.pauseSelector);
+        ObjectiveCRuntime.instance.objc_msgSend(audioPlayer, AVFoundation.AVAudioPlayer.pause);
     }
 
     @Override
     public void stop() {
-        ObjectiveCRuntime.instance.objc_msgSend(instance, AVFoundation.AVAudioPlayer.stopSelector);
+        ObjectiveCRuntime.instance.objc_msgSend(audioPlayer, AVFoundation.AVAudioPlayer.stop);
     }
 
     @Override
     public boolean isPlaying() {
-        return ObjectiveCRuntime.instance.objc_msgSend(instance, AVFoundation.AVAudioPlayer.playingSelector) > 0;
+        return ObjectiveCRuntime.instance.objc_msgSend(audioPlayer, AVFoundation.AVAudioPlayer.playing) > 0;
     }
 
     @Override
     public double getPosition() {
-        return ObjectiveCRuntime.instance.objc_msgSend(instance, AVFoundation.AVAudioPlayer.currentTimeSelector);
+        return ObjectiveCRuntime.instance.objc_msgSend(audioPlayer, AVFoundation.AVAudioPlayer.currentTime);
     }
 
     @Override
     public void setPosition(double position) {
-        ObjectiveCRuntime.instance.objc_msgSend(instance, AVFoundation.AVAudioPlayer.setCurrentTimeSelector, position);
+        ObjectiveCRuntime.instance.objc_msgSend(audioPlayer, AVFoundation.AVAudioPlayer.setCurrentTime, position);
     }
 
     @Override
     public double getDuration() {
-        return ObjectiveCRuntime.instance.objc_msgSend(instance, AVFoundation.AVAudioPlayer.durationSelector);
+        return ObjectiveCRuntime.instance.objc_msgSend(audioPlayer, AVFoundation.AVAudioPlayer.duration);
     }
 
     @Override
     public void dispose() {
-        ObjectiveCRuntime.instance.object_dispose(instance);
+        ObjectiveCRuntime.instance.object_dispose(audioPlayer);
     }
 }

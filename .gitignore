@@ -4,5 +4,6 @@
 .idea/dataSources.local.xml
 .idea/sqldialects.xml
 .idea/queries
+*.log
 **/build
 **/.DS_Store
