@@ -5,6 +5,8 @@ package org.httprpc.helios;
 import java.nio.file.Path;
 
 public class WindowsAudioPlayer implements AudioPlayer {
+    private boolean playing = false;
+
     public WindowsAudioPlayer(Path contentPath) {
         // TODO
     }
@@ -12,22 +14,25 @@ public class WindowsAudioPlayer implements AudioPlayer {
     @Override
     public void playFrom(double position) {
         // TODO
+        playing = true;
     }
 
     @Override
     public void pause() {
         // TODO
+        playing = false;
     }
 
     @Override
     public void stop() {
         // TODO
+        playing = false;
     }
 
     @Override
     public boolean isPlaying() {
         // TODO
-        return false;
+        return playing;
     }
 
     @Override

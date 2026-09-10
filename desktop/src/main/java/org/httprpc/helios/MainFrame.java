@@ -207,12 +207,12 @@ public class MainFrame extends JFrame implements Runnable {
 
     private ImportStatusPanel importStatusPanel = new ImportStatusPanel();
 
-    private boolean playing = false;
-
     private List<ExpandedPlaylist> playlists = listOf();
 
     private List<Song> queue = new ArrayList<>();
     private int nextSongIndex = 0;
+
+    private AudioPlayer audioPlayer = null;
 
     private static MainFrame instance = null;
 
@@ -390,7 +390,7 @@ public class MainFrame extends JFrame implements Runnable {
         setContentPane(UILoader.load(this, "MainFrame.xml", resourceBundle));
 
         playPauseButton.addActionListener(event -> {
-            if (!playing) {
+            if (audioPlayer == null || !audioPlayer.isPlaying()) {
                 play();
             } else {
                 pause();
@@ -634,33 +634,37 @@ public class MainFrame extends JFrame implements Runnable {
         playPauseButton.setIcon(pauseIcon);
         playPauseButton.setToolTipText(resourceBundle.getString("pause"));
 
-        var n = queue.size();
+        if (audioPlayer == null) {
+            var n = queue.size();
 
-        if (nextSongIndex == n && repeatButton.isSelected()) {
-            nextSongIndex = 0;
+            if (nextSongIndex == n && repeatButton.isSelected()) {
+                nextSongIndex = 0;
+            }
+
+            if (nextSongIndex < n) {
+                var song = queue.get(nextSongIndex);
+
+                setTitle(String.format(resourceBundle.getString("songTitleFormat"),
+                    song.getTitle(),
+                    song.getArtist(),
+                    song.getAlbum()));
+
+                audioPlayer = AudioPlayer.create(MusicLibrary.getContentPath(song));
+            }
         }
 
-        if (nextSongIndex < n) {
-            var song = queue.get(nextSongIndex);
-
-            setTitle(String.format(resourceBundle.getString("songTitleFormat"),
-                song.getTitle(),
-                song.getArtist(),
-                song.getAlbum()));
+        if (audioPlayer != null) {
+            audioPlayer.play();
         }
-
-        // TODO
-
-        playing = true;
     }
 
     private void pause() {
         playPauseButton.setIcon(playIcon);
         playPauseButton.setToolTipText(resourceBundle.getString("play"));
 
-        // TODO
-
-        playing = false;
+        if (audioPlayer != null) {
+            audioPlayer.pause();
+        }
     }
 
     private void movePrevious() {
@@ -745,7 +749,7 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     private void updatePosition() {
-        // TODO
+        audioPlayer.setPosition(positionSlider.getValue());
     }
 
     private void getAlbumArtwork() {
