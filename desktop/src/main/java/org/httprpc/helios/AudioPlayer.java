@@ -2,6 +2,8 @@
 
 package org.httprpc.helios;
 
+import com.sun.jna.Platform;
+
 import java.nio.file.Path;
 
 public interface AudioPlayer {
@@ -22,10 +24,12 @@ public interface AudioPlayer {
     double getDuration();
 
     static AudioPlayer create(Path contentPath) {
-        return switch (OperatingSystem.getCurrent()) {
-            case MAC_OS -> new MacOSAudioPlayer(contentPath);
-            case WINDOWS -> new WindowsAudioPlayer(contentPath);
-            default -> throw new UnsupportedOperationException();
-        };
+        if (Platform.isMac()) {
+            return new MacOSAudioPlayer(contentPath);
+        } else if (Platform.isWindows()) {
+            return new WindowsAudioPlayer(contentPath);
+        } else {
+            throw new UnsupportedOperationException();
+        }
     }
 }

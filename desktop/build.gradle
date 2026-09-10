@@ -9,6 +9,7 @@ dependencies {
     implementation "com.formdev:flatlaf-extras:${flatLafVersion}"
     implementation "org.xerial:sqlite-jdbc:${sqliteJDBCVersion}"
     implementation "net.jthink:jaudiotagger:${jAudioTaggerVersion}"
+    implementation "net.java.dev.jna:jna-platform:${jnaVersion}"
 }
 
 tasks.withType(JavaCompile).configureEach {
