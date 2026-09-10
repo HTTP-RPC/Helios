@@ -860,6 +860,12 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     public void playAll(List<Song> songs) {
+        if (audioPlayer != null) {
+            audioPlayer.dispose();
+
+            audioPlayer = null;
+        }
+
         queue.clear();
 
         queue.addAll(songs);
