@@ -381,6 +381,10 @@ public class MainFrame extends JFrame implements Runnable {
         });
     }
 
+    public static MainFrame getInstance() {
+        return instance;
+    }
+
     public List<ExpandedPlaylist> getPlaylists() {
         return playlists;
     }
@@ -580,6 +584,15 @@ public class MainFrame extends JFrame implements Runnable {
                 return true;
             }
         });
+    }
+
+    @Override
+    public void dispose() {
+        if (audioPlayer != null) {
+            audioPlayer.dispose();
+        }
+
+        super.dispose();
     }
 
     public void loadArtists() {
@@ -871,7 +884,6 @@ public class MainFrame extends JFrame implements Runnable {
         collectionScrollPane.setViewportView(collectionDetailPanel);
     }
 
-
     public static void main(String[] args) throws Exception {
         if (preferences.getBoolean(DARK_MODE_KEY, true)) {
             FlatDarkLaf.setup();
@@ -884,9 +896,5 @@ public class MainFrame extends JFrame implements Runnable {
         instance = new MainFrame();
 
         SwingUtilities.invokeLater(instance);
-    }
-
-    public static MainFrame getInstance() {
-        return instance;
     }
 }

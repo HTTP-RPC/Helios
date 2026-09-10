@@ -51,4 +51,9 @@ public class WindowsAudioPlayer implements AudioPlayer {
         // TODO
         return 0.0;
     }
+
+    @Override
+    public void dispose() {
+        // TODO
+    }
 }

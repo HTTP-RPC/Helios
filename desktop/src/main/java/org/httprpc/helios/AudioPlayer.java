@@ -23,6 +23,8 @@ public interface AudioPlayer {
 
     double getDuration();
 
+    void dispose();
+
     static AudioPlayer create(Path contentPath) {
         if (Platform.isMac()) {
             return new MacOSAudioPlayer(contentPath);
