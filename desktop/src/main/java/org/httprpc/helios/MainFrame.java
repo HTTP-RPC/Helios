@@ -653,6 +653,8 @@ public class MainFrame extends JFrame implements Runnable {
             }
         }
 
+        // TODO Start timer
+
         if (audioPlayer != null) {
             audioPlayer.play();
         }
@@ -661,6 +663,8 @@ public class MainFrame extends JFrame implements Runnable {
     private void pause() {
         playPauseButton.setIcon(playIcon);
         playPauseButton.setToolTipText(resourceBundle.getString("play"));
+
+        // TODO Stop timer
 
         if (audioPlayer != null) {
             audioPlayer.pause();
