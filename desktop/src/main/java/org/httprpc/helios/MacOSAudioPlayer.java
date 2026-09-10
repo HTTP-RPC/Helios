@@ -9,7 +9,7 @@ import com.sun.jna.Pointer;
 import java.nio.file.Path;
 
 public class MacOSAudioPlayer implements AudioPlayer {
-    public interface ObjectiveCRuntime extends Library {
+    private interface ObjectiveCRuntime extends Library {
         ObjectiveCRuntime instance = Native.load("objc.A", ObjectiveCRuntime.class);
 
         Pointer objc_getClass(String name);
@@ -27,9 +27,7 @@ public class MacOSAudioPlayer implements AudioPlayer {
         }
     }
 
-    public interface Foundation extends Library {
-        Foundation instance = Native.load(Foundation.class.getSimpleName(), Foundation.class);
-
+    private interface Foundation extends Library {
         interface NSString {
             Pointer type = ObjectiveCRuntime.instance.objc_getClass("NSString");
 
@@ -41,20 +39,15 @@ public class MacOSAudioPlayer implements AudioPlayer {
 
             Pointer fileURLWithPath_ = ObjectiveCRuntime.instance.sel_registerName("fileURLWithPath:");
         }
-
-        int NS_UTF8_STRING_ENCODING = 4;
     }
 
-    public interface AVFoundation extends Library {
-        AVFoundation instance = Native.load(AVFoundation.class.getSimpleName(), AVFoundation.class);
-
+    private interface AVFoundation extends Library {
         interface AVAudioPlayer {
             Pointer type = ObjectiveCRuntime.instance.objc_getClass("AVAudioPlayer");
 
             Pointer initWithContentsOfURL_Error_ = ObjectiveCRuntime.instance.sel_registerName("initWithContentsOfURL:error:");
 
             Pointer play = ObjectiveCRuntime.instance.sel_registerName("play");
-            Pointer playAtTime_ = ObjectiveCRuntime.instance.sel_registerName("playAtTime:");
             Pointer pause = ObjectiveCRuntime.instance.sel_registerName("pause");
             Pointer stop = ObjectiveCRuntime.instance.sel_registerName("stop");
             Pointer playing = ObjectiveCRuntime.instance.sel_registerName("playing");
@@ -62,6 +55,11 @@ public class MacOSAudioPlayer implements AudioPlayer {
             Pointer setCurrentTime = ObjectiveCRuntime.instance.sel_registerName("setCurrentTime");
             Pointer duration = ObjectiveCRuntime.instance.sel_registerName("duration");
         }
+    }
+
+    static {
+        Native.load(Foundation.class.getSimpleName(), Foundation.class);
+        Native.load(AVFoundation.class.getSimpleName(), AVFoundation.class);
     }
 
     private Pointer audioPlayer;
