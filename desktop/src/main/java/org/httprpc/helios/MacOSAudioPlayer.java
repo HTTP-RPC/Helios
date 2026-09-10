@@ -21,9 +21,14 @@ public class MacOSAudioPlayer implements AudioPlayer {
         long objc_msgSend(Pointer self, Pointer op, Object arg1, Object arg2);
 
         Pointer alloc = instance.sel_registerName("alloc");
+        Pointer release = instance.sel_registerName("release");
 
         static Pointer alloc(Pointer type) {
             return new Pointer(instance.objc_msgSend(type, alloc));
+        }
+
+        static void release(Pointer type) {
+            instance.objc_msgSend(type, release);
         }
     }
 
@@ -49,8 +54,7 @@ public class MacOSAudioPlayer implements AudioPlayer {
 
             Pointer play = ObjectiveCRuntime.instance.sel_registerName("play");
             Pointer pause = ObjectiveCRuntime.instance.sel_registerName("pause");
-            Pointer stop = ObjectiveCRuntime.instance.sel_registerName("stop");
-            Pointer playing = ObjectiveCRuntime.instance.sel_registerName("playing");
+            Pointer isPlaying = ObjectiveCRuntime.instance.sel_registerName("isPlaying");
             Pointer currentTime = ObjectiveCRuntime.instance.sel_registerName("currentTime");
             Pointer setCurrentTime = ObjectiveCRuntime.instance.sel_registerName("setCurrentTime");
             Pointer duration = ObjectiveCRuntime.instance.sel_registerName("duration");
@@ -89,13 +93,8 @@ public class MacOSAudioPlayer implements AudioPlayer {
     }
 
     @Override
-    public void stop() {
-        ObjectiveCRuntime.instance.objc_msgSend(audioPlayer, AVFoundation.AVAudioPlayer.stop);
-    }
-
-    @Override
     public boolean isPlaying() {
-        return ObjectiveCRuntime.instance.objc_msgSend(audioPlayer, AVFoundation.AVAudioPlayer.playing) > 0;
+        return ObjectiveCRuntime.instance.objc_msgSend(audioPlayer, AVFoundation.AVAudioPlayer.isPlaying) > 0;
     }
 
     @Override
@@ -115,6 +114,6 @@ public class MacOSAudioPlayer implements AudioPlayer {
 
     @Override
     public void dispose() {
-        // TODO
+        ObjectiveCRuntime.release(audioPlayer);
     }
 }

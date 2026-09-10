@@ -9,7 +9,6 @@ import java.nio.file.Path;
 public interface AudioPlayer {
     void play();
     void pause();
-    void stop();
 
     boolean isPlaying();
 

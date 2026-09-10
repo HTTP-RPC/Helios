@@ -24,12 +24,6 @@ public class WindowsAudioPlayer implements AudioPlayer {
     }
 
     @Override
-    public void stop() {
-        // TODO
-        playing = false;
-    }
-
-    @Override
     public boolean isPlaying() {
         // TODO
         return playing;
