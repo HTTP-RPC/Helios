@@ -23,6 +23,10 @@ public class MacOSAudioPlayer implements AudioPlayer {
         void object_dispose(Pointer obj);
 
         Pointer alloc = instance.sel_registerName("alloc");
+
+        static Pointer alloc(Pointer type) {
+            return new Pointer(instance.objc_msgSend(type, alloc));
+        }
     }
 
     public interface Foundation extends Library {
@@ -37,7 +41,7 @@ public class MacOSAudioPlayer implements AudioPlayer {
         interface NSURL {
             Pointer type = ObjectiveCRuntime.instance.objc_getClass("NSURL");
 
-            Pointer URLWithString_ = ObjectiveCRuntime.instance.sel_registerName("URLWithString:");
+            Pointer fileURLWithPath_ = ObjectiveCRuntime.instance.sel_registerName("fileURLWithPath:");
         }
 
         int NS_UTF8_STRING_ENCODING = 4;
@@ -51,6 +55,7 @@ public class MacOSAudioPlayer implements AudioPlayer {
 
             Pointer initWithContentsOfURL_Error_ = ObjectiveCRuntime.instance.sel_registerName("initWithContentsOfURL:error:");
 
+            Pointer play = ObjectiveCRuntime.instance.sel_registerName("play");
             Pointer playAtTime_ = ObjectiveCRuntime.instance.sel_registerName("playAtTime:");
             Pointer pause = ObjectiveCRuntime.instance.sel_registerName("pause");
             Pointer stop = ObjectiveCRuntime.instance.sel_registerName("stop");
@@ -66,18 +71,20 @@ public class MacOSAudioPlayer implements AudioPlayer {
     public MacOSAudioPlayer(Path contentPath) {
         var urlString = new Pointer(ObjectiveCRuntime.instance.objc_msgSend(Foundation.NSString.type,
             Foundation.NSString.stringWithUTF8String_,
-            contentPath.toAbsolutePath().toString()));
+            contentPath.toString()));
 
         var url = new Pointer(ObjectiveCRuntime.instance.objc_msgSend(Foundation.NSURL.type,
-            Foundation.NSURL.URLWithString_,
+            Foundation.NSURL.fileURLWithPath_,
             urlString));
 
-        var audioPlayer = new Pointer(ObjectiveCRuntime.instance.objc_msgSend(AVFoundation.AVAudioPlayer.type,
-            ObjectiveCRuntime.alloc));
-
-        this.audioPlayer = new Pointer(ObjectiveCRuntime.instance.objc_msgSend(audioPlayer,
+        audioPlayer = new Pointer(ObjectiveCRuntime.instance.objc_msgSend(ObjectiveCRuntime.alloc(AVFoundation.AVAudioPlayer.type),
             AVFoundation.AVAudioPlayer.initWithContentsOfURL_Error_,
             url, null));
+    }
+
+    @Override
+    public void play() {
+        ObjectiveCRuntime.instance.objc_msgSend(audioPlayer, AVFoundation.AVAudioPlayer.play);
     }
 
     @Override

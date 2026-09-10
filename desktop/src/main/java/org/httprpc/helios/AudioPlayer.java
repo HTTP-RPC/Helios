@@ -7,12 +7,8 @@ import com.sun.jna.Platform;
 import java.nio.file.Path;
 
 public interface AudioPlayer {
-    default void play() {
-        playFrom(0.0);
-    }
-
+    void play();
     void playFrom(double position);
-
     void pause();
     void stop();
 
