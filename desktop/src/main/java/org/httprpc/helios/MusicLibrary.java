@@ -171,7 +171,7 @@ public class MusicLibrary {
     }
 
     public static String getSortableValue(String value) {
-        var sortableValue = value.toLowerCase().strip();
+        var sortableValue = toLowerCase(value);
 
         for (var article : articles) {
             var n = article.length();
@@ -184,6 +184,22 @@ public class MusicLibrary {
         }
 
         return sortableValue;
+    }
+
+    private static String toLowerCase(String value) {
+        var n = value.length();
+
+        var sortableValueBuilder = new StringBuilder(n);
+
+        for (var i = 0; i < n; i++) {
+            var c = value.charAt(i);
+
+            if (Character.isLetterOrDigit(c) || Character.isWhitespace(c)) {
+                sortableValueBuilder.append(Character.toLowerCase(c));
+            }
+        }
+
+        return sortableValueBuilder.toString();
     }
 
     private static Connection openConnection() throws SQLException {
@@ -307,6 +323,10 @@ public class MusicLibrary {
     }
 
     public static void addSong(Path path) {
+        if (path.startsWith(rootDirectory)) {
+            return;
+        }
+
         try {
             AudioFile audioFile;
             try {
