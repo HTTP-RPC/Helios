@@ -427,10 +427,6 @@ public class MainFrame extends JFrame implements Runnable {
         addSongsMenuItem.addActionListener(event -> addSongs());
         addPlaylistMenuItem.addActionListener(event -> addPlaylist());
 
-        // TODO
-        elapsedTimeLabel.setText("00:00");
-        remainingTimeLabel.setText("-00:00");
-
         positionSlider.addChangeListener(event -> updatePosition());
 
         getAlbumArtworkButton.addActionListener(event -> getAlbumArtwork());

@@ -702,18 +702,18 @@ public class MusicLibrary {
         }
     }
 
-    public static Path getArtworkPath(String artist, String album) {
-        return getPath(artist, album).resolve("artwork.jpg");
-    }
-
-    private static Path getContentPath(String artist, String album) {
-        return getPath(artist, album).resolve("content");
-    }
-
-    private static Path getContentPath(Song song) {
+    public static Path getContentPath(Song song) {
         var fileName = String.format("%s.%s", song.getTitle(), song.getType());
 
         return getContentPath(song.getArtist(), song.getAlbum()).resolve(escape(fileName));
+    }
+
+    public static Path getContentPath(String artist, String album) {
+        return getPath(artist, album).resolve("content");
+    }
+
+    public static Path getArtworkPath(String artist, String album) {
+        return getPath(artist, album).resolve("artwork.jpg");
     }
 
     private static Path getPath(String artist, String album) {
