@@ -18,12 +18,6 @@ public class WindowsAudioPlayer implements AudioPlayer {
     }
 
     @Override
-    public void playFrom(double position) {
-        // TODO
-        playing = true;
-    }
-
-    @Override
     public void pause() {
         // TODO
         playing = false;

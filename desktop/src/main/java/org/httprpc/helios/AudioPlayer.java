@@ -8,7 +8,6 @@ import java.nio.file.Path;
 
 public interface AudioPlayer {
     void play();
-    void playFrom(double position);
     void pause();
     void stop();
 

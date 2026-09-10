@@ -20,8 +20,6 @@ public class MacOSAudioPlayer implements AudioPlayer {
         long objc_msgSend(Pointer self, Pointer op, Object arg);
         long objc_msgSend(Pointer self, Pointer op, Object arg1, Object arg2);
 
-        void object_dispose(Pointer obj);
-
         Pointer alloc = instance.sel_registerName("alloc");
 
         static Pointer alloc(Pointer type) {
@@ -88,11 +86,6 @@ public class MacOSAudioPlayer implements AudioPlayer {
     }
 
     @Override
-    public void playFrom(double position) {
-        ObjectiveCRuntime.instance.objc_msgSend(audioPlayer, AVFoundation.AVAudioPlayer.playAtTime_, position);
-    }
-
-    @Override
     public void pause() {
         ObjectiveCRuntime.instance.objc_msgSend(audioPlayer, AVFoundation.AVAudioPlayer.pause);
     }
@@ -124,6 +117,6 @@ public class MacOSAudioPlayer implements AudioPlayer {
 
     @Override
     public void dispose() {
-        ObjectiveCRuntime.instance.object_dispose(audioPlayer);
+        // TODO
     }
 }
