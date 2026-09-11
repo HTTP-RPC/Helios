@@ -19,5 +19,42 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 application {
+    applicationName = 'Helios'
+
     mainClass = 'org.httprpc.helios.MainFrame'
+}
+
+jar {
+    dependsOn configurations.runtimeClasspath
+
+    archiveFileName = "${project.name}.jar"
+
+    manifest {
+        attributes (
+            'Implementation-Title': application.applicationName,
+            'Implementation-Version': project.version,
+            'Main-Class': application.mainClass
+        )
+    }
+
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+tasks.register("packageMacOS", Exec) {
+    dependsOn 'jar'
+
+    executable = 'jpackage'
+    args = [
+        '--name', application.applicationName,
+        '--input', 'build/libs',
+        '--main-jar', "${project.name}.jar",
+        '--app-version', "${version}",
+        '--icon', 'Helios.icns',
+        '--mac-sign',
+        '--mac-signing-key-user-name', project.findProperty('jpackage.macSigningKeyUserName') ?: ''
+    ]
 }
