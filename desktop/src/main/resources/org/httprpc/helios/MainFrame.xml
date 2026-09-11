@@ -70,16 +70,12 @@
             </column-panel>
         </row-panel>
 
-        <row-panel alignToBaseline="true" weight="3">
-            <label name="elapsedTimeLabel" horizontalAlignment="trailing"
-                styleClass="small"
-                weight="1"/>
-
-            <progress-bar name="positionProgressBar" weight="9"/>
-
-            <label name="remainingTimeLabel"
-                styleClass="small"
-                weight="1"/>
+        <row-panel weight="2.75">
+            <column-panel weight="1">
+                <spacer weight="1"/>
+                <progress-bar name="positionProgressBar"/>
+                <spacer weight="1"/>
+            </column-panel>
         </row-panel>
 
         <row-panel spacing="8" weight="1.25">

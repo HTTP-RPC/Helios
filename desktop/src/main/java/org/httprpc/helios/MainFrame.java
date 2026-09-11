@@ -183,9 +183,7 @@ public class MainFrame extends JFrame implements Runnable {
     private @Outlet JMenuItem addSongsMenuItem = null;
     private @Outlet JMenuItem addPlaylistMenuItem = null;
 
-    private @Outlet JLabel elapsedTimeLabel = null;
     private @Outlet JProgressBar positionProgressBar = null;
-    private @Outlet JLabel remainingTimeLabel = null;
 
     private @Outlet ActivityIndicator albumArtworkActivityIndicator = null;
     private @Outlet JButton getAlbumArtworkButton = null;
@@ -215,7 +213,7 @@ public class MainFrame extends JFrame implements Runnable {
 
     private AudioPlayer audioPlayer = null;
 
-    private Timer timer = new Timer(100, event -> updateControls());
+    private Timer timer = new Timer(100, event -> updatePosition());
 
     private static MainFrame instance = null;
 
@@ -679,14 +677,10 @@ public class MainFrame extends JFrame implements Runnable {
                     song.getArtist(),
                     song.getAlbum()));
 
-                elapsedTimeLabel.setText(null);
-
                 positionProgressBar.setMinimum(0);
                 positionProgressBar.setMaximum(song.getTime());
 
                 positionProgressBar.setValue(0);
-
-                remainingTimeLabel.setText(null);
 
                 audioPlayer = AudioPlayer.create(MusicLibrary.getContentPath(song));
             }
@@ -729,11 +723,11 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     private void updateControls() {
-        if (audioPlayer != null) {
-            // TODO If song is over, play next
-        } else {
-            // TODO
-        }
+        // TODO
+    }
+
+    private void updatePosition() {
+        positionProgressBar.setValue((int)Math.ceil(audioPlayer.getPosition()));
     }
 
     private void showQueueDialog() {
