@@ -418,6 +418,8 @@ public class MainFrame extends JFrame implements Runnable {
             }
         }));
 
+        shuffleButton.addActionListener(event -> shuffle());
+
         var repeatIcon = (FlatSVGIcon)repeatButton.getIcon();
 
         repeatIcon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> {
@@ -761,6 +763,16 @@ public class MainFrame extends JFrame implements Runnable {
         nextButton.setEnabled(nextSongIndex < n - 1);
 
         queueButton.setEnabled(nextButton.isEnabled());
+    }
+
+    private void shuffle() {
+        if (shuffleButton.isSelected()) {
+            java.util.Collections.shuffle(queue);
+
+            nextSongIndex = 0;
+
+            updateControls();
+        }
     }
 
     private void showQueueDialog() {
