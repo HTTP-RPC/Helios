@@ -70,12 +70,12 @@
             </column-panel>
         </row-panel>
 
-        <row-panel weight="3">
+        <row-panel alignToBaseline="true" weight="3">
             <label name="elapsedTimeLabel" horizontalAlignment="trailing"
                 styleClass="small"
                 weight="1"/>
 
-            <slider name="positionSlider" focusable="false" weight="9"/>
+            <progress-bar name="positionProgressBar" weight="9"/>
 
             <label name="remainingTimeLabel"
                 styleClass="small"

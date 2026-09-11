@@ -23,8 +23,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
+import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
-import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
 import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
@@ -184,7 +184,7 @@ public class MainFrame extends JFrame implements Runnable {
     private @Outlet JMenuItem addPlaylistMenuItem = null;
 
     private @Outlet JLabel elapsedTimeLabel = null;
-    private @Outlet JSlider positionSlider = null;
+    private @Outlet JProgressBar positionProgressBar = null;
     private @Outlet JLabel remainingTimeLabel = null;
 
     private @Outlet ActivityIndicator albumArtworkActivityIndicator = null;
@@ -434,8 +434,6 @@ public class MainFrame extends JFrame implements Runnable {
         addSongsMenuItem.addActionListener(event -> addSongs());
         addPlaylistMenuItem.addActionListener(event -> addPlaylist());
 
-        positionSlider.addChangeListener(event -> updatePosition());
-
         updateControls();
 
         getAlbumArtworkButton.addActionListener(event -> getAlbumArtwork());
@@ -683,10 +681,10 @@ public class MainFrame extends JFrame implements Runnable {
 
                 elapsedTimeLabel.setText(null);
 
-                positionSlider.setMinimum(0);
-                positionSlider.setMaximum(song.getTime());
+                positionProgressBar.setMinimum(0);
+                positionProgressBar.setMaximum(song.getTime());
 
-                positionSlider.setValue(0);
+                positionProgressBar.setValue(0);
 
                 remainingTimeLabel.setText(null);
 
@@ -805,12 +803,6 @@ public class MainFrame extends JFrame implements Runnable {
 
         playlistList.setModel(new BasicListModel<>(playlists));
         playlistList.setSelectedIndex(playlists.size() - 1);
-    }
-
-    private void updatePosition() {
-        if (audioPlayer != null) {
-            audioPlayer.setPosition(positionSlider.getValue());
-        }
     }
 
     private void getAlbumArtwork() {
