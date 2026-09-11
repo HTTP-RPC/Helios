@@ -760,7 +760,7 @@ public class MainFrame extends JFrame implements Runnable {
         previousButton.setEnabled(nextSongIndex > 0);
         nextButton.setEnabled(nextSongIndex < n - 1);
 
-        queueButton.setEnabled(nextSongIndex < n);
+        queueButton.setEnabled(nextButton.isEnabled());
     }
 
     private void showQueueDialog() {
