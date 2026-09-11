@@ -14,11 +14,11 @@ public class MacOSAudioPlayer implements AudioPlayer {
 
         Pointer objc_getClass(String name);
 
-        Pointer sel_registerName(String str);
+        Pointer sel_registerName(String name);
 
-        long objc_msgSend(Pointer self, Pointer op);
-        long objc_msgSend(Pointer self, Pointer op, Object arg);
-        long objc_msgSend(Pointer self, Pointer op, Object arg1, Object arg2);
+        long objc_msgSend(Pointer self, Pointer selector);
+        long objc_msgSend(Pointer self, Pointer selector, Object arg);
+        long objc_msgSend(Pointer self, Pointer selector, Object arg1, Object arg2);
 
         Pointer alloc = instance.sel_registerName("alloc");
         Pointer release = instance.sel_registerName("release");
@@ -27,8 +27,8 @@ public class MacOSAudioPlayer implements AudioPlayer {
             return new Pointer(instance.objc_msgSend(type, alloc));
         }
 
-        static void release(Pointer type) {
-            instance.objc_msgSend(type, release);
+        static void release(Pointer self) {
+            instance.objc_msgSend(self, release);
         }
     }
 

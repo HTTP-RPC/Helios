@@ -30,6 +30,7 @@ import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import javax.swing.TransferHandler;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
@@ -213,6 +214,8 @@ public class MainFrame extends JFrame implements Runnable {
     private int nextSongIndex = 0;
 
     private AudioPlayer audioPlayer = null;
+
+    private Timer timer = new Timer(100, event -> updateControls());
 
     private static MainFrame instance = null;
 
@@ -433,6 +436,8 @@ public class MainFrame extends JFrame implements Runnable {
 
         positionSlider.addChangeListener(event -> updatePosition());
 
+        updateControls();
+
         getAlbumArtworkButton.addActionListener(event -> getAlbumArtwork());
 
         searchButton.addActionListener(event -> showSearchDialog());
@@ -588,9 +593,7 @@ public class MainFrame extends JFrame implements Runnable {
 
     @Override
     public void dispose() {
-        if (audioPlayer != null) {
-            audioPlayer.dispose();
-        }
+        stop();
 
         super.dispose();
     }
@@ -643,6 +646,22 @@ public class MainFrame extends JFrame implements Runnable {
         }
     }
 
+    public void playAll(List<Song> songs) {
+        stop();
+
+        queue.clear();
+
+        queue.addAll(songs);
+
+        if (shuffleButton.isSelected()) {
+            java.util.Collections.shuffle(queue);
+        }
+
+        nextSongIndex = 0;
+
+        play();
+    }
+
     private void play() {
         playPauseButton.setIcon(pauseIcon);
         playPauseButton.setToolTipText(resourceBundle.getString("pause"));
@@ -662,38 +681,61 @@ public class MainFrame extends JFrame implements Runnable {
                     song.getArtist(),
                     song.getAlbum()));
 
+                elapsedTimeLabel.setText(null);
+
+                positionSlider.setMinimum(0);
+                positionSlider.setMaximum(song.getTime());
+
+                positionSlider.setValue(0);
+
+                remainingTimeLabel.setText(null);
+
                 audioPlayer = AudioPlayer.create(MusicLibrary.getContentPath(song));
             }
         }
 
-        // TODO Start timer
+        perform(audioPlayer, AudioPlayer::play);
 
-        if (audioPlayer != null) {
-            audioPlayer.play();
-        }
+        timer.start();
     }
 
     private void pause() {
         playPauseButton.setIcon(playIcon);
         playPauseButton.setToolTipText(resourceBundle.getString("play"));
 
-        // TODO Stop timer
+        perform(audioPlayer, AudioPlayer::pause);
 
-        if (audioPlayer != null) {
-            audioPlayer.pause();
-        }
+        timer.stop();
     }
 
     private void movePrevious() {
+        stop();
+
         nextSongIndex--;
 
         play();
     }
 
     private void moveNext() {
+        stop();
+
         nextSongIndex++;
 
         play();
+    }
+
+    private void stop() {
+        perform(audioPlayer, AudioPlayer::dispose);
+
+        audioPlayer = null;
+    }
+
+    private void updateControls() {
+        if (audioPlayer != null) {
+            // TODO If song is over, play next
+        } else {
+            // TODO
+        }
     }
 
     private void showQueueDialog() {
@@ -766,7 +808,9 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     private void updatePosition() {
-        audioPlayer.setPosition(positionSlider.getValue());
+        if (audioPlayer != null) {
+            audioPlayer.setPosition(positionSlider.getValue());
+        }
     }
 
     private void getAlbumArtwork() {
@@ -857,26 +901,6 @@ public class MainFrame extends JFrame implements Runnable {
         settingsDialog.setLocationRelativeTo(this);
 
         settingsDialog.setVisible(true);
-    }
-
-    public void playAll(List<Song> songs) {
-        if (audioPlayer != null) {
-            audioPlayer.dispose();
-
-            audioPlayer = null;
-        }
-
-        queue.clear();
-
-        queue.addAll(songs);
-
-        if (shuffleButton.isSelected()) {
-            java.util.Collections.shuffle(queue);
-        }
-
-        nextSongIndex = 0;
-
-        play();
     }
 
     private void showSelectedCollection() {
