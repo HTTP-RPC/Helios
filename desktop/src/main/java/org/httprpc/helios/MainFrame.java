@@ -755,6 +755,8 @@ public class MainFrame extends JFrame implements Runnable {
     private void updateControls() {
         var n = queue.size();
 
+        playPauseButton.setEnabled(n > 0);
+
         previousButton.setEnabled(nextSongIndex > 0);
         nextButton.setEnabled(nextSongIndex < n - 1);
 
