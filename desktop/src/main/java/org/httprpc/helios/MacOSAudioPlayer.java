@@ -55,8 +55,6 @@ public class MacOSAudioPlayer implements AudioPlayer {
             Pointer play = ObjectiveCRuntime.instance.sel_registerName("play");
             Pointer pause = ObjectiveCRuntime.instance.sel_registerName("pause");
             Pointer isPlaying = ObjectiveCRuntime.instance.sel_registerName("isPlaying");
-            Pointer currentTime = ObjectiveCRuntime.instance.sel_registerName("currentTime");
-            Pointer duration = ObjectiveCRuntime.instance.sel_registerName("duration");
         }
     }
 
@@ -94,16 +92,6 @@ public class MacOSAudioPlayer implements AudioPlayer {
     @Override
     public boolean isPlaying() {
         return ObjectiveCRuntime.instance.objc_msgSend(audioPlayer, AVFoundation.AVAudioPlayer.isPlaying) > 0;
-    }
-
-    @Override
-    public int getPosition() {
-        return (int)ObjectiveCRuntime.instance.objc_msgSend(audioPlayer, AVFoundation.AVAudioPlayer.currentTime);
-    }
-
-    @Override
-    public int getDuration() {
-        return (int)ObjectiveCRuntime.instance.objc_msgSend(audioPlayer, AVFoundation.AVAudioPlayer.duration);
     }
 
     @Override

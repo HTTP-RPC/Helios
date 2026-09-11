@@ -12,9 +12,6 @@ public interface AudioPlayer {
 
     boolean isPlaying();
 
-    int getPosition();
-    int getDuration();
-
     void dispose();
 
     static AudioPlayer create(Path contentPath) {

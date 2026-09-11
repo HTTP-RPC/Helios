@@ -73,7 +73,7 @@
         <row-panel weight="2.75">
             <column-panel weight="1">
                 <spacer weight="1"/>
-                <progress-bar name="positionProgressBar"/>
+                <slider name="positionSlider" enabled="false"/>
                 <spacer weight="1"/>
             </column-panel>
         </row-panel>

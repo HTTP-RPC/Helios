@@ -23,8 +23,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
-import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
+import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
 import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
@@ -183,7 +183,7 @@ public class MainFrame extends JFrame implements Runnable {
     private @Outlet JMenuItem addSongsMenuItem = null;
     private @Outlet JMenuItem addPlaylistMenuItem = null;
 
-    private @Outlet JProgressBar positionProgressBar = null;
+    private @Outlet JSlider positionSlider = null;
 
     private @Outlet ActivityIndicator albumArtworkActivityIndicator = null;
     private @Outlet JButton getAlbumArtworkButton = null;
@@ -212,6 +212,7 @@ public class MainFrame extends JFrame implements Runnable {
     private int nextSongIndex = 0;
 
     private AudioPlayer audioPlayer = null;
+    private long lastTime = 0;
 
     private Timer timer = new Timer(250, event -> updatePosition());
 
@@ -432,7 +433,7 @@ public class MainFrame extends JFrame implements Runnable {
         addSongsMenuItem.addActionListener(event -> addSongs());
         addPlaylistMenuItem.addActionListener(event -> addPlaylist());
 
-        updateControls();
+        positionSlider.setValue(0);
 
         getAlbumArtworkButton.addActionListener(event -> getAlbumArtwork());
 
@@ -677,16 +678,18 @@ public class MainFrame extends JFrame implements Runnable {
                     song.getArtist(),
                     song.getAlbum()));
 
-                positionProgressBar.setMinimum(0);
-                positionProgressBar.setMaximum(song.getTime());
+                positionSlider.setMinimum(0);
+                positionSlider.setMaximum(song.getTime() * 1000);
 
-                positionProgressBar.setValue(0);
+                positionSlider.setValue(0);
 
                 audioPlayer = AudioPlayer.create(MusicLibrary.getContentPath(song));
             }
         }
 
         perform(audioPlayer, AudioPlayer::play);
+
+        lastTime = System.currentTimeMillis();
 
         timer.start();
     }
@@ -720,17 +723,19 @@ public class MainFrame extends JFrame implements Runnable {
         perform(audioPlayer, AudioPlayer::dispose);
 
         audioPlayer = null;
-    }
 
-    private void updateControls() {
-        // TODO
+        lastTime = 0;
     }
 
     private void updatePosition() {
         if (audioPlayer.isPlaying()) {
-            positionProgressBar.setValue(audioPlayer.getPosition());
+            var currentTime = System.currentTimeMillis();
+
+            positionSlider.setValue(positionSlider.getValue() + (int)(currentTime - lastTime));
+
+            lastTime = currentTime;
         } else {
-            positionProgressBar.setValue(0);
+            positionSlider.setValue(0);
 
             // TODO
             pause();
