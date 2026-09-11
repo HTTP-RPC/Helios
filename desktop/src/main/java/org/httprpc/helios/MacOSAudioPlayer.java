@@ -97,13 +97,13 @@ public class MacOSAudioPlayer implements AudioPlayer {
     }
 
     @Override
-    public double getPosition() {
-        return ObjectiveCRuntime.instance.objc_msgSend(audioPlayer, AVFoundation.AVAudioPlayer.currentTime);
+    public int getPosition() {
+        return (int)ObjectiveCRuntime.instance.objc_msgSend(audioPlayer, AVFoundation.AVAudioPlayer.currentTime);
     }
 
     @Override
-    public double getDuration() {
-        return ObjectiveCRuntime.instance.objc_msgSend(audioPlayer, AVFoundation.AVAudioPlayer.duration);
+    public int getDuration() {
+        return (int)ObjectiveCRuntime.instance.objc_msgSend(audioPlayer, AVFoundation.AVAudioPlayer.duration);
     }
 
     @Override

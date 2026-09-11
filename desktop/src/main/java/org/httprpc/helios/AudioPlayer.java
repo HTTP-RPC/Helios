@@ -12,8 +12,8 @@ public interface AudioPlayer {
 
     boolean isPlaying();
 
-    double getPosition();
-    double getDuration();
+    int getPosition();
+    int getDuration();
 
     void dispose();
 

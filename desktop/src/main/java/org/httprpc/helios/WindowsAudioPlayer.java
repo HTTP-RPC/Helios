@@ -30,15 +30,15 @@ public class WindowsAudioPlayer implements AudioPlayer {
     }
 
     @Override
-    public double getPosition() {
+    public int getPosition() {
         // TODO
-        return 0.0;
+        return 0;
     }
 
     @Override
-    public double getDuration() {
+    public int getDuration() {
         // TODO
-        return 0.0;
+        return 0;
     }
 
     @Override

@@ -213,7 +213,7 @@ public class MainFrame extends JFrame implements Runnable {
 
     private AudioPlayer audioPlayer = null;
 
-    private Timer timer = new Timer(100, event -> updatePosition());
+    private Timer timer = new Timer(250, event -> updatePosition());
 
     private static MainFrame instance = null;
 
@@ -727,7 +727,14 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     private void updatePosition() {
-        positionProgressBar.setValue((int)Math.ceil(audioPlayer.getPosition()));
+        if (audioPlayer.isPlaying()) {
+            positionProgressBar.setValue(audioPlayer.getPosition());
+        } else {
+            positionProgressBar.setValue(0);
+
+            // TODO
+            pause();
+        }
     }
 
     private void showQueueDialog() {
