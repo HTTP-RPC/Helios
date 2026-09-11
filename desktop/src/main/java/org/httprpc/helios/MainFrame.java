@@ -720,6 +720,10 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     private void stop() {
+        pause();
+
+        positionSlider.setValue(0);
+
         perform(audioPlayer, AudioPlayer::dispose);
 
         audioPlayer = null;
@@ -735,10 +739,13 @@ public class MainFrame extends JFrame implements Runnable {
 
             lastTime = currentTime;
         } else {
-            positionSlider.setValue(0);
+            stop();
 
-            // TODO
-            pause();
+            nextSongIndex++;
+
+            if (nextSongIndex < queue.size()) {
+                play();
+            }
         }
     }
 
