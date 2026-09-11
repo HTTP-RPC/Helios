@@ -430,6 +430,8 @@ public class MainFrame extends JFrame implements Runnable {
 
         queueButton.addActionListener(event -> showQueueDialog());
 
+        updateControls();
+
         addSongsMenuItem.addActionListener(event -> addSongs());
         addPlaylistMenuItem.addActionListener(event -> addPlaylist());
 
@@ -676,6 +678,8 @@ public class MainFrame extends JFrame implements Runnable {
             positionSlider.setMaximum(song.getTime() * 1000);
 
             audioPlayer = AudioPlayer.create(MusicLibrary.getContentPath(song));
+
+            updateControls();
         }
 
         perform(audioPlayer, AudioPlayer::play);
@@ -743,7 +747,18 @@ public class MainFrame extends JFrame implements Runnable {
             if (nextSongIndex < n) {
                 play();
             }
+
+            updateControls();
         }
+    }
+
+    private void updateControls() {
+        var n = queue.size();
+
+        previousButton.setEnabled(nextSongIndex > 0);
+        nextButton.setEnabled(nextSongIndex < n - 1);
+
+        queueButton.setEnabled(nextSongIndex < n);
     }
 
     private void showQueueDialog() {
