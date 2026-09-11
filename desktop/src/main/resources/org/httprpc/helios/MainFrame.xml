@@ -71,7 +71,7 @@
         <row-panel weight="2.75">
             <column-panel weight="1">
                 <spacer weight="1"/>
-                <slider name="positionSlider" enabled="false"/>
+                <slider name="positionSlider" enabled="false" style="thumbSize: 8, 8"/>
                 <spacer weight="1"/>
             </column-panel>
         </row-panel>
