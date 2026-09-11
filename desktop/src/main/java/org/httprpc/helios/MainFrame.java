@@ -664,27 +664,18 @@ public class MainFrame extends JFrame implements Runnable {
         playPauseButton.setToolTipText(resourceBundle.getString("pause"));
 
         if (audioPlayer == null) {
-            var n = queue.size();
+            var song = queue.get(nextSongIndex);
 
-            if (nextSongIndex == n && repeatButton.isSelected()) {
-                nextSongIndex = 0;
-            }
+            setTitle(String.format(resourceBundle.getString("songTitleFormat"),
+                song.getTitle(),
+                song.getArtist(),
+                song.getAlbum()));
 
-            if (nextSongIndex < n) {
-                var song = queue.get(nextSongIndex);
+            positionSlider.setValue(0);
 
-                setTitle(String.format(resourceBundle.getString("songTitleFormat"),
-                    song.getTitle(),
-                    song.getArtist(),
-                    song.getAlbum()));
+            positionSlider.setMaximum(song.getTime() * 1000);
 
-                positionSlider.setMinimum(0);
-                positionSlider.setMaximum(song.getTime() * 1000);
-
-                positionSlider.setValue(0);
-
-                audioPlayer = AudioPlayer.create(MusicLibrary.getContentPath(song));
-            }
+            audioPlayer = AudioPlayer.create(MusicLibrary.getContentPath(song));
         }
 
         perform(audioPlayer, AudioPlayer::play);
@@ -743,7 +734,13 @@ public class MainFrame extends JFrame implements Runnable {
 
             nextSongIndex++;
 
-            if (nextSongIndex < queue.size()) {
+            var n = queue.size();
+
+            if (nextSongIndex == n && repeatButton.isSelected()) {
+                nextSongIndex = 0;
+            }
+
+            if (nextSongIndex < n) {
                 play();
             }
         }
