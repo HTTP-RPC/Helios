@@ -24,9 +24,12 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import static org.httprpc.kilo.util.Collections.*;
+import static org.httprpc.kilo.util.Optionals.*;
 
 public class SongDetailPanel extends StackPanel {
     private Song song;
+
+    private @Outlet JLabel trackNumberLabel = null;
 
     private @Outlet JLabel titleLabel = null;
 
@@ -55,6 +58,11 @@ public class SongDetailPanel extends StackPanel {
         var content = UILoader.load(this, "SongDetailPanel.xml", resourceBundle);
 
         add(content);
+
+        trackNumberLabel.setText("000");
+        trackNumberLabel.setPreferredSize(trackNumberLabel.getPreferredSize());
+
+        trackNumberLabel.setText(map(song.getTrackNumber(), String::valueOf));
 
         titleLabel.setText(song.getTitle());
 
@@ -140,11 +148,6 @@ public class SongDetailPanel extends StackPanel {
                 hideButtons();
             }
         });
-
-        if (song.getTrackNumber() == null) {
-            titleLabel.setEnabled(false);
-            timeLabel.setEnabled(false);
-        }
 
         setBackground(UIManager.getColor("Component.borderColor"));
 

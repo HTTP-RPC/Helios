@@ -2,7 +2,9 @@
 
 <!DOCTYPE row-panel SYSTEM "sierra.dtd">
 
-<row-panel spacing="4" padding="2, 4, 2, 4">
+<row-panel spacing="8" padding="2, 4, 2, 4">
+    <label name="trackNumberLabel" horizontalAlignment="trailing" enabled="false"/>
+
     <label name="titleLabel" weight="1"/>
 
     <row-panel spacing="2">
@@ -27,5 +29,5 @@
             style="buttonType: borderless"/>
     </row-panel>
 
-    <label name="timeLabel" horizontalAlignment="trailing"/>
+    <label name="timeLabel" horizontalAlignment="trailing" enabled="false"/>
 </row-panel>
