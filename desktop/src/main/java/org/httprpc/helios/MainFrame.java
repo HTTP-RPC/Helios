@@ -8,6 +8,7 @@ import com.formdev.flatlaf.extras.FlatSVGIcon;
 import org.httprpc.sierra.ActivityIndicator;
 import org.httprpc.sierra.BasicListModel;
 import org.httprpc.sierra.ColumnPanel;
+import org.httprpc.sierra.ImagePane;
 import org.httprpc.sierra.MenuButton;
 import org.httprpc.sierra.Outlet;
 import org.httprpc.sierra.StackPanel;
@@ -182,6 +183,11 @@ public class MainFrame extends JFrame implements Runnable {
     private @Outlet MenuButton addButton = null;
     private @Outlet JMenuItem addSongsMenuItem = null;
     private @Outlet JMenuItem addPlaylistMenuItem = null;
+
+    private @Outlet ImagePane artworkImagePane = null;
+
+    private @Outlet JLabel songTitleLabel = null;
+    private @Outlet JLabel artistAlbumLabel = null;
 
     private @Outlet JSlider positionSlider = null;
 
@@ -683,8 +689,9 @@ public class MainFrame extends JFrame implements Runnable {
         if (audioPlayer == null) {
             var song = queue.get(nextSongIndex);
 
-            setTitle(String.format(resourceBundle.getString("songTitleFormat"),
-                song.getTitle(),
+            songTitleLabel.setText(song.getTitle());
+
+            artistAlbumLabel.setText(String.format(resourceBundle.getString("artistAlbumFormat"),
                 song.getArtist(),
                 song.getAlbum()));
 

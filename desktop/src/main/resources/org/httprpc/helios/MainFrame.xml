@@ -2,7 +2,7 @@
 
 <!DOCTYPE column-panel SYSTEM "sierra.dtd">
 
-<column-panel spacing="4" padding="4, 8, 8, 8" opaque="true">
+<column-panel spacing="4" padding="8" opaque="true">
     <row-panel spacing="16">
         <row-panel spacing="8" weight="1.25">
             <row-panel spacing="2">
@@ -68,11 +68,22 @@
             </column-panel>
         </row-panel>
 
-        <row-panel weight="2.75">
-            <column-panel weight="1">
-                <spacer weight="1"/>
+        <row-panel weight="2">
+            <column-panel spacing="2" weight="1">
+                <row-panel spacing="8">
+                    <column-panel>
+                        <spacer weight="1"/>
+                        <image-pane name="artworkImagePane" size="30" scaleMode="fill-width" border="Component.borderColor"/>
+                        <spacer weight="1"/>
+                    </column-panel>
+
+                    <column-panel>
+                        <label name="songTitleLabel" styleClass="h4"/>
+                        <label name="artistAlbumLabel" styleClass="small" enabled="false"/>
+                    </column-panel>
+                </row-panel>
+
                 <slider name="positionSlider" enabled="false" style="thumbSize: 8, 8"/>
-                <spacer weight="1"/>
             </column-panel>
         </row-panel>
 
