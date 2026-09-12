@@ -776,7 +776,26 @@ public class MainFrame extends JFrame implements Runnable {
         if (queueButton.isSelected()) {
             queueDialog = new QueueDialog(this, queue, nextSongIndex);
 
+            queueDialog.pack();
+            queueDialog.setLocationRelativeTo(this);
+
+            var preferences = Preferences.userRoot().node(QueueDialog.class.getName());
+
+            queueDialog.setLocation(preferences.getInt(LOCATION_X_KEY, queueDialog.getX()), preferences.getInt(LOCATION_Y_KEY, queueDialog.getY()));
+
             queueDialog.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent event) {
+                    preferences.putInt(LOCATION_X_KEY, queueDialog.getX());
+                    preferences.putInt(LOCATION_Y_KEY, queueDialog.getY());
+
+                    try {
+                        preferences.flush();
+                    } catch (BackingStoreException exception) {
+                        // No-op
+                    }
+                }
+
                 @Override
                 public void windowClosed(WindowEvent event) {
                     queueButton.setSelected(false);
@@ -784,9 +803,6 @@ public class MainFrame extends JFrame implements Runnable {
                     queueDialog = null;
                 }
             });
-
-            queueDialog.pack();
-            queueDialog.setLocationRelativeTo(this);
 
             queueDialog.setVisible(true);
         } else {
