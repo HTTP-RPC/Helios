@@ -76,8 +76,6 @@ public class SearchDialog extends AbstractDialog {
 
         setTitle(resourceBundle.getString("windowTitle"));
 
-        setType(Type.POPUP);
-
         setContentPane(UILoader.load(this, "SearchDialog.xml", resourceBundle));
 
         titleTextField.getDocument().addDocumentListener(new DocumentListener() {
