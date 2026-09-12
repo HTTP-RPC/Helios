@@ -76,6 +76,7 @@ public class MainFrame extends JFrame implements Runnable {
             add(countLabel);
 
             countLabel.putClientProperty("FlatLaf.styleClass", "mini");
+            countLabel.setEnabled(false);
         }
 
         @Override
