@@ -786,8 +786,10 @@ public class MainFrame extends JFrame implements Runnable {
             queueDialog.addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowClosing(WindowEvent event) {
-                    preferences.putInt(LOCATION_X_KEY, queueDialog.getX());
-                    preferences.putInt(LOCATION_Y_KEY, queueDialog.getY());
+                    var location = queueDialog.getLocation();
+
+                    preferences.putInt(LOCATION_X_KEY, location.x);
+                    preferences.putInt(LOCATION_Y_KEY, location.y);
 
                     try {
                         preferences.flush();
