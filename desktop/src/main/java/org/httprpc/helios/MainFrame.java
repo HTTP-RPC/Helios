@@ -209,8 +209,8 @@ public class MainFrame extends JFrame implements Runnable {
     private List<ExpandedPlaylist> playlists = listOf();
 
     private List<Song> songs = emptyListOf(Song.class);
-    private List<Song> queue = listOf();
 
+    private List<Song> queue = listOf();
     private int nextSongIndex = 0;
 
     private AudioPlayer audioPlayer = null;
@@ -765,6 +765,12 @@ public class MainFrame extends JFrame implements Runnable {
 
             if (nextSongIndex < n) {
                 play();
+            } else {
+                songs = emptyListOf(Song.class);
+
+                queue.clear();
+
+                nextSongIndex = 0;
             }
 
             updateControls();
