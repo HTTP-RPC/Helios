@@ -86,7 +86,7 @@ public class QueueDialog extends AbstractDialog {
 
         setTitle(resourceBundle.getString("windowTitle"));
 
-        setAlwaysOnTop(true);
+        setType(Type.UTILITY);
 
         setContentPane(UILoader.load(this, "QueueDialog.xml", resourceBundle));
 
