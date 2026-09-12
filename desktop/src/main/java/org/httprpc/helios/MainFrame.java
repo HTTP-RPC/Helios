@@ -53,6 +53,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
@@ -189,6 +190,7 @@ public class MainFrame extends JFrame implements Runnable {
 
     private @Outlet JLabel songTitleLabel = null;
     private @Outlet JLabel artistAlbumLabel = null;
+    private @Outlet JLabel timeLabel = null;
 
     private @Outlet JProgressBar positionProgressBar = null;
 
@@ -458,6 +460,7 @@ public class MainFrame extends JFrame implements Runnable {
 
         songTitleLabel.setText(" ");
         artistAlbumLabel.setText(" ");
+        timeLabel.setText(" ");
 
         positionProgressBar.setValue(0);
 
@@ -703,7 +706,6 @@ public class MainFrame extends JFrame implements Runnable {
             }, (image, exception) -> artworkImagePane.setImage(image));
 
             songTitleLabel.setText(song.getTitle());
-
             artistAlbumLabel.setText(String.format(resourceBundle.getString("artistAlbumFormat"), artist, album));
 
             positionProgressBar.setValue(0);
@@ -770,6 +772,14 @@ public class MainFrame extends JFrame implements Runnable {
             positionProgressBar.setValue(positionProgressBar.getValue() + (int)(currentTime - lastTime));
 
             lastTime = currentTime;
+
+            var elapsedDuration = Duration.ofMillis(positionProgressBar.getValue());
+            var totalDuration = Duration.ofMillis(positionProgressBar.getMaximum());
+
+            timeLabel.setText(String.format(resourceBundle.getString("timeFormat"),
+                elapsedDuration.toMinutesPart(), elapsedDuration.toSecondsPart(),
+                totalDuration.toMinutesPart(), totalDuration.toSecondsPart()
+            ));
         } else {
             stop();
 

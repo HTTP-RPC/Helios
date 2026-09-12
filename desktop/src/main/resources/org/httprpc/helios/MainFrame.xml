@@ -68,7 +68,7 @@
             </column-panel>
         </row-panel>
 
-        <column-panel spacing="4" weight="2">
+        <column-panel spacing="4" weight="2.5">
             <row-panel spacing="8">
                 <column-panel>
                     <spacer weight="1"/>
@@ -76,9 +76,13 @@
                     <spacer weight="1"/>
                 </column-panel>
 
-                <column-panel>
+                <column-panel weight="1">
                     <label name="songTitleLabel" styleClass="h4"/>
-                    <label name="artistAlbumLabel" styleClass="small" enabled="false"/>
+
+                    <row-panel alignToBaseline="true">
+                        <label name="artistAlbumLabel" styleClass="small" enabled="false" weight="1"/>
+                        <label name="timeLabel" styleClass="small" enabled="false"/>
+                    </row-panel>
                 </column-panel>
             </row-panel>
 
