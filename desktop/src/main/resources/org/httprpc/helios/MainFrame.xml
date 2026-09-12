@@ -2,7 +2,7 @@
 
 <!DOCTYPE column-panel SYSTEM "sierra.dtd">
 
-<column-panel spacing="4" padding="8" opaque="true">
+<column-panel spacing="4" padding="4, 8, 8, 8" opaque="true">
     <row-panel spacing="16">
         <row-panel spacing="8" weight="1.25">
             <row-panel spacing="2">
@@ -15,12 +15,12 @@
                 <column-panel>
                     <spacer weight="1"/>
                     <row-panel spacing="2">
-                        <button name="previousButton" icon="icons/skip_previous_24dp.svg; 18"
+                        <button name="previousButton" icon="icons/skip_previous_24dp.svg"
                             focusable="false"
                             style="buttonType: borderless"
                             toolTipText="previous"/>
 
-                        <button name="nextButton" icon="icons/skip_next_24dp.svg; 18"
+                        <button name="nextButton" icon="icons/skip_next_24dp.svg"
                             focusable="false"
                             style="buttonType: borderless"
                             toolTipText="next"/>
@@ -32,11 +32,11 @@
             <column-panel>
                 <spacer weight="1"/>
                 <row-panel spacing="2">
-                    <toggle-button name="shuffleButton" icon="icons/shuffle_24dp.svg; 16"
+                    <toggle-button name="shuffleButton" icon="icons/shuffle_24dp.svg; 18"
                         focusable="false"
                         style="buttonType: borderless"
                         toolTipText="shuffle"/>
-                    <toggle-button name="repeatButton" icon="icons/repeat_24dp.svg; 16"
+                    <toggle-button name="repeatButton" icon="icons/repeat_24dp.svg; 18"
                         focusable="false"
                         style="buttonType: borderless"
                         toolTipText="repeat"/>
@@ -46,7 +46,7 @@
 
             <column-panel>
                 <spacer weight="1"/>
-                <toggle-button name="queueButton" icon="icons/queue_music_24dp.svg; 18"
+                <toggle-button name="queueButton" icon="icons/queue_music_24dp.svg; 20"
                     focusable="false"
                     style="buttonType: borderless"
                     toolTipText="queue"/>
@@ -56,7 +56,7 @@
             <column-panel>
                 <spacer weight="1"/>
                 <row-panel spacing="2">
-                    <menu-button name="addButton" icon="icons/add_24dp.svg; 18"
+                    <menu-button name="addButton" icon="icons/add_24dp.svg; 20"
                         focusable="false"
                         style="buttonType: borderless"
                         toolTipText="add">
@@ -68,24 +68,22 @@
             </column-panel>
         </row-panel>
 
-        <row-panel weight="2">
-            <column-panel spacing="2" weight="1">
-                <row-panel spacing="8">
-                    <column-panel>
-                        <spacer weight="1"/>
-                        <image-pane name="artworkImagePane" size="30" scaleMode="fill-width" border="Component.borderColor"/>
-                        <spacer weight="1"/>
-                    </column-panel>
+        <column-panel spacing="4" weight="2">
+            <row-panel spacing="8">
+                <column-panel>
+                    <spacer weight="1"/>
+                    <image-pane name="artworkImagePane" size="30" scaleMode="fill-width" border="Component.borderColor"/>
+                    <spacer weight="1"/>
+                </column-panel>
 
-                    <column-panel>
-                        <label name="songTitleLabel" styleClass="h4"/>
-                        <label name="artistAlbumLabel" styleClass="small" enabled="false"/>
-                    </column-panel>
-                </row-panel>
+                <column-panel>
+                    <label name="songTitleLabel" styleClass="h4"/>
+                    <label name="artistAlbumLabel" styleClass="small" enabled="false"/>
+                </column-panel>
+            </row-panel>
 
-                <slider name="positionSlider" enabled="false" style="thumbSize: 8, 8"/>
-            </column-panel>
-        </row-panel>
+            <progress-bar name="positionProgressBar"/>
+        </column-panel>
 
         <row-panel spacing="8" weight="1.25">
             <spacer weight="1"/>
@@ -95,7 +93,7 @@
                 <row-panel spacing="4">
                     <activity-indicator name="albumArtworkActivityIndicator" indicatorStyle="small"/>
 
-                    <button name="getAlbumArtworkButton" icon="icons/file_download_24dp.svg; 18"
+                    <button name="getAlbumArtworkButton" icon="icons/file_download_24dp.svg; 20"
                         focusable="false"
                         style="buttonType: borderless"
                         toolTipText="getAlbumArtwork"/>
@@ -106,12 +104,12 @@
             <column-panel>
                 <spacer weight="1"/>
                 <row-panel spacing="2">
-                    <button name="searchButton" icon="icons/search_24dp.svg; 18"
+                    <button name="searchButton" icon="icons/search_24dp.svg; 20"
                         focusable="false"
                         style="buttonType: borderless"
                         toolTipText="search"/>
 
-                    <button name="settingsButton" icon="icons/settings_24dp.svg; 18"
+                    <button name="settingsButton" icon="icons/settings_24dp.svg; 20"
                         focusable="false"
                         style="buttonType: borderless"
                         toolTipText="settings"/>

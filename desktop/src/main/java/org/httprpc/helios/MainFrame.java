@@ -15,6 +15,7 @@ import org.httprpc.sierra.StackPanel;
 import org.httprpc.sierra.TaskExecutor;
 import org.httprpc.sierra.UILoader;
 
+import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JButton;
@@ -24,8 +25,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
+import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
-import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
 import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
@@ -189,7 +190,7 @@ public class MainFrame extends JFrame implements Runnable {
     private @Outlet JLabel songTitleLabel = null;
     private @Outlet JLabel artistAlbumLabel = null;
 
-    private @Outlet JSlider positionSlider = null;
+    private @Outlet JProgressBar positionProgressBar = null;
 
     private @Outlet ActivityIndicator albumArtworkActivityIndicator = null;
     private @Outlet JButton getAlbumArtworkButton = null;
@@ -256,8 +257,8 @@ public class MainFrame extends JFrame implements Runnable {
     private static final int GENRE_TAB_INDEX = 1;
     private static final int PLAYLIST_TAB_INDEX = 2;
 
-    private static final FlatSVGIcon playIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/play_arrow_24dp.svg"));
-    private static final FlatSVGIcon pauseIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/pause_24dp.svg"));
+    private static final FlatSVGIcon playIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/play_arrow_24dp.svg")).derive(32, 32);
+    private static final FlatSVGIcon pauseIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/pause_24dp.svg")).derive(32, 32);
 
     static {
         var playButtonColorFilter = new FlatSVGIcon.ColorFilter(color -> UIManager.getColor("Button.foreground"));
@@ -270,7 +271,7 @@ public class MainFrame extends JFrame implements Runnable {
 
     private static final Preferences preferences = Preferences.userRoot().node(MainFrame.class.getName());
 
-    private static final TaskExecutor taskExecutor = new TaskExecutor(Executors.newSingleThreadExecutor(runnable -> {
+    private static final TaskExecutor taskExecutor = new TaskExecutor(Executors.newCachedThreadPool(runnable -> {
         var thread = new Thread(runnable);
 
         thread.setDaemon(true);
@@ -455,7 +456,10 @@ public class MainFrame extends JFrame implements Runnable {
         addSongsMenuItem.addActionListener(event -> addSongs());
         addPlaylistMenuItem.addActionListener(event -> addPlaylist());
 
-        positionSlider.setValue(0);
+        songTitleLabel.setText(" ");
+        artistAlbumLabel.setText(" ");
+
+        positionProgressBar.setValue(0);
 
         getAlbumArtworkButton.addActionListener(event -> getAlbumArtwork());
 
@@ -689,15 +693,22 @@ public class MainFrame extends JFrame implements Runnable {
         if (audioPlayer == null) {
             var song = queue.get(nextSongIndex);
 
+            var artist = song.getArtist();
+            var album = song.getAlbum();
+
+            taskExecutor.execute(() -> {
+                try (var inputStream = Files.newInputStream(MusicLibrary.getArtworkPath(artist, album))) {
+                    return ImageIO.read(inputStream);
+                }
+            }, (image, exception) -> artworkImagePane.setImage(image));
+
             songTitleLabel.setText(song.getTitle());
 
-            artistAlbumLabel.setText(String.format(resourceBundle.getString("artistAlbumFormat"),
-                song.getArtist(),
-                song.getAlbum()));
+            artistAlbumLabel.setText(String.format(resourceBundle.getString("artistAlbumFormat"), artist, album));
 
-            positionSlider.setValue(0);
+            positionProgressBar.setValue(0);
 
-            positionSlider.setMaximum(song.getTime() * 1000);
+            positionProgressBar.setMaximum(song.getTime() * 1000);
 
             audioPlayer = AudioPlayer.create(MusicLibrary.getContentPath(song));
 
@@ -743,7 +754,7 @@ public class MainFrame extends JFrame implements Runnable {
     private void stop() {
         pause();
 
-        positionSlider.setValue(0);
+        positionProgressBar.setValue(0);
 
         perform(audioPlayer, AudioPlayer::dispose);
 
@@ -756,7 +767,7 @@ public class MainFrame extends JFrame implements Runnable {
         if (audioPlayer.isPlaying()) {
             var currentTime = System.currentTimeMillis();
 
-            positionSlider.setValue(positionSlider.getValue() + (int)(currentTime - lastTime));
+            positionProgressBar.setValue(positionProgressBar.getValue() + (int)(currentTime - lastTime));
 
             lastTime = currentTime;
         } else {
@@ -773,6 +784,11 @@ public class MainFrame extends JFrame implements Runnable {
             if (nextSongIndex < n) {
                 play();
             } else {
+                artworkImagePane.setImage(null);
+
+                songTitleLabel.setText(" ");
+                artistAlbumLabel.setText(" ");
+
                 songs = emptyListOf(Song.class);
 
                 queue.clear();
