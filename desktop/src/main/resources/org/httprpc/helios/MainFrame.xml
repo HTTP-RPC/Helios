@@ -46,7 +46,7 @@
 
             <column-panel>
                 <spacer weight="1"/>
-                <button name="queueButton" icon="icons/queue_music_24dp.svg; 18"
+                <toggle-button name="queueButton" icon="icons/queue_music_24dp.svg; 18"
                     focusable="false"
                     style="buttonType: borderless"
                     toolTipText="queue"/>

@@ -18,7 +18,9 @@ import java.time.Duration;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class QueueDialog extends ModalDialog {
+import static org.httprpc.kilo.util.Collections.*;
+
+public class QueueDialog extends AbstractDialog {
     private static class SongCellRenderer extends ColumnPanel implements ListCellRenderer<Song> {
         JLabel titleTimeLabel = new JLabel();
         JLabel artistAlbumLabel = new JLabel();
@@ -68,25 +70,41 @@ public class QueueDialog extends ModalDialog {
         }
     }
 
+    private List<Song> queue;
+
     private @Outlet JScrollPane scrollPane = null;
 
     private @Outlet JList<Song> queueList = null;
 
     private static ResourceBundle resourceBundle = ResourceBundle.getBundle(QueueDialog.class.getName());
 
-    public QueueDialog(MainFrame owner, List<Song> queue) {
-        super(owner);
+    public QueueDialog(MainFrame owner, List<Song> queue, int nextSongIndex) {
+        super(owner, false);
+
+        this.queue = queue;
 
         setTitle(resourceBundle.getString("windowTitle"));
+
+        setAlwaysOnTop(true);
 
         setContentPane(UILoader.load(this, "QueueDialog.xml", resourceBundle));
 
         scrollPane.setBorder(null);
 
-        queueList.setModel(new BasicListModel<>(queue));
-
         queueList.setCellRenderer(new SongCellRenderer());
 
+        update(nextSongIndex);
+
         setResizable(false);
+    }
+
+    public void update(int nextSongIndex) {
+        var n = queue.size();
+
+        if (nextSongIndex < n) {
+            queueList.setModel(new BasicListModel<>(queue.subList(nextSongIndex + 1, n)));
+        } else {
+            queueList.setModel(new BasicListModel<>(emptyListOf(Song.class)));
+        }
     }
 }

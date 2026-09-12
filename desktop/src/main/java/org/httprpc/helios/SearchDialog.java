@@ -18,7 +18,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.util.ResourceBundle;
 
-public class SearchDialog extends ModalDialog {
+public class SearchDialog extends AbstractDialog {
     private static class ResultCellRenderer extends ColumnPanel implements ListCellRenderer<Song> {
         JLabel titleLabel = new JLabel();
         JLabel artistAlbumLabel = new JLabel();

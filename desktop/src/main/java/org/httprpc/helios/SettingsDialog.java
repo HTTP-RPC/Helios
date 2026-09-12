@@ -11,7 +11,7 @@ import java.util.ResourceBundle;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-public class SettingsDialog extends ModalDialog {
+public class SettingsDialog extends AbstractDialog {
     private @Outlet JRadioButton lightRadioButton = null;
     private @Outlet JRadioButton darkRadioButton = null;
 

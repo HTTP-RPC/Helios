@@ -178,7 +178,7 @@ public class MainFrame extends JFrame implements Runnable {
     private @Outlet JToggleButton shuffleButton = null;
     private @Outlet JToggleButton repeatButton = null;
 
-    private @Outlet JButton queueButton = null;
+    private @Outlet JToggleButton queueButton = null;
 
     private @Outlet MenuButton addButton = null;
     private @Outlet JMenuItem addSongsMenuItem = null;
@@ -216,6 +216,8 @@ public class MainFrame extends JFrame implements Runnable {
     private long lastTime = 0;
 
     private Timer timer = new Timer(250, event -> updatePosition());
+
+    private QueueDialog queueDialog = null;
 
     private static MainFrame instance = null;
 
@@ -429,7 +431,11 @@ public class MainFrame extends JFrame implements Runnable {
             }
         }));
 
-        queueButton.addActionListener(event -> showQueueDialog());
+        queueButton.addActionListener(event -> {
+            if (queueButton.isSelected() || queueDialog != null) {
+                toggleQueueDialog();
+            }
+        });
 
         updateControls();
 
@@ -681,6 +687,10 @@ public class MainFrame extends JFrame implements Runnable {
             audioPlayer = AudioPlayer.create(MusicLibrary.getContentPath(song));
 
             updateControls();
+
+            if (queueDialog != null) {
+                queueDialog.update(nextSongIndex);
+            }
         }
 
         perform(audioPlayer, AudioPlayer::play);
@@ -760,17 +770,30 @@ public class MainFrame extends JFrame implements Runnable {
 
         previousButton.setEnabled(nextSongIndex > 0);
         nextButton.setEnabled(nextSongIndex < n - 1);
-
-        queueButton.setEnabled(nextButton.isEnabled());
     }
 
-    private void showQueueDialog() {
-        var queueDialog = new QueueDialog(this, queue.subList(nextSongIndex + 1, queue.size()));
+    private void toggleQueueDialog() {
+        if (queueButton.isSelected()) {
+            queueDialog = new QueueDialog(this, queue, nextSongIndex);
 
-        queueDialog.pack();
-        queueDialog.setLocationRelativeTo(this);
+            queueDialog.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosed(WindowEvent event) {
+                    queueButton.setSelected(false);
 
-        queueDialog.setVisible(true);
+                    queueDialog = null;
+                }
+            });
+
+            queueDialog.pack();
+            queueDialog.setLocationRelativeTo(this);
+
+            queueDialog.setVisible(true);
+        } else {
+            queueDialog.dispose();
+
+            queueDialog = null;
+        }
     }
 
     private void addSongs() {

@@ -17,7 +17,7 @@ import java.util.ResourceBundle;
 
 import static org.httprpc.kilo.util.Optionals.*;
 
-public class EditSongDialog extends ModalDialog {
+public class EditSongDialog extends AbstractDialog {
     private Song song;
 
     private @Outlet JTextField artistTextField = null;
