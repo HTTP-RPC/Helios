@@ -51,7 +51,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
@@ -209,7 +208,9 @@ public class MainFrame extends JFrame implements Runnable {
 
     private List<ExpandedPlaylist> playlists = listOf();
 
-    private List<Song> queue = new ArrayList<>();
+    private List<Song> songs = emptyListOf(Song.class);
+    private List<Song> queue = listOf();
+
     private int nextSongIndex = 0;
 
     private AudioPlayer audioPlayer = null;
@@ -420,6 +421,12 @@ public class MainFrame extends JFrame implements Runnable {
                 return UILoader.getColor("Button.foreground");
             }
         }));
+
+        shuffleButton.addActionListener(event -> {
+            if (!songs.isEmpty()) {
+                playAll(songs);
+            }
+        });
 
         var repeatIcon = (FlatSVGIcon)repeatButton.getIcon();
 
@@ -655,8 +662,9 @@ public class MainFrame extends JFrame implements Runnable {
     public void playAll(List<Song> songs) {
         stop();
 
-        queue.clear();
+        this.songs = songs;
 
+        queue.clear();
         queue.addAll(songs);
 
         if (shuffleButton.isSelected()) {
