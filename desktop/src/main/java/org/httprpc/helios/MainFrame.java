@@ -186,6 +186,8 @@ public class MainFrame extends JFrame implements Runnable {
     private @Outlet JMenuItem addSongsMenuItem = null;
     private @Outlet JMenuItem addPlaylistMenuItem = null;
 
+    private @Outlet ColumnPanel currentSongPanel = null;
+
     private @Outlet ImagePane artworkImagePane = null;
 
     private @Outlet JLabel songTitleLabel = null;
@@ -458,6 +460,8 @@ public class MainFrame extends JFrame implements Runnable {
         addSongsMenuItem.addActionListener(event -> addSongs());
         addPlaylistMenuItem.addActionListener(event -> addPlaylist());
 
+        currentSongPanel.setVisible(false);
+
         songTitleLabel.setText(" ");
         artistAlbumLabel.setText(" ");
         timeLabel.setText(" ");
@@ -699,6 +703,8 @@ public class MainFrame extends JFrame implements Runnable {
             var artist = song.getArtist();
             var album = song.getAlbum();
 
+            currentSongPanel.setVisible(true);
+
             taskExecutor.execute(() -> {
                 try (var inputStream = Files.newInputStream(MusicLibrary.getArtworkPath(artist, album))) {
                     return ImageIO.read(inputStream);
@@ -756,6 +762,11 @@ public class MainFrame extends JFrame implements Runnable {
     private void stop() {
         pause();
 
+        artworkImagePane.setImage(null);
+
+        songTitleLabel.setText(" ");
+        artistAlbumLabel.setText(" ");
+
         positionProgressBar.setValue(0);
 
         perform(audioPlayer, AudioPlayer::dispose);
@@ -794,10 +805,7 @@ public class MainFrame extends JFrame implements Runnable {
             if (nextSongIndex < n) {
                 play();
             } else {
-                artworkImagePane.setImage(null);
-
-                songTitleLabel.setText(" ");
-                artistAlbumLabel.setText(" ");
+                currentSongPanel.setVisible(false);
 
                 songs = emptyListOf(Song.class);
 
