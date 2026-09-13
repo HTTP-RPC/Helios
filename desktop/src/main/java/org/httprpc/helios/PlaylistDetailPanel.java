@@ -142,6 +142,13 @@ public class PlaylistDetailPanel extends StackPanel {
             listOf("artist", "title", "album"),
             resourceBundle));
 
+        songTable.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent event) {
+                songTable.clearSelection();
+            }
+        });
+
         var playlistCellRenderer = new PlaylistCellRenderer();
 
         songTable.setDefaultRenderer(Object.class, playlistCellRenderer);

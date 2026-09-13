@@ -21,6 +21,8 @@ import javax.swing.table.TableCellRenderer;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.KeyboardFocusManager;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -108,6 +110,13 @@ public class GenreDetailPanel extends StackPanel {
         songTable.setModel(new BasicTableModel<>(Song.class, songs,
             listOf("album", "title", "artist"),
             resourceBundle));
+
+        songTable.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent event) {
+                songTable.clearSelection();
+            }
+        });
 
         var genreCellRenderer = new GenreCellRenderer();
 
