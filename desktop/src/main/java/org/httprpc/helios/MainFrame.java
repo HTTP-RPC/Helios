@@ -744,9 +744,13 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     private void movePrevious() {
+        var elapsedTime = positionProgressBar.getValue();
+
         stop();
 
-        nextSongIndex--;
+        if (elapsedTime < 2500 && nextSongIndex > 0) {
+            nextSongIndex--;
+        }
 
         play();
     }
@@ -823,7 +827,7 @@ public class MainFrame extends JFrame implements Runnable {
 
         playPauseButton.setEnabled(n > 0);
 
-        previousButton.setEnabled(nextSongIndex > 0);
+        previousButton.setEnabled(playPauseButton.isEnabled());
         nextButton.setEnabled(nextSongIndex < n - 1);
     }
 
