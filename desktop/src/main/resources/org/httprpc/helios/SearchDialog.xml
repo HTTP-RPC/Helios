@@ -5,9 +5,12 @@
 <column-panel spacing="8" padding="8" opaque="true">
     <text-field name="titleTextField" columns="18"
         leadingIcon="icons/search_24dp.svg; 18"
-        showClearButton="true"/>
+        showClearButton="true"
+        style="arc: 8"/>
 
-    <scroll-pane size="480, 320">
-        <list name="resultList" selectionMode="single-selection"/>
-    </scroll-pane>
+    <stack-panel size="480, 320" border="Component.borderColor, 1, solid, 4">
+        <scroll-pane border="none">
+            <list name="resultList" selectionMode="single-selection" focusable="false"/>
+        </scroll-pane>
+    </stack-panel>
 </column-panel>
