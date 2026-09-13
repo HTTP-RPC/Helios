@@ -9,7 +9,6 @@ import org.httprpc.sierra.UILoader;
 
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JScrollPane;
 import javax.swing.ListCellRenderer;
 import javax.swing.border.EmptyBorder;
 import java.awt.Color;
@@ -73,8 +72,6 @@ public class QueueDialog extends AbstractDialog {
 
     private List<Song> queue;
 
-    private @Outlet JScrollPane scrollPane = null;
-
     private @Outlet JList<Song> queueList = null;
 
     private static ResourceBundle resourceBundle = ResourceBundle.getBundle(QueueDialog.class.getName());
@@ -89,8 +86,6 @@ public class QueueDialog extends AbstractDialog {
         setType(Type.UTILITY);
 
         setContentPane(UILoader.load(this, "QueueDialog.xml", resourceBundle));
-
-        scrollPane.setBorder(null);
 
         queueList.setCellRenderer(new SongCellRenderer());
 

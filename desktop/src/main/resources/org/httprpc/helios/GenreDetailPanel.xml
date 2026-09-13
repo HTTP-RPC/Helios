@@ -30,7 +30,9 @@
         </row-panel>
     </row-panel>
 
-    <scroll-pane weight="1">
-        <table name="songTable" rowSelectionMode="single-selection"/>
-    </scroll-pane>
+    <stack-panel border="Component.borderColor, 1, solid, 4" weight="1">
+        <scroll-pane border="none">
+            <table name="songTable" rowSelectionMode="single-selection"/>
+        </scroll-pane>
+    </stack-panel>
 </column-panel>

@@ -204,13 +204,8 @@ public class MainFrame extends JFrame implements Runnable {
 
     private @Outlet JTabbedPane collectionTabbedPane = null;
 
-    private @Outlet JScrollPane artistScrollPane = null;
     private @Outlet JList<ExpandedArtist> artistList = null;
-
-    private @Outlet JScrollPane genreScrollPane = null;
     private @Outlet JList<ExpandedGenre> genreList = null;
-
-    private @Outlet JScrollPane playlistScrollPane = null;
     private @Outlet JList<ExpandedPlaylist> playlistList = null;
 
     private @Outlet JScrollPane collectionScrollPane = null;
@@ -479,8 +474,6 @@ public class MainFrame extends JFrame implements Runnable {
 
         collectionTabbedPane.addChangeListener(event -> showSelectedCollection());
 
-        artistScrollPane.setBorder(null);
-
         artistList.setCellRenderer(new ArtistCellRenderer());
         artistList.setSelectionModel(new CollectionListSelectionModel());
 
@@ -494,8 +487,6 @@ public class MainFrame extends JFrame implements Runnable {
             }
         });
 
-        genreScrollPane.setBorder(null);
-
         genreList.setCellRenderer(new GenreCellRenderer());
         genreList.setSelectionModel(new CollectionListSelectionModel());
 
@@ -508,8 +499,6 @@ public class MainFrame extends JFrame implements Runnable {
                 showSelectedCollection();
             }
         });
-
-        playlistScrollPane.setBorder(null);
 
         playlistList.setCellRenderer(new PlaylistCellRenderer());
         playlistList.setSelectionModel(new CollectionListSelectionModel());

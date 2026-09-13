@@ -84,7 +84,6 @@ public class PlaylistDetailPanel extends StackPanel {
         add(UILoader.load(this, "PlaylistDetailPanel.xml", resourceBundle));
 
         nameTextField.setText(playlist.getName());
-        nameTextField.setBorder(null);
 
         nameTextField.addActionListener(event -> updatePlaylistName());
 

@@ -31,7 +31,9 @@
                     </row-panel>
                 </column-panel>
 
-                <image-pane name="artworkImagePane" size="180" scaleMode="fill-width" border="Component.borderColor"/>
+                <image-pane name="artworkImagePane" size="180"
+                    scaleMode="fill-width"
+                    border="Component.borderColor, 1, solid, 4"/>
 
                 <label icon="icons/photo_24dp.svg; 48" horizontalAlignment="center"/>
             </stack-panel>
