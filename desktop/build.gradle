@@ -36,9 +36,8 @@ jar {
 
             if (name.endsWith(".dylib") || name.endsWith(".jnilib")) {
                 println "Signing ${it.absolutePath}"
-                println "Developer ID Application: ${macSigningKeyUserName} (${teamID})"
 
-                def commandLine = new String[] {
+                Runtime.getRuntime().exec(new String[] {
                     'codesign',
                     '-vvv',
                     '--force',
@@ -47,9 +46,7 @@ jar {
                     '--timestamp',
                     '-s', "Developer ID Application: \"${macSigningKeyUserName} (${teamID})\"",
                     it.absolutePath
-                }
-
-                Runtime.getRuntime().exec(commandLine).waitFor()
+                }).waitFor()
             }
         }
     }
