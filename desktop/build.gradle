@@ -24,7 +24,36 @@ application {
     mainClass = 'org.httprpc.helios.MainFrame'
 }
 
+def macSigningKeyUserName = project.findProperty('jpackage.macSigningKeyUserName') ?: ''
+def teamID = project.findProperty('notarytool.teamID') ?: ''
+
 jar {
+    inputs.files(configurations.runtimeClasspath)
+
+    doFirst {
+        inputs.files.forEach {
+            def name = it.name
+
+            if (name.endsWith(".dylib") || name.endsWith(".jnilib")) {
+                println "Signing ${it.absolutePath}"
+                println "Developer ID Application: ${macSigningKeyUserName} (${teamID})"
+
+                def commandLine = new String[] {
+                    'codesign',
+                    '-vvv',
+                    '--force',
+                    '--verbose',
+                    '--options', 'runtime',
+                    '--timestamp',
+                    '-s', "Developer ID Application: \"${macSigningKeyUserName} (${teamID})\"",
+                    it.absolutePath
+                }
+
+                Runtime.getRuntime().exec(commandLine).waitFor()
+            }
+        }
+    }
+
     dependsOn configurations.runtimeClasspath
 
     archiveFileName = "${project.name}.jar"
@@ -44,7 +73,9 @@ jar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
-tasks.register("packageMacOS", Exec) {
+final macOSInstaller = "${application.applicationName}-${version}.dmg"
+
+tasks.register('packageMacOS', Exec) {
     dependsOn 'jar'
 
     executable = 'jpackage'
@@ -55,6 +86,40 @@ tasks.register("packageMacOS", Exec) {
         '--app-version', "${version}",
         '--icon', 'Helios.icns',
         '--mac-sign',
-        '--mac-signing-key-user-name', project.findProperty('jpackage.macSigningKeyUserName') ?: ''
+        '--mac-signing-key-user-name', macSigningKeyUserName
+    ]
+}
+
+tasks.register("notarizeMacOS", Exec) {
+    dependsOn 'packageMacOS'
+
+    executable = 'xcrun'
+    args = [
+        'notarytool', 'submit',
+        '--apple-id', project.findProperty('notarytool.appleID') ?: '',
+        '--team-id', project.findProperty('notarytool.teamID') ?: '',
+        '--password', project.findProperty('notarytool.password') ?: '',
+        '--wait',
+        macOSInstaller
+    ]
+}
+
+tasks.register("stapleMacOS", Exec) {
+    dependsOn 'notarizeMacOS'
+
+    executable = 'xcrun'
+    args = [
+        'stapler', 'staple', macOSInstaller
+    ]
+}
+
+tasks.register("logMacOS", Exec) {
+    executable = 'xcrun'
+    args = [
+        'notarytool', 'log',
+        '--apple-id', project.findProperty('notarytool.appleID') ?: '',
+        '--team-id', project.findProperty('notarytool.teamID') ?: '',
+        '--password', project.findProperty('notarytool.password') ?: '',
+        project.findProperty('submissionID') ?: ''
     ]
 }
