@@ -52,3 +52,12 @@ tasks.register("packageMacOS", Exec) {
     executable = 'bin/package-macos.sh'
     args = ["${project.name}", "${application.applicationName}", "${version}"]
 }
+
+tasks.register("packageWindows", Exec) {
+    dependsOn 'jar'
+
+    workingDir = projectDir
+
+    executable = 'bin/package-windows.sh'
+    args = ["${project.name}", "${application.applicationName}", "${version}"]
+}
