@@ -40,7 +40,6 @@ import javax.swing.filechooser.FileFilter;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.KeyboardFocusManager;
 import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -488,9 +487,6 @@ public class MainFrame extends JFrame implements Runnable {
             }
         });
 
-        artistList.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, setOf());
-        artistList.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, setOf());
-
         genreList.setCellRenderer(new GenreCellRenderer());
         genreList.setSelectionModel(new CollectionListSelectionModel());
 
@@ -504,9 +500,6 @@ public class MainFrame extends JFrame implements Runnable {
             }
         });
 
-        genreList.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, setOf());
-        genreList.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, setOf());
-
         playlistList.setCellRenderer(new PlaylistCellRenderer());
         playlistList.setSelectionModel(new CollectionListSelectionModel());
 
@@ -519,9 +512,6 @@ public class MainFrame extends JFrame implements Runnable {
                 showSelectedCollection();
             }
         });
-
-        playlistList.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, setOf());
-        playlistList.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, setOf());
 
         importStatusPanel.setVisible(false);
 
