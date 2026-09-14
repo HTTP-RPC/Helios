@@ -37,16 +37,25 @@ jar {
             if (name.endsWith(".dylib") || name.endsWith(".jnilib")) {
                 println "Signing ${it.absolutePath}"
 
-                Runtime.getRuntime().exec(new String[] {
+                def process = Runtime.getRuntime().exec(new String[] {
                     'codesign',
                     '-vvv',
                     '--force',
                     '--verbose',
                     '--options', 'runtime',
                     '--timestamp',
-                    '-s', "Developer ID Application: \"${macSigningKeyUserName} (${teamID})\"",
+                    '-s', String.format("Developer ID Application: %s (%s)", macSigningKeyUserName, teamID),
                     it.absolutePath
-                }).waitFor()
+                })
+
+                try (def inputStream = process.errorStream) {
+                    def inputStreamReader = new BufferedReader(new InputStreamReader(inputStream))
+
+                    String line
+                    while ((line = inputStreamReader.readLine()) != null) {
+                        println line
+                    }
+                }
             }
         }
     }
