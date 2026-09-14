@@ -43,3 +43,12 @@ jar {
 
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
+
+tasks.register("packageMacOS", Exec) {
+    dependsOn 'jar'
+
+    workingDir = projectDir
+
+    executable = 'bin/package-macos.sh'
+    args = ["${project.name}", "${application.applicationName}", "${version}"]
+}
