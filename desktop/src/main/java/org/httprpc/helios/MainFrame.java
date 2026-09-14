@@ -195,6 +195,8 @@ public class MainFrame extends JFrame implements Runnable {
     private @Outlet JLabel artistAlbumLabel = null;
     private @Outlet JLabel timeLabel = null;
 
+    private @Outlet JButton goToSongButton = null;
+
     private @Outlet JProgressBar positionProgressBar = null;
 
     private @Outlet ActivityIndicator albumArtworkActivityIndicator = null;
@@ -218,7 +220,7 @@ public class MainFrame extends JFrame implements Runnable {
     private List<Song> songs = emptyListOf(Song.class);
 
     private List<Song> queue = listOf();
-    private int nextSongIndex = 0;
+    private int songIndex = 0;
 
     private AudioPlayer audioPlayer = null;
     private long lastTime = 0;
@@ -392,6 +394,8 @@ public class MainFrame extends JFrame implements Runnable {
                 collectionTabbedPane.setSelectedIndex(PLAYLIST_TAB_INDEX);
             }
         });
+
+        rootPane.putClientProperty("apple.awt.transparentTitleBar", true);
     }
 
     public static MainFrame getInstance() {
@@ -461,6 +465,8 @@ public class MainFrame extends JFrame implements Runnable {
         songTitleLabel.setText(" ");
         artistAlbumLabel.setText(" ");
         timeLabel.setText(" ");
+
+        goToSongButton.addActionListener(event -> showSong(queue.get(songIndex)));
 
         positionProgressBar.setValue(0);
 
@@ -678,7 +684,7 @@ public class MainFrame extends JFrame implements Runnable {
             java.util.Collections.shuffle(queue);
         }
 
-        nextSongIndex = 0;
+        songIndex = 0;
 
         play();
     }
@@ -688,7 +694,7 @@ public class MainFrame extends JFrame implements Runnable {
         playPauseButton.setToolTipText(resourceBundle.getString("pause"));
 
         if (audioPlayer == null) {
-            var song = queue.get(nextSongIndex);
+            var song = queue.get(songIndex);
 
             var artist = song.getArtist();
             var album = song.getAlbum();
@@ -713,7 +719,7 @@ public class MainFrame extends JFrame implements Runnable {
             updateControls();
 
             if (queueDialog != null) {
-                queueDialog.update(nextSongIndex);
+                queueDialog.update(songIndex);
             }
         }
 
@@ -738,8 +744,8 @@ public class MainFrame extends JFrame implements Runnable {
 
         stop();
 
-        if (elapsedTime < 2500 && nextSongIndex > 0) {
-            nextSongIndex--;
+        if (elapsedTime < 2500 && songIndex > 0) {
+            songIndex--;
         }
 
         play();
@@ -748,7 +754,7 @@ public class MainFrame extends JFrame implements Runnable {
     private void moveNext() {
         stop();
 
-        nextSongIndex++;
+        songIndex++;
 
         play();
     }
@@ -788,15 +794,15 @@ public class MainFrame extends JFrame implements Runnable {
         } else {
             stop();
 
-            nextSongIndex++;
+            songIndex++;
 
             var n = queue.size();
 
-            if (nextSongIndex == n && repeatButton.isSelected()) {
-                nextSongIndex = 0;
+            if (songIndex == n && repeatButton.isSelected()) {
+                songIndex = 0;
             }
 
-            if (nextSongIndex < n) {
+            if (songIndex < n) {
                 play();
             } else {
                 currentSongPanel.setVisible(false);
@@ -805,7 +811,7 @@ public class MainFrame extends JFrame implements Runnable {
 
                 queue.clear();
 
-                nextSongIndex = 0;
+                songIndex = 0;
             }
 
             updateControls();
@@ -818,12 +824,12 @@ public class MainFrame extends JFrame implements Runnable {
         playPauseButton.setEnabled(n > 0);
 
         previousButton.setEnabled(playPauseButton.isEnabled());
-        nextButton.setEnabled(nextSongIndex < n - 1);
+        nextButton.setEnabled(songIndex < n - 1);
     }
 
     private void toggleQueueDialog() {
         if (queueButton.isSelected()) {
-            queueDialog = new QueueDialog(this, queue, nextSongIndex);
+            queueDialog = new QueueDialog(this, queue, songIndex);
 
             queueDialog.pack();
             queueDialog.setLocationRelativeTo(this);
@@ -923,38 +929,7 @@ public class MainFrame extends JFrame implements Runnable {
         playlistList.setSelectedIndex(playlists.size() - 1);
     }
 
-    private void getAlbumArtwork() {
-        getAlbumArtworkButton.setEnabled(false);
-
-        albumArtworkActivityIndicator.start();
-
-        taskExecutor.execute(() -> {
-            MusicLibrary.getAlbumArtwork();
-
-            return null;
-        }, (result, exception) -> {
-            getAlbumArtworkButton.setEnabled(true);
-
-            albumArtworkActivityIndicator.stop();
-
-            loadArtists();
-        });
-    }
-
-    private void showSearchDialog() {
-        var searchDialog = new SearchDialog(this);
-
-        searchDialog.pack();
-        searchDialog.setLocationRelativeTo(this);
-
-        searchDialog.setVisible(true);
-
-        var selectedSong = searchDialog.getSelectedSong();
-
-        if (selectedSong == null) {
-            return;
-        }
-
+    private void showSong(Song selectedSong) {
         if (!selectedSong.isCompilation()) {
             var artist = selectedSong.getArtist();
 
@@ -1002,6 +977,35 @@ public class MainFrame extends JFrame implements Runnable {
                 }
             }
         }
+    }
+
+    private void getAlbumArtwork() {
+        getAlbumArtworkButton.setEnabled(false);
+
+        albumArtworkActivityIndicator.start();
+
+        taskExecutor.execute(() -> {
+            MusicLibrary.getAlbumArtwork();
+
+            return null;
+        }, (result, exception) -> {
+            getAlbumArtworkButton.setEnabled(true);
+
+            albumArtworkActivityIndicator.stop();
+
+            loadArtists();
+        });
+    }
+
+    private void showSearchDialog() {
+        var searchDialog = new SearchDialog(this);
+
+        searchDialog.pack();
+        searchDialog.setLocationRelativeTo(this);
+
+        searchDialog.setVisible(true);
+
+        perform(searchDialog.getSelectedSong(), this::showSong);
     }
 
     private void showSettingsDialog() {
