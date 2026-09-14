@@ -35,8 +35,6 @@ jar {
             def name = it.name
 
             if (name.endsWith(".dylib") || name.endsWith(".jnilib")) {
-                println "Signing ${it.absolutePath}"
-
                 def process = Runtime.getRuntime().exec(new String[] {
                     'codesign',
                     '-vvv',
@@ -79,25 +77,41 @@ jar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
-final macOSInstaller = "${application.applicationName}-${version}.dmg"
+def macOSApplication = "${application.applicationName}.app"
+def macOSInstaller = "${application.applicationName}-${version}.dmg"
 
 tasks.register('packageMacOS', Exec) {
     dependsOn 'jar'
 
+    delete macOSApplication
+
     executable = 'jpackage'
     args = [
         '--name', application.applicationName,
+        '--type', 'app-image',
         '--input', 'build/libs',
-        '--main-jar', "${project.name}.jar",
-        '--app-version', "${version}",
         '--icon', 'Helios.icns',
+        '--main-jar', "${project.name}.jar",
+        '--mac-sign',
+        '--mac-signing-key-user-name', macSigningKeyUserName
+    ]
+}
+
+tasks.register('archiveMacOS', Exec) {
+    dependsOn 'packageMacOS'
+
+    executable = 'jpackage'
+    args = [
+        '--type', 'dmg',
+        '--app-image', macOSApplication,
+        '--app-version', "${version}",
         '--mac-sign',
         '--mac-signing-key-user-name', macSigningKeyUserName
     ]
 }
 
 tasks.register("notarizeMacOS", Exec) {
-    dependsOn 'packageMacOS'
+    dependsOn 'archiveMacOS'
 
     executable = 'xcrun'
     args = [
