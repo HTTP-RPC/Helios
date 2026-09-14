@@ -62,7 +62,7 @@ tasks.register("packageWindows", Exec) {
         '--input', 'build/libs',
         '--main-jar', "${project.name}.jar",
         '--app-version', "${version}",
-        '--icon', "${project.name}.ico",
+        '--icon', "${application.applicationName}.ico",
         '--win-shortcut'
     ]
 }
