@@ -20,6 +20,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.TableCellRenderer;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Container;
+import java.awt.FocusTraversalPolicy;
 import java.awt.KeyboardFocusManager;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -130,6 +132,36 @@ public class GenreDetailPanel extends StackPanel {
 
         setScrollableTracksViewportWidth(true);
         setScrollableTracksViewportHeight(true);
+
+        setFocusCycleRoot(true);
+        setFocusTraversalPolicyProvider(true);
+
+        setFocusTraversalPolicy(new FocusTraversalPolicy() {
+            @Override
+            public Component getComponentAfter(Container container, Component component) {
+                return null;
+            }
+
+            @Override
+            public Component getComponentBefore(Container container, Component component) {
+                return null;
+            }
+
+            @Override
+            public Component getFirstComponent(Container container) {
+                return null;
+            }
+
+            @Override
+            public Component getLastComponent(Container container) {
+                return null;
+            }
+
+            @Override
+            public Component getDefaultComponent(Container container) {
+                return null;
+            }
+        });
 
         SwingUtilities.invokeLater(() -> {
             var playlists = MainFrame.getInstance().getPlaylists();
