@@ -1040,6 +1040,8 @@ public class MainFrame extends JFrame implements Runnable {
             FlatLightLaf.setup();
         }
 
+        UIManager.put("TextComponent.arc", 8);
+
         MusicLibrary.initialize();
 
         instance = new MainFrame();
