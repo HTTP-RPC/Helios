@@ -78,7 +78,6 @@ public class MainFrame extends JFrame implements Runnable {
             add(countLabel);
 
             countLabel.putClientProperty("FlatLaf.styleClass", "mini");
-            countLabel.setEnabled(false);
         }
 
         @Override
@@ -102,6 +101,8 @@ public class MainFrame extends JFrame implements Runnable {
 
             nameLabel.setForeground(foreground);
             countLabel.setForeground(foreground);
+
+            countLabel.setEnabled(selected);
 
             return this;
         }

@@ -33,7 +33,6 @@ public class QueueDialog extends AbstractDialog {
             add(artistAlbumLabel);
 
             artistAlbumLabel.putClientProperty("FlatLaf.styleClass", "small");
-            artistAlbumLabel.setEnabled(false);
         }
 
         @Override
@@ -65,6 +64,8 @@ public class QueueDialog extends AbstractDialog {
 
             titleTimeLabel.setForeground(foreground);
             artistAlbumLabel.setForeground(foreground);
+
+            artistAlbumLabel.setEnabled(selected);
 
             return this;
         }

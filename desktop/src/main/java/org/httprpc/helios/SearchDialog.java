@@ -32,7 +32,6 @@ public class SearchDialog extends AbstractDialog {
             add(artistAlbumLabel);
 
             artistAlbumLabel.putClientProperty("FlatLaf.styleClass", "small");
-            artistAlbumLabel.setEnabled(false);
         }
 
         @Override
@@ -58,6 +57,8 @@ public class SearchDialog extends AbstractDialog {
 
             titleLabel.setForeground(foreground);
             artistAlbumLabel.setForeground(foreground);
+
+            artistAlbumLabel.setEnabled(selected);
 
             return this;
         }
