@@ -24,40 +24,7 @@ application {
     mainClass = 'org.httprpc.helios.MainFrame'
 }
 
-def macSigningKeyUserName = project.findProperty('jpackage.macSigningKeyUserName') ?: ''
-def teamID = project.findProperty('notarytool.teamID') ?: ''
-
 jar {
-    inputs.files(configurations.runtimeClasspath)
-
-    doFirst {
-        inputs.files.forEach {
-            def name = it.name
-
-            if (name.endsWith(".dylib") || name.endsWith(".jnilib")) {
-                def process = Runtime.getRuntime().exec(new String[] {
-                    'codesign',
-                    '-vvv',
-                    '--force',
-                    '--verbose',
-                    '--options', 'runtime',
-                    '--timestamp',
-                    '-s', String.format("Developer ID Application: %s (%s)", macSigningKeyUserName, teamID),
-                    it.absolutePath
-                })
-
-                try (def inputStream = process.errorStream) {
-                    def inputStreamReader = new BufferedReader(new InputStreamReader(inputStream))
-
-                    String line
-                    while ((line = inputStreamReader.readLine()) != null) {
-                        println line
-                    }
-                }
-            }
-        }
-    }
-
     dependsOn configurations.runtimeClasspath
 
     archiveFileName = "${project.name}.jar"
@@ -75,71 +42,4 @@ jar {
     }
 
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-}
-
-def macOSApplication = "${application.applicationName}.app"
-def macOSInstaller = "${application.applicationName}-${version}.dmg"
-
-tasks.register('packageMacOS', Exec) {
-    dependsOn 'jar'
-
-    delete macOSApplication
-
-    executable = 'jpackage'
-    args = [
-        '--name', application.applicationName,
-        '--type', 'app-image',
-        '--input', 'build/libs',
-        '--icon', 'Helios.icns',
-        '--main-jar', "${project.name}.jar",
-        '--mac-sign',
-        '--mac-signing-key-user-name', macSigningKeyUserName
-    ]
-}
-
-tasks.register('archiveMacOS', Exec) {
-    dependsOn 'packageMacOS'
-
-    executable = 'jpackage'
-    args = [
-        '--type', 'dmg',
-        '--app-image', macOSApplication,
-        '--app-version', "${version}",
-        '--mac-sign',
-        '--mac-signing-key-user-name', macSigningKeyUserName
-    ]
-}
-
-tasks.register("notarizeMacOS", Exec) {
-    dependsOn 'archiveMacOS'
-
-    executable = 'xcrun'
-    args = [
-        'notarytool', 'submit',
-        '--apple-id', project.findProperty('notarytool.appleID') ?: '',
-        '--team-id', project.findProperty('notarytool.teamID') ?: '',
-        '--password', project.findProperty('notarytool.password') ?: '',
-        '--wait',
-        macOSInstaller
-    ]
-}
-
-tasks.register("stapleMacOS", Exec) {
-    dependsOn 'notarizeMacOS'
-
-    executable = 'xcrun'
-    args = [
-        'stapler', 'staple', macOSInstaller
-    ]
-}
-
-tasks.register("logMacOS", Exec) {
-    executable = 'xcrun'
-    args = [
-        'notarytool', 'log',
-        '--apple-id', project.findProperty('notarytool.appleID') ?: '',
-        '--team-id', project.findProperty('notarytool.teamID') ?: '',
-        '--password', project.findProperty('notarytool.password') ?: '',
-        project.findProperty('submissionID') ?: ''
-    ]
 }
