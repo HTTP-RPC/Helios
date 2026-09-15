@@ -796,11 +796,7 @@ public class MusicLibrary {
                         var artwork = ArtworkAPI.getArtwork(artworkURL100);
 
                         if (artwork != null) {
-                            try (var outputStream = Files.newOutputStream(artworkPath,
-                                StandardOpenOption.CREATE,
-                                StandardOpenOption.TRUNCATE_EXISTING)) {
-                                ImageIO.write(artwork, "jpeg", outputStream);
-                            }
+                            updateAlbumArtwork(artist, album, artwork);
                         }
                     }
                 }
