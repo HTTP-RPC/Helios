@@ -9,6 +9,20 @@
             focusable="false"
             toolTipText="playAlbum"
             style="buttonType: borderless"/>
+
+        <spacer weight="1"/>
+
+        <row-panel spacing="2">
+            <button name="editAlbumButton" icon="icons/edit_24dp.svg; 16"
+                focusable="false"
+                toolTipText="editAlbum"
+                style="buttonType: borderless"/>
+
+            <button name="deleteAlbumButton" icon="icons/delete_24dp.svg; 18"
+                focusable="false"
+                toolTipText="deleteAlbum"
+                style="buttonType: borderless"/>
+        </row-panel>
     </row-panel>
 
     <row-panel spacing="16">

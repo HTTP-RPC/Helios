@@ -191,10 +191,12 @@ public class GenreDetailPanel extends StackPanel {
     private void editSong() {
         var song = ((BasicTableModel<Song>)songTable.getModel()).getRow(songTable.getSelectedRow());
 
-        var editSongDialog = new EditSongDialog(MainFrame.getInstance(), song);
+        var mainFrame = MainFrame.getInstance();
+
+        var editSongDialog = new EditSongDialog(mainFrame, song);
 
         editSongDialog.pack();
-        editSongDialog.setLocationRelativeTo(editSongDialog.getOwner());
+        editSongDialog.setLocationRelativeTo(mainFrame);
 
         editSongDialog.setVisible(true);
     }

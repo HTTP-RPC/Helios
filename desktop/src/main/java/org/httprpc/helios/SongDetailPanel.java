@@ -173,10 +173,12 @@ public class SongDetailPanel extends StackPanel {
     }
 
     private void editSong() {
-        var editSongDialog = new EditSongDialog(MainFrame.getInstance(), song);
+        var mainFrame = MainFrame.getInstance();
+
+        var editSongDialog = new EditSongDialog(mainFrame, song);
 
         editSongDialog.pack();
-        editSongDialog.setLocationRelativeTo(editSongDialog.getOwner());
+        editSongDialog.setLocationRelativeTo(mainFrame);
 
         editSongDialog.setVisible(true);
     }

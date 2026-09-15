@@ -39,8 +39,16 @@ public class AlbumDetailPanel extends StackPanel {
     private Artist artist;
     private String name;
 
+    private String genre = null;
+    private Integer year = null;
+
+    private boolean compilation = false;
+
     private @Outlet JLabel nameLabel = null;
     private @Outlet JButton playAlbumButton = null;
+
+    private @Outlet JButton editAlbumButton = null;
+    private @Outlet JButton deleteAlbumButton = null;
 
     private @Outlet StackPanel artworkPanel = null;
 
@@ -55,8 +63,6 @@ public class AlbumDetailPanel extends StackPanel {
     private @Outlet JLabel yearLabel = null;
 
     private @Outlet ColumnPanel songListPanel = null;
-
-    private boolean compilation = false;
 
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(AlbumDetailPanel.class.getName());
 
@@ -78,6 +84,9 @@ public class AlbumDetailPanel extends StackPanel {
 
         playAlbumButton.addActionListener(event -> MainFrame.getInstance().playAll(songs));
 
+        editAlbumButton.addActionListener(event -> editAlbum());
+        deleteAlbumButton.addActionListener(event -> deleteAlbum());
+
         editArtworkButton.addActionListener(event -> editArtwork());
         editArtworkButton.setVisible(false);
 
@@ -89,7 +98,7 @@ public class AlbumDetailPanel extends StackPanel {
         artworkPanel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent event) {
-                showButtons();
+                showArtworkButtons();
             }
 
             @Override
@@ -97,7 +106,7 @@ public class AlbumDetailPanel extends StackPanel {
                 var rectangle = new Rectangle(0, 0, artworkPanel.getWidth(), artworkPanel.getHeight());
 
                 if (!rectangle.contains(event.getPoint())) {
-                    hideButtons();
+                    hideArtworkButtons();
                 }
             }
         });
@@ -105,14 +114,14 @@ public class AlbumDetailPanel extends StackPanel {
         editArtworkButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseExited(MouseEvent event) {
-                hideButtons();
+                hideArtworkButtons();
             }
         });
 
         deleteArtworkButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseExited(MouseEvent event) {
-                hideButtons();
+                hideArtworkButtons();
             }
         });
 
@@ -128,9 +137,6 @@ public class AlbumDetailPanel extends StackPanel {
             new MatteBorder(1, 0, 0, 0, UIManager.getColor("Component.borderColor")),
             new EmptyBorder(2, 0, 0, 0)
         ));
-
-        String genre = null;
-        Integer year = null;
 
         Integer lastDiscNumber = null;
 
@@ -155,6 +161,29 @@ public class AlbumDetailPanel extends StackPanel {
 
         genreLabel.setText(genre);
         yearLabel.setText(map(year, String::valueOf));
+    }
+
+    private void editAlbum() {
+        var mainFrame = MainFrame.getInstance();
+
+        var editAlbumDialog = new EditAlbumDialog(mainFrame, name, genre, year, compilation);
+
+        editAlbumDialog.pack();
+        editAlbumDialog.setLocationRelativeTo(mainFrame);
+
+        editAlbumDialog.setVisible(true);
+    }
+
+    private void deleteAlbum() {
+        var result = JOptionPane.showConfirmDialog(getTopLevelAncestor(),
+            String.format(resourceBundle.getString("confirmDeleteAlbumMessageFormat"), name),
+            resourceBundle.getString("deleteAlbum"),
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.WARNING_MESSAGE);
+
+        if (result == JOptionPane.YES_OPTION) {
+            // TODO
+        }
     }
 
     private void editArtwork() {
@@ -189,7 +218,7 @@ public class AlbumDetailPanel extends StackPanel {
 
     private void deleteArtwork() {
         var result = JOptionPane.showConfirmDialog(getTopLevelAncestor(),
-            resourceBundle.getString("confirmDeleteArtwork"),
+            resourceBundle.getString("confirmDeleteArtworkMessage"),
             resourceBundle.getString("deleteArtwork"),
             JOptionPane.YES_NO_OPTION,
             JOptionPane.WARNING_MESSAGE);
@@ -230,7 +259,7 @@ public class AlbumDetailPanel extends StackPanel {
         });
     }
 
-    private void showButtons() {
+    private void showArtworkButtons() {
         if (compilation) {
             return;
         }
@@ -241,7 +270,7 @@ public class AlbumDetailPanel extends StackPanel {
         deleteArtworkButton.setVisible(true);
     }
 
-    private void hideButtons() {
+    private void hideArtworkButtons() {
         artworkButtonPanel.setOpaque(false);
 
         editArtworkButton.setVisible(false);

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE column-panel SYSTEM "sierra.dtd">
+
+<column-panel spacing="8" padding="8" opaque="true">
+    <form-panel>
+        <text-field name="nameTextField" label="name" columns="24"/>
+        <suggestion-picker name="genreSuggestionPicker" label="genre" columns="12"/>
+        <number-field name="yearTextField" label="year" columns="4"/>
+
+        <spacer height="4"/>
+
+        <check-box name="compilationCheckBox" text="compilation"/>
+    </form-panel>
+
+    <separator/>
+
+    <row-panel spacing="8">
+        <spacer weight="1"/>
+
+        <button name="cancelButton" text="cancel"/>
+        <button name="okButton" text="ok"/>
+    </row-panel>
+</column-panel>
