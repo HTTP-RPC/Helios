@@ -786,6 +786,8 @@ public class MusicLibrary {
 
             System.out.println(String.format("Downloading artwork for %s / %s", artist, album));
 
+            var t0 = System.currentTimeMillis();
+
             try {
                 var artistID = map(ArtworkAPI.getArtist(artist), ArtworkAPI.Result::getArtistID);
 
@@ -804,10 +806,16 @@ public class MusicLibrary {
                 System.out.println(exception.getMessage());
             }
 
-            try {
-                Thread.sleep(ArtworkAPI.REQUEST_DELAY);
-            } catch (InterruptedException exception) {
-                throw new RuntimeException(exception);
+            var t1 = System.currentTimeMillis();
+
+            var delay = Math.max(ArtworkAPI.REQUEST_DELAY - (t1 - t0), 0);
+
+            if (delay > 0) {
+                try {
+                    Thread.sleep(delay);
+                } catch (InterruptedException exception) {
+                    throw new RuntimeException(exception);
+                }
             }
         }
     }
