@@ -251,4 +251,12 @@ public class AlbumDetailPanel extends StackPanel {
     public boolean matches(String name) {
         return this.name.equals(name);
     }
+
+    public void showCurrentSong(Song song) {
+        var n = songListPanel.getComponentCount();
+
+        for (var i = 0; i < n; i++) {
+            ((SongDetailPanel)songListPanel.getComponent(i)).showCurrentSong(song);
+        }
+    }
 }

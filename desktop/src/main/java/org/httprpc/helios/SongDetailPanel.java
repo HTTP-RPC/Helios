@@ -37,6 +37,8 @@ public class SongDetailPanel extends StackPanel {
 
     private @Outlet JLabel titleLabel = null;
 
+    private @Outlet JLabel nowPlayingLabel = null;
+
     private @Outlet JButton playSongButton = null;
 
     private @Outlet MenuButton addToPlaylistButton = null;
@@ -153,6 +155,8 @@ public class SongDetailPanel extends StackPanel {
             }
         });
 
+        showCurrentSong(MainFrame.getInstance().getCurrentSong());
+
         SwingUtilities.invokeLater(() -> playlists = MainFrame.getInstance().getPlaylists());
     }
 
@@ -245,5 +249,9 @@ public class SongDetailPanel extends StackPanel {
 
         editSongButton.setVisible(false);
         deleteSongButton.setVisible(false);
+    }
+
+    public void showCurrentSong(Song song) {
+        nowPlayingLabel.setVisible(song != null && song.getID().equals(this.song.getID()));
     }
 }

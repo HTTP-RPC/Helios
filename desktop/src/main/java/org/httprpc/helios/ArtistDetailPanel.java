@@ -47,6 +47,14 @@ public class ArtistDetailPanel extends StackPanel {
         setScrollableTracksViewportWidth(true);
     }
 
+    public void showCurrentSong(Song song) {
+        var n = albumListPanel.getComponentCount();
+
+        for (var i = 0; i < n; i++) {
+            ((AlbumDetailPanel)albumListPanel.getComponent(i)).showCurrentSong(song);
+        }
+    }
+
     public void scrollToSong(Song song) {
         var album = song.getAlbum();
 

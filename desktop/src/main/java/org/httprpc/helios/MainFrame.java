@@ -413,6 +413,10 @@ public class MainFrame extends JFrame implements Runnable {
         return instance;
     }
 
+    public Song getCurrentSong() {
+        return songIndex < queue.size() ? queue.get(songIndex) : null;
+    }
+
     public List<ExpandedPlaylist> getPlaylists() {
         return playlists;
     }
@@ -731,6 +735,10 @@ public class MainFrame extends JFrame implements Runnable {
 
             if (queueDialog != null) {
                 queueDialog.update(songIndex);
+            }
+
+            if (collectionTabbedPane.getSelectedIndex() == ARTIST_TAB_INDEX) {
+                ((ArtistDetailPanel)collectionScrollPane.getViewport().getView()).showCurrentSong(song);
             }
         }
 
