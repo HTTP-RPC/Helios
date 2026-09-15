@@ -38,6 +38,7 @@ import static org.httprpc.kilo.util.Optionals.*;
 public class AlbumDetailPanel extends StackPanel {
     private Artist artist;
     private String name;
+    private List<Song> songs;
 
     private String genre = null;
     private Integer year = null;
@@ -77,6 +78,7 @@ public class AlbumDetailPanel extends StackPanel {
     public AlbumDetailPanel(Artist artist, String name, List<Song> songs) {
         this.artist = artist;
         this.name = name;
+        this.songs = songs;
 
         add(UILoader.load(this, "AlbumDetailPanel.xml", resourceBundle));
 
@@ -166,7 +168,7 @@ public class AlbumDetailPanel extends StackPanel {
     private void editAlbum() {
         var mainFrame = MainFrame.getInstance();
 
-        var editAlbumDialog = new EditAlbumDialog(mainFrame, artist, name, genre, year, compilation);
+        var editAlbumDialog = new EditAlbumDialog(mainFrame, artist, name, songs, genre, year, compilation);
 
         editAlbumDialog.pack();
         editAlbumDialog.setLocationRelativeTo(mainFrame);
@@ -182,7 +184,16 @@ public class AlbumDetailPanel extends StackPanel {
             JOptionPane.WARNING_MESSAGE);
 
         if (result == JOptionPane.YES_OPTION) {
-            MusicLibrary.deleteAlbum(artist.getName(), name);
+            // TODO Do in background?
+            for (var song : songs) {
+                MusicLibrary.deleteSong(song);
+            }
+
+            var mainFrame = MainFrame.getInstance();
+
+            mainFrame.loadArtists();
+            mainFrame.loadGenres();
+            mainFrame.loadPlaylists();
         }
     }
 

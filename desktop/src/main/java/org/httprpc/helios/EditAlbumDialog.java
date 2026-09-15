@@ -11,6 +11,7 @@ import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import java.text.NumberFormat;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import static org.httprpc.kilo.util.Optionals.*;
@@ -18,6 +19,7 @@ import static org.httprpc.kilo.util.Optionals.*;
 public class EditAlbumDialog extends AbstractDialog {
     private Artist artist;
     private String name;
+    private List<Song> songs;
 
     private String genre;
     private Integer year;
@@ -35,13 +37,15 @@ public class EditAlbumDialog extends AbstractDialog {
 
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(EditAlbumDialog.class.getName());
 
-    public EditAlbumDialog(MainFrame owner, Artist artist, String name,
+    public EditAlbumDialog(MainFrame owner,
+        Artist artist, String name, List<Song> songs,
         String genre, Integer year,
         boolean compilation) {
         super(owner);
 
         this.artist = artist;
         this.name = name;
+        this.songs = songs;
 
         this.genre = genre;
         this.year = year;
@@ -105,7 +109,24 @@ public class EditAlbumDialog extends AbstractDialog {
             return;
         }
 
-        MusicLibrary.updateAlbum(artist.getName(), name, genre, year, compilation);
+        // TODO Do in background?
+        for (var previousSong : songs) {
+            var song = new Song();
+
+            song.setID(previousSong.getID());
+            song.setArtist(previousSong.getArtist());
+            song.setAlbum(name);
+            song.setTitle(previousSong.getTitle());
+            song.setTime(previousSong.getTime());
+            song.setGenre(genre);
+            song.setYear(year);
+            song.setTrackNumber(previousSong.getTrackNumber());
+            song.setDiscNumber(previousSong.getDiscNumber());
+            song.setCompilation(compilation);
+            song.setType(previousSong.getType());
+
+            MusicLibrary.updateSong(song, previousSong);
+        }
 
         var mainFrame = MainFrame.getInstance();
 

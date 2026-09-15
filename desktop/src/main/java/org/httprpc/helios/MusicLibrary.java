@@ -581,14 +581,6 @@ public class MusicLibrary {
         deleteSong(getContentPath(song));
     }
 
-    public static void updateAlbum(String artist, String album, String genre, Integer year, boolean compilation) {
-        // TODO
-    }
-
-    public static void deleteAlbum(String artist, String album) {
-        // TODO
-    }
-
     public static boolean addPlaylist(Playlist playlist) {
         var queryBuilder = QueryBuilder.insert(Playlist.class);
 
