@@ -28,10 +28,7 @@ public class EditSongDialog extends AbstractDialog {
     private @Outlet NumberField yearTextField = null;
 
     private @Outlet NumberField trackNumberTextField = null;
-    private @Outlet NumberField trackCountTextField = null;
-
     private @Outlet NumberField discNumberTextField = null;
-    private @Outlet NumberField discCountTextField = null;
 
     private @Outlet JCheckBox compilationCheckBox = null;
 
@@ -56,10 +53,7 @@ public class EditSongDialog extends AbstractDialog {
         yearTextField.setFormat(integerFormat);
 
         trackNumberTextField.setFormat(integerFormat);
-        trackCountTextField.setFormat(integerFormat);
-
         discNumberTextField.setFormat(integerFormat);
-        discCountTextField.setFormat(integerFormat);
 
         cancelButton.addActionListener(event -> dispose());
         okButton.addActionListener(event -> save());
@@ -89,10 +83,7 @@ public class EditSongDialog extends AbstractDialog {
         yearTextField.setValue(song.getYear());
 
         trackNumberTextField.setValue(song.getTrackNumber());
-        trackCountTextField.setValue(song.getTrackCount());
-
         discNumberTextField.setValue(song.getDiscNumber());
-        discCountTextField.setValue(song.getDiscCount());
 
         compilationCheckBox.setSelected(song.isCompilation());
     }
@@ -124,10 +115,7 @@ public class EditSongDialog extends AbstractDialog {
         var year = map(yearTextField.getValue(), Number::intValue);
 
         var trackNumber = map(trackNumberTextField.getValue(), Number::intValue);
-        var trackCount = map(trackCountTextField.getValue(), Number::intValue);
-
         var discNumber = map(discNumberTextField.getValue(), Number::intValue);
-        var discCount = map(discCountTextField.getValue(), Number::intValue);
 
         var compilation = compilationCheckBox.isSelected();
 
@@ -153,10 +141,7 @@ public class EditSongDialog extends AbstractDialog {
         song.setYear(year);
 
         song.setTrackNumber(trackNumber);
-        song.setTrackCount(trackCount);
-
         song.setDiscNumber(discNumber);
-        song.setDiscCount(discCount);
 
         song.setCompilation(compilation);
 

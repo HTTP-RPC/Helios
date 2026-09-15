@@ -392,31 +392,11 @@ public class MusicLibrary {
                 }
             }
 
-            var trackCount = map(tag.getFirst(FieldKey.TRACK_TOTAL), String::strip);
-
-            if (trackCount != null) {
-                try {
-                    song.setTrackCount(Integer.parseInt(trackCount));
-                } catch (Exception exception) {
-                    // No-op
-                }
-            }
-
             var discNumber = map(tag.getFirst(FieldKey.DISC_NO), String::strip);
 
             if (discNumber != null) {
                 try {
                     song.setDiscNumber(Integer.parseInt(discNumber));
-                } catch (Exception exception) {
-                    // No-op
-                }
-            }
-
-            var discCount = map(tag.getFirst(FieldKey.DISC_TOTAL), String::strip);
-
-            if (discCount != null) {
-                try {
-                    song.setDiscCount(Integer.parseInt(discCount));
                 } catch (Exception exception) {
                     // No-op
                 }
@@ -566,28 +546,12 @@ public class MusicLibrary {
                 tag.deleteField(FieldKey.TRACK);
             }
 
-            var trackCount = song.getTrackCount();
-
-            if (trackCount != null) {
-                tag.setField(FieldKey.TRACK_TOTAL, map(trackCount, Object::toString));
-            } else {
-                tag.deleteField(FieldKey.TRACK_TOTAL);
-            }
-
             var discNumber = song.getDiscNumber();
 
             if (discNumber != null) {
                 tag.setField(FieldKey.DISC_NO, map(discNumber, Object::toString));
             } else {
                 tag.deleteField(FieldKey.DISC_NO);
-            }
-
-            var discCount = song.getDiscCount();
-
-            if (discCount != null) {
-                tag.setField(FieldKey.DISC_TOTAL, map(discCount, Object::toString));
-            } else {
-                tag.deleteField(FieldKey.DISC_TOTAL);
             }
 
             tag.setField(FieldKey.IS_COMPILATION, String.valueOf(song.isCompilation() ? 1 : 0));

@@ -15,17 +15,8 @@
 
         <spacer height="4"/>
 
-        <row-panel label="track" spacing="6" alignToBaseline="true">
-            <number-field name="trackNumberTextField" columns="2"/>
-            <label text="of"/>
-            <number-field name="trackCountTextField" columns="2"/>
-        </row-panel>
-
-        <row-panel label="disc" spacing="6" alignToBaseline="true">
-            <number-field name="discNumberTextField" columns="2"/>
-            <label text="of"/>
-            <number-field name="discCountTextField" columns="2"/>
-        </row-panel>
+        <number-field label="trackNumber" name="trackNumberTextField" columns="2"/>
+        <number-field label="discNumber" name="discNumberTextField" columns="2"/>
 
         <spacer height="4"/>
 

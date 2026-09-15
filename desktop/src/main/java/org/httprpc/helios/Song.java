@@ -29,10 +29,7 @@ public class Song {
     private Integer year;
 
     private Integer trackNumber;
-    private Integer trackCount;
-
     private Integer discNumber;
-    private Integer discCount;
 
     private Boolean compilation;
 
@@ -136,15 +133,6 @@ public class Song {
         this.trackNumber = trackNumber;
     }
 
-    @Column("trackCount")
-    public Integer getTrackCount() {
-        return trackCount;
-    }
-
-    public void setTrackCount(Integer trackCount) {
-        this.trackCount = trackCount;
-    }
-
     @Column("discNumber")
     public Integer getDiscNumber() {
         return discNumber;
@@ -152,15 +140,6 @@ public class Song {
 
     public void setDiscNumber(Integer discNumber) {
         this.discNumber = discNumber;
-    }
-
-    @Column("discCount")
-    public Integer getDiscCount() {
-        return discCount;
-    }
-
-    public void setDiscCount(Integer discCount) {
-        this.discCount = discCount;
     }
 
     @Column("compilation")

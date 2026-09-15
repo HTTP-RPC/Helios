@@ -9,9 +9,7 @@ create table Song (
     genre text collate nocase,
     year integer,
     trackNumber integer,
-    trackCount integer,
     discNumber integer,
-    discCount integer,
     compilation boolean not null,
     type text not null check (type in ('mp3', 'm4a')),
     unique (artist, album, title)
