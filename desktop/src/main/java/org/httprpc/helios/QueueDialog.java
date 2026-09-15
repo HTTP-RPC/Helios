@@ -84,8 +84,6 @@ public class QueueDialog extends AbstractDialog {
 
         setTitle(resourceBundle.getString("windowTitle"));
 
-        setType(Type.UTILITY);
-
         setContentPane(UILoader.load(this, "QueueDialog.xml", resourceBundle));
 
         queueList.setCellRenderer(new SongCellRenderer());

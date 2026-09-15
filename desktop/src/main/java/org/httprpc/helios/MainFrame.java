@@ -243,6 +243,7 @@ public class MainFrame extends JFrame implements Runnable {
     private static final String REPEAT_KEY = "repeat";
     private static final String QUEUE_KEY = "queue";
     private static final String ADD_KEY = "add";
+    private static final String GO_TO_SONG_KEY = "goToSong";
     private static final String GET_ALBUM_ARTWORK_KEY = "getAlbumArtwork";
     private static final String SEARCH_KEY = "search";
     private static final String SETTINGS_KEY = "settings";
@@ -344,6 +345,16 @@ public class MainFrame extends JFrame implements Runnable {
             @Override
             public void actionPerformed(ActionEvent event) {
                 addButton.doClick();
+            }
+        });
+
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_G, shortcutModifier, false), GO_TO_SONG_KEY);
+        actionMap.put(GO_TO_SONG_KEY, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                if (currentSongPanel.isVisible()) {
+                    goToSongButton.doClick();
+                }
             }
         });
 
@@ -929,9 +940,9 @@ public class MainFrame extends JFrame implements Runnable {
         playlistList.setSelectedIndex(playlists.size() - 1);
     }
 
-    private void showSong(Song selectedSong) {
-        if (!selectedSong.isCompilation()) {
-            var artist = selectedSong.getArtist();
+    private void showSong(Song song) {
+        if (!song.isCompilation()) {
+            var artist = song.getArtist();
 
             var artistListModel = artistList.getModel();
 
@@ -946,7 +957,7 @@ public class MainFrame extends JFrame implements Runnable {
 
                     SwingUtilities.invokeLater(() -> {
                         if (collectionScrollPane.getViewport().getView() instanceof ArtistDetailPanel artistDetailPanel) {
-                            artistDetailPanel.scrollToSong(selectedSong);
+                            artistDetailPanel.scrollToSong(song);
                         }
                     });
 
@@ -954,7 +965,7 @@ public class MainFrame extends JFrame implements Runnable {
                 }
             }
         } else {
-            var genre = selectedSong.getGenre();
+            var genre = song.getGenre();
 
             var genreListModel = genreList.getModel();
 
@@ -969,7 +980,7 @@ public class MainFrame extends JFrame implements Runnable {
 
                     SwingUtilities.invokeLater(() -> {
                         if (collectionScrollPane.getViewport().getView() instanceof GenreDetailPanel genreDetailPanel) {
-                            genreDetailPanel.scrollToSong(selectedSong);
+                            genreDetailPanel.scrollToSong(song);
                         }
                     });
 
