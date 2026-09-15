@@ -71,14 +71,14 @@ public class GenreDetailPanel extends StackPanel {
 
     private @Outlet JTable songTable = null;
 
-    private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(GenreDetailPanel.class.getName());
-
     private static final FlatSVGIcon playlistIcon;
     static {
         playlistIcon = new FlatSVGIcon(GenreDetailPanel.class.getResource("icons/music_note_24dp.svg")).derive(18, 18);
 
         playlistIcon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> UIManager.getColor("Button.foreground")));
     }
+
+    private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(GenreDetailPanel.class.getName());
 
     public GenreDetailPanel(Genre genre, List<Song> songs) {
         add(UILoader.load(this, "GenreDetailPanel.xml", resourceBundle));

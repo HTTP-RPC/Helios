@@ -49,14 +49,14 @@ public class SongDetailPanel extends StackPanel {
 
     private List<ExpandedPlaylist> playlists = listOf();
 
-    private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(SongDetailPanel.class.getName());
-
     private static final FlatSVGIcon playlistIcon;
     static {
         playlistIcon = new FlatSVGIcon(SongDetailPanel.class.getResource("icons/music_note_24dp.svg")).derive(18, 18);
 
         playlistIcon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> UIManager.getColor("Button.foreground")));
     }
+
+    private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(SongDetailPanel.class.getName());
 
     public SongDetailPanel(Song song) {
         this.song = song;
