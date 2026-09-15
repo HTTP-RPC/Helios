@@ -5,7 +5,6 @@ package org.httprpc.helios;
 import org.httprpc.sierra.ColumnPanel;
 import org.httprpc.sierra.ImagePane;
 import org.httprpc.sierra.Outlet;
-import org.httprpc.sierra.RowPanel;
 import org.httprpc.sierra.StackPanel;
 import org.httprpc.sierra.TaskExecutor;
 import org.httprpc.sierra.UILoader;
@@ -53,7 +52,7 @@ public class AlbumDetailPanel extends StackPanel {
 
     private @Outlet StackPanel artworkPanel = null;
 
-    private @Outlet RowPanel artworkButtonPanel = null;
+    private @Outlet ColumnPanel artworkButtonPanel = null;
 
     private @Outlet JButton editArtworkButton = null;
     private @Outlet JButton deleteArtworkButton = null;
