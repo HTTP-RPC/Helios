@@ -166,7 +166,7 @@ public class AlbumDetailPanel extends StackPanel {
     private void editAlbum() {
         var mainFrame = MainFrame.getInstance();
 
-        var editAlbumDialog = new EditAlbumDialog(mainFrame, name, genre, year, compilation);
+        var editAlbumDialog = new EditAlbumDialog(mainFrame, artist, name, genre, year, compilation);
 
         editAlbumDialog.pack();
         editAlbumDialog.setLocationRelativeTo(mainFrame);
@@ -182,7 +182,7 @@ public class AlbumDetailPanel extends StackPanel {
             JOptionPane.WARNING_MESSAGE);
 
         if (result == JOptionPane.YES_OPTION) {
-            // TODO
+            MusicLibrary.deleteAlbum(artist.getName(), name);
         }
     }
 

@@ -13,7 +13,10 @@ import javax.swing.JTextField;
 import java.text.NumberFormat;
 import java.util.ResourceBundle;
 
+import static org.httprpc.kilo.util.Optionals.*;
+
 public class EditAlbumDialog extends AbstractDialog {
+    private Artist artist;
     private String name;
 
     private String genre;
@@ -32,12 +35,14 @@ public class EditAlbumDialog extends AbstractDialog {
 
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(EditAlbumDialog.class.getName());
 
-    public EditAlbumDialog(MainFrame owner, String name,
+    public EditAlbumDialog(MainFrame owner, Artist artist, String name,
         String genre, Integer year,
         boolean compilation) {
         super(owner);
 
+        this.artist = artist;
         this.name = name;
+
         this.genre = genre;
         this.year = year;
 
@@ -82,7 +87,33 @@ public class EditAlbumDialog extends AbstractDialog {
     }
 
     private void save() {
-        // TODO
+        var name = nameTextField.getText().strip();
+
+        if (name.isEmpty()) {
+            alertRequired("name", nameTextField);
+            return;
+        }
+
+        var genre = genreSuggestionPicker.getText().strip();
+
+        var year = map(yearTextField.getValue(), Number::intValue);
+
+        var compilation = compilationCheckBox.isSelected();
+
+        if (compilation && genre.isEmpty()) {
+            alertRequired("genre", genreSuggestionPicker);
+            return;
+        }
+
+        MusicLibrary.updateAlbum(artist.getName(), name, genre, year, compilation);
+
+        var mainFrame = MainFrame.getInstance();
+
+        mainFrame.loadArtists();
+        mainFrame.loadGenres();
+        mainFrame.loadPlaylists();
+
+        dispose();
     }
 
     private void alertRequired(String key, JComponent component) {
