@@ -40,6 +40,7 @@ import javax.swing.filechooser.FileFilter;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -251,6 +252,8 @@ public class MainFrame extends JFrame implements Runnable {
     private static final String GENRES_KEY = "genres";
     private static final String PLAYLISTS_KEY = "playlists";
 
+    private static final String MINIMIZE_KEY = "minimize";
+
     private static final String LOCATION_X_KEY = "locationX";
     private static final String LOCATION_Y_KEY = "locationY";
     private static final String SIZE_WIDTH_KEY = "sizeWidth";
@@ -403,6 +406,14 @@ public class MainFrame extends JFrame implements Runnable {
             @Override
             public void actionPerformed(ActionEvent event) {
                 collectionTabbedPane.setSelectedIndex(PLAYLIST_TAB_INDEX);
+            }
+        });
+
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_M, shortcutModifier, false), MINIMIZE_KEY);
+        actionMap.put(MINIMIZE_KEY, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                setState(Frame.ICONIFIED);
             }
         });
 
