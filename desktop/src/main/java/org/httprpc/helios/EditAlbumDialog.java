@@ -17,7 +17,6 @@ import java.util.ResourceBundle;
 import static org.httprpc.kilo.util.Optionals.*;
 
 public class EditAlbumDialog extends AbstractDialog {
-    private Artist artist;
     private String name;
     private List<Song> songs;
 
@@ -37,13 +36,11 @@ public class EditAlbumDialog extends AbstractDialog {
 
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(EditAlbumDialog.class.getName());
 
-    public EditAlbumDialog(MainFrame owner,
-        Artist artist, String name, List<Song> songs,
+    public EditAlbumDialog(MainFrame owner, String name, List<Song> songs,
         String genre, Integer year,
         boolean compilation) {
         super(owner);
 
-        this.artist = artist;
         this.name = name;
         this.songs = songs;
 
@@ -109,7 +106,6 @@ public class EditAlbumDialog extends AbstractDialog {
             return;
         }
 
-        // TODO Do in background?
         for (var previousSong : songs) {
             var song = new Song();
 
