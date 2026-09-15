@@ -29,5 +29,7 @@ public abstract class AbstractDialog extends JDialog {
         });
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+
+        rootPane.putClientProperty("apple.awt.transparentTitleBar", true);
     }
 }

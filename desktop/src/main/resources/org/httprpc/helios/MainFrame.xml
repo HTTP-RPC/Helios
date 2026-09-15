@@ -14,7 +14,7 @@
 
                 <column-panel>
                     <spacer weight="1"/>
-                    <row-panel spacing="2">
+                    <row-panel>
                         <button name="previousButton" icon="icons/skip_previous_24dp.svg"
                             focusable="false"
                             style="buttonType: borderless"
@@ -36,6 +36,7 @@
                         focusable="false"
                         style="buttonType: borderless"
                         toolTipText="shuffle"/>
+
                     <toggle-button name="repeatButton" icon="icons/repeat_24dp.svg; 18"
                         focusable="false"
                         style="buttonType: borderless"
@@ -55,15 +56,13 @@
 
             <column-panel>
                 <spacer weight="1"/>
-                <row-panel spacing="2">
-                    <menu-button name="addButton" icon="icons/add_24dp.svg; 20"
-                        focusable="false"
-                        style="buttonType: borderless"
-                        toolTipText="add">
-                        <menu-item name="addSongsMenuItem" text="songs" icon="icons/folder_24dp.svg; 18"/>
-                        <menu-item name="addPlaylistMenuItem" text="playlist" icon="icons/music_note_24dp.svg; 18"/>
-                    </menu-button>
-                </row-panel>
+                <menu-button name="addButton" icon="icons/add_24dp.svg; 20"
+                    focusable="false"
+                    style="buttonType: borderless"
+                    toolTipText="add">
+                    <menu-item name="addSongsMenuItem" text="songs" icon="icons/folder_24dp.svg; 18"/>
+                    <menu-item name="addPlaylistMenuItem" text="playlist" icon="icons/music_note_24dp.svg; 18"/>
+                </menu-button>
                 <spacer weight="1"/>
             </column-panel>
         </row-panel>
