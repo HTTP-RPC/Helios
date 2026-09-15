@@ -51,7 +51,9 @@ public class ArtistDetailPanel extends StackPanel {
         var n = albumListPanel.getComponentCount();
 
         for (var i = 0; i < n; i++) {
-            ((AlbumDetailPanel)albumListPanel.getComponent(i)).showCurrentSong(song);
+            if (albumListPanel.getComponent(i) instanceof AlbumDetailPanel albumDetailPanel) {
+                albumDetailPanel.showCurrentSong(song);
+            }
         }
     }
 

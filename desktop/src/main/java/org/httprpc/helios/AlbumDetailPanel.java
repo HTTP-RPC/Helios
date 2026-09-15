@@ -295,7 +295,9 @@ public class AlbumDetailPanel extends StackPanel {
         var n = songListPanel.getComponentCount();
 
         for (var i = 0; i < n; i++) {
-            ((SongDetailPanel)songListPanel.getComponent(i)).showCurrentSong(song);
+            if (songListPanel.getComponent(i) instanceof SongDetailPanel songDetailPanel) {
+                songDetailPanel.showCurrentSong(song);
+            }
         }
     }
 }
