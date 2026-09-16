@@ -12,6 +12,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
 import java.text.NumberFormat;
 import java.util.ResourceBundle;
 
@@ -147,15 +148,17 @@ public class EditSongDialog extends AbstractDialog {
 
         song.setType(this.song.getType());
 
-        MusicLibrary.updateSong(song, this.song);
+        if (MusicLibrary.updateSong(song, this.song)) {
+            var mainFrame = MainFrame.getInstance();
 
-        var mainFrame = MainFrame.getInstance();
+            mainFrame.loadArtists();
+            mainFrame.loadGenres();
+            mainFrame.loadPlaylists();
 
-        mainFrame.loadArtists();
-        mainFrame.loadGenres();
-        mainFrame.loadPlaylists();
-
-        dispose();
+            dispose();
+        } else {
+            UIManager.getLookAndFeel().provideErrorFeedback(artistTextField);
+        }
     }
 
     private void alertRequired(String key, JComponent component) {

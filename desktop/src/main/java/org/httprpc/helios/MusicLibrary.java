@@ -20,7 +20,6 @@ import org.jaudiotagger.tag.images.StandardArtwork;
 import org.sqlite.SQLiteErrorCode;
 
 import javax.imageio.ImageIO;
-import javax.swing.UIManager;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -467,7 +466,7 @@ public class MusicLibrary {
         }
     }
 
-    public static void updateSong(Song song, Song previousSong) {
+    public static boolean updateSong(Song song, Song previousSong) {
         var queryBuilder = QueryBuilder.update(Song.class).filterByPrimaryKey("id");
 
         try (var connection = openConnection();
@@ -475,9 +474,7 @@ public class MusicLibrary {
             queryBuilder.executeUpdate(statement, new BeanAdapter(song));
         } catch (SQLException exception) {
             if (SQLiteErrorCode.getErrorCode(exception.getErrorCode()) == SQLiteErrorCode.SQLITE_CONSTRAINT) {
-                UIManager.getLookAndFeel().provideErrorFeedback(null);
-
-                return;
+                return false;
             }
 
             throw new RuntimeException(exception);
@@ -564,6 +561,8 @@ public class MusicLibrary {
         } catch (CannotWriteException exception) {
             throw new RuntimeException(exception);
         }
+
+        return true;
     }
 
     public static void deleteSong(Song song) {
