@@ -16,6 +16,8 @@
             toolTipText="playSong"
             style="buttonType: borderless"/>
 
+        <spacer width="2"/>
+
         <menu-button name="addToPlaylistButton" icon="icons/add_24dp.svg; 18"
             focusable="false"
             toolTipText="addToPlaylist"
