@@ -461,7 +461,9 @@ public class MainFrame extends JFrame implements Runnable {
         }));
 
         shuffleButton.addActionListener(event -> {
-            if (!songs.isEmpty() && shuffleButton.isSelected()) {
+            if (!songs.isEmpty()
+                && shuffleButton.isSelected()
+                && coalesce(map(audioPlayer, AudioPlayer::isPlaying), () -> false)) {
                 playAll(songs);
             }
         });
