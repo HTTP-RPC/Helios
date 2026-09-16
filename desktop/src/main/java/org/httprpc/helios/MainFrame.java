@@ -37,6 +37,7 @@ import javax.swing.TransferHandler;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.text.JTextComponent;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -299,7 +300,9 @@ public class MainFrame extends JFrame implements Runnable {
         actionMap.put(PLAY_PAUSE_KEY, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent event) {
-                playPauseButton.doClick();
+                if (!(getFocusOwner() instanceof JTextComponent)) {
+                    playPauseButton.doClick();
+                }
             }
         });
 

@@ -10,7 +10,6 @@ import org.httprpc.sierra.UILoader;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
-import javax.swing.border.EmptyBorder;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -41,8 +40,6 @@ public class ArtistDetailPanel extends StackPanel {
 
             albumListPanel.add(albumDetailPanel);
         }
-
-        setBorder(new EmptyBorder(8, 8, 8, 8));
 
         setScrollableTracksViewportWidth(true);
     }

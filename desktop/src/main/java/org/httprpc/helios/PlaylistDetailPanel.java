@@ -157,8 +157,6 @@ public class PlaylistDetailPanel extends StackPanel {
             removeFromPlaylistButton.setEnabled(songTable.getSelectedRow() != -1);
         });
 
-        setBorder(new EmptyBorder(8, 8, 8, 8));
-
         setScrollableTracksViewportWidth(true);
         setScrollableTracksViewportHeight(true);
 

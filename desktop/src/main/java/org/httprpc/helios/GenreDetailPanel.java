@@ -128,8 +128,6 @@ public class GenreDetailPanel extends StackPanel {
             }
         });
 
-        setBorder(new EmptyBorder(8, 8, 8, 8));
-
         setScrollableTracksViewportWidth(true);
         setScrollableTracksViewportHeight(true);
 
