@@ -57,6 +57,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
+import java.util.function.Predicate;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
@@ -652,6 +653,19 @@ public class MainFrame extends JFrame implements Runnable {
         loadArtists();
         loadGenres();
         loadPlaylists();
+
+        Predicate<Song> deleted = song -> !Files.exists(MusicLibrary.getContentPath(song));
+
+        songs.removeIf(deleted);
+        queue.removeIf(deleted);
+
+        queueIndex = Math.min(queueIndex, queue.size());
+
+        if (queueDialog != null) {
+            queueDialog.update(queueIndex);
+        }
+
+        updateControls();
     }
 
     public void loadArtists() {
