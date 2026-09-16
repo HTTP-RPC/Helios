@@ -190,13 +190,23 @@ public class SongDetailPanel extends StackPanel {
             JOptionPane.WARNING_MESSAGE);
 
         if (option == JOptionPane.YES_OPTION) {
-            MusicLibrary.deleteSong(song);
-
             var mainFrame = MainFrame.getInstance();
 
-            mainFrame.loadArtists();
-            mainFrame.loadGenres();
-            mainFrame.loadPlaylists();
+            var glassPane = mainFrame.getGlassPane();
+
+            glassPane.setVisible(true);
+
+            MainFrame.getTaskExecutor().execute(() -> {
+                MusicLibrary.deleteSong(song);
+
+                return null;
+            }, (result, exception) -> {
+                glassPane.setVisible(false);
+
+                mainFrame.loadArtists();
+                mainFrame.loadGenres();
+                mainFrame.loadPlaylists();
+            });
         }
     }
 

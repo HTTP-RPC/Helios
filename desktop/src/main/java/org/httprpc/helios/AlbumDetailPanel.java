@@ -257,6 +257,10 @@ public class AlbumDetailPanel extends StackPanel {
         editArtworkButton.setEnabled(false);
         deleteArtworkButton.setEnabled(false);
 
+        var glassPane = MainFrame.getInstance().getGlassPane();
+
+        glassPane.setVisible(true);
+
         MainFrame.getTaskExecutor().execute(() -> {
             if (artwork != null) {
                 MusicLibrary.updateAlbumArtwork(artist.getName(), name, artwork);
@@ -266,6 +270,8 @@ public class AlbumDetailPanel extends StackPanel {
 
             return null;
         }, (result, exception) -> {
+            glassPane.setVisible(false);
+
             editArtworkButton.setEnabled(true);
             deleteArtworkButton.setEnabled(artwork != null);
         });
