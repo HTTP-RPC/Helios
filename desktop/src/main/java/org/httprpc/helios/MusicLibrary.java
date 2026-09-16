@@ -20,6 +20,7 @@ import org.jaudiotagger.tag.images.StandardArtwork;
 import org.sqlite.SQLiteErrorCode;
 
 import javax.imageio.ImageIO;
+import javax.swing.SwingUtilities;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -467,6 +468,10 @@ public class MusicLibrary {
     }
 
     public static boolean updateSong(Song song, Song previousSong) {
+        if (SwingUtilities.isEventDispatchThread()) {
+            throw new IllegalStateException();
+        }
+
         var queryBuilder = QueryBuilder.update(Song.class).filterByPrimaryKey("id");
 
         try (var connection = openConnection();
@@ -595,6 +600,10 @@ public class MusicLibrary {
     }
 
     public static void deleteSong(Song song) {
+        if (SwingUtilities.isEventDispatchThread()) {
+            throw new IllegalStateException();
+        }
+
         var queryBuilder = QueryBuilder.delete(Song.class).filterByPrimaryKey("id");
 
         try (var connection = openConnection();
