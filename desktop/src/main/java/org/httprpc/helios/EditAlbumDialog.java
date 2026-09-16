@@ -74,6 +74,13 @@ public class EditAlbumDialog extends AbstractDialog {
         super.setVisible(visible);
     }
 
+    @Override
+    protected void cancel() {
+        if (cancelButton.isEnabled()) {
+            super.cancel();
+        }
+    }
+
     private void load() {
         nameTextField.setText(name);
 
@@ -104,30 +111,37 @@ public class EditAlbumDialog extends AbstractDialog {
             return;
         }
 
-        for (var previousSong : songs) {
-            var song = new Song();
+        cancelButton.setEnabled(false);
+        okButton.setEnabled(false);
 
-            song.setID(previousSong.getID());
-            song.setArtist(previousSong.getArtist());
-            song.setAlbum(name);
-            song.setTitle(previousSong.getTitle());
-            song.setTime(previousSong.getTime());
-            song.setGenre(genre);
-            song.setYear(year);
-            song.setTrackNumber(previousSong.getTrackNumber());
-            song.setDiscNumber(previousSong.getDiscNumber());
-            song.setCompilation(compilation);
-            song.setType(previousSong.getType());
+        MainFrame.getTaskExecutor().execute(() -> {
+            for (var previousSong : songs) {
+                var song = new Song();
 
-            MusicLibrary.updateSong(song, previousSong);
-        }
+                song.setID(previousSong.getID());
+                song.setArtist(previousSong.getArtist());
+                song.setAlbum(name);
+                song.setTitle(previousSong.getTitle());
+                song.setTime(previousSong.getTime());
+                song.setGenre(genre);
+                song.setYear(year);
+                song.setTrackNumber(previousSong.getTrackNumber());
+                song.setDiscNumber(previousSong.getDiscNumber());
+                song.setCompilation(compilation);
+                song.setType(previousSong.getType());
 
-        var mainFrame = MainFrame.getInstance();
+                MusicLibrary.updateSong(song, previousSong);
+            }
 
-        mainFrame.loadArtists();
-        mainFrame.loadGenres();
-        mainFrame.loadPlaylists();
+            return null;
+        }, (result, exception) -> {
+            var mainFrame = MainFrame.getInstance();
 
-        dispose();
+            mainFrame.loadArtists();
+            mainFrame.loadGenres();
+            mainFrame.loadPlaylists();
+
+            dispose();
+        });
     }
 }

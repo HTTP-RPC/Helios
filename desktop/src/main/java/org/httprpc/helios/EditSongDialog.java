@@ -71,6 +71,13 @@ public class EditSongDialog extends AbstractDialog {
         super.setVisible(visible);
     }
 
+    @Override
+    protected void cancel() {
+        if (cancelButton.isEnabled()) {
+            super.cancel();
+        }
+    }
+
     private void load() {
         artistTextField.setText(song.getArtist());
         albumTextField.setText(song.getAlbum());
@@ -146,16 +153,21 @@ public class EditSongDialog extends AbstractDialog {
 
         song.setType(this.song.getType());
 
-        if (MusicLibrary.updateSong(song, this.song)) {
-            var mainFrame = MainFrame.getInstance();
+        cancelButton.setEnabled(false);
+        okButton.setEnabled(false);
 
-            mainFrame.loadArtists();
-            mainFrame.loadGenres();
-            mainFrame.loadPlaylists();
+        MainFrame.getTaskExecutor().execute(() -> MusicLibrary.updateSong(song, this.song), (result, exception) -> {
+            if (coalesce(result, () -> false)) {
+                var mainFrame = MainFrame.getInstance();
 
-            dispose();
-        } else {
-            UIManager.getLookAndFeel().provideErrorFeedback(artistTextField);
-        }
+                mainFrame.loadArtists();
+                mainFrame.loadGenres();
+                mainFrame.loadPlaylists();
+
+                dispose();
+            } else {
+                UIManager.getLookAndFeel().provideErrorFeedback(artistTextField);
+            }
+        });
     }
 }
