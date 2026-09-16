@@ -564,6 +564,8 @@ public class MusicLibrary {
             tag.setField(FieldKey.IS_COMPILATION, String.valueOf(compilation ? 1 : 0));
 
             if (!compilation) {
+                tag.setField(FieldKey.ALBUM_ARTIST, artist);
+
                 var artworkPath = getArtworkPath(artist, album);
 
                 if (Files.exists(artworkPath)) {
