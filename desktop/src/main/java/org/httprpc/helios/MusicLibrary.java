@@ -515,8 +515,11 @@ public class MusicLibrary {
         var tag = audioFile.getTag();
 
         try {
-            tag.setField(FieldKey.ARTIST, song.getArtist());
-            tag.setField(FieldKey.ALBUM, song.getAlbum());
+            var artist = song.getArtist();
+            var album = song.getAlbum();
+
+            tag.setField(FieldKey.ARTIST, artist);
+            tag.setField(FieldKey.ALBUM, album);
             tag.setField(FieldKey.TITLE, song.getTitle());
 
             var genre = song.getGenre();
@@ -551,7 +554,33 @@ public class MusicLibrary {
                 tag.deleteField(FieldKey.DISC_NO);
             }
 
-            tag.setField(FieldKey.IS_COMPILATION, String.valueOf(song.isCompilation() ? 1 : 0));
+            var compilation = song.isCompilation();
+
+            tag.setField(FieldKey.IS_COMPILATION, String.valueOf(compilation ? 1 : 0));
+
+            if (!compilation) {
+                var artworkPath = getArtworkPath(artist, album);
+
+                if (Files.exists(artworkPath)) {
+                    var artworkField = new StandardArtwork();
+
+                    byte[] binaryData;
+                    try (var inputStream = Files.newInputStream(artworkPath);
+                        var outputStream = new ByteArrayOutputStream()) {
+                        inputStream.transferTo(outputStream);
+
+                        binaryData = outputStream.toByteArray();
+                    } catch (IOException exception) {
+                        throw new RuntimeException(exception);
+                    }
+
+                    artworkField.setBinaryData(binaryData);
+
+                    tag.setField(artworkField);
+                } else {
+                    tag.deleteArtworkField();
+                }
+            }
         } catch (FieldDataInvalidException exception) {
             throw new RuntimeException(exception);
         }
