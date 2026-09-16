@@ -136,7 +136,7 @@
     <row-panel weight="1">
         <tabbed-pane name="collectionTabbedPane" tabPlacement="bottom"
             focusable="false"
-            style="tabAreaAlignment: fill">
+            style="tabAreaAlignment: fill" weight="1">
             <scroll-pane tabTitle="artists" tabIcon="icons/mic_24dp.svg; 18" border="none">
                 <list name="artistList" selectionMode="single-selection"/>
             </scroll-pane>
@@ -152,6 +152,6 @@
 
         <separator orientation="vertical" style="stripeIndent: 0"/>
 
-        <scroll-pane name="collectionScrollPane" border="none" weight="1"/>
+        <scroll-pane name="collectionScrollPane" border="none" weight="2.75"/>
     </row-panel>
 </column-panel>
