@@ -443,8 +443,6 @@ public class MainFrame extends JFrame implements Runnable {
             }
         });
 
-        pause();
-
         previousButton.addActionListener(event -> movePrevious());
         nextButton.addActionListener(event -> moveNext());
 
@@ -480,16 +478,8 @@ public class MainFrame extends JFrame implements Runnable {
             }
         });
 
-        updateControls();
-
         addSongsMenuItem.addActionListener(event -> addSongs());
         addPlaylistMenuItem.addActionListener(event -> addPlaylist());
-
-        currentSongPanel.setVisible(false);
-
-        songTitleLabel.setText(" ");
-        artistAlbumLabel.setText(" ");
-        timeLabel.setText(" ");
 
         goToSongButton.addActionListener(event -> showSong(queue.get(songIndex)));
 
@@ -566,6 +556,11 @@ public class MainFrame extends JFrame implements Runnable {
         loadArtists();
         loadGenres();
         loadPlaylists();
+
+        pause();
+        unload();
+
+        updateControls();
 
         setVisible(true);
 
@@ -644,7 +639,7 @@ public class MainFrame extends JFrame implements Runnable {
 
     @Override
     public void dispose() {
-        stop();
+        unload();
 
         super.dispose();
     }
@@ -698,7 +693,7 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     public void playAll(List<Song> songs) {
-        stop();
+        unload();
 
         this.songs = songs;
 
@@ -711,6 +706,8 @@ public class MainFrame extends JFrame implements Runnable {
 
         songIndex = 0;
 
+        load();
+
         play();
     }
 
@@ -718,45 +715,15 @@ public class MainFrame extends JFrame implements Runnable {
         playPauseButton.setIcon(pauseIcon);
         playPauseButton.setToolTipText(resourceBundle.getString("pause"));
 
-        if (audioPlayer == null) {
-            var song = queue.get(songIndex);
-
-            var artist = song.getArtist();
-            var album = song.getAlbum();
-
-            currentSongPanel.setVisible(true);
-
-            taskExecutor.execute(() -> {
-                try (var inputStream = Files.newInputStream(MusicLibrary.getArtworkPath(artist, album))) {
-                    return ImageIO.read(inputStream);
-                }
-            }, (image, exception) -> artworkImagePane.setImage(image));
-
-            songTitleLabel.setText(song.getTitle());
-            artistAlbumLabel.setText(String.format(resourceBundle.getString("artistAlbumFormat"), artist, album));
-
-            positionProgressBar.setValue(0);
-
-            positionProgressBar.setMaximum(song.getTime() * 1000);
-
-            audioPlayer = AudioPlayer.create(MusicLibrary.getContentPath(song));
-
-            updateControls();
-
-            if (queueDialog != null) {
-                queueDialog.update(songIndex);
-            }
-
-            if (collectionTabbedPane.getSelectedIndex() == ARTIST_TAB_INDEX) {
-                ((ArtistDetailPanel)collectionScrollPane.getViewport().getView()).showCurrentSong(song);
-            }
-        }
-
-        perform(audioPlayer, AudioPlayer::play);
+        audioPlayer.play();
 
         lastTime = System.currentTimeMillis();
 
         timer.start();
+
+        if (collectionTabbedPane.getSelectedIndex() == ARTIST_TAB_INDEX) {
+            ((ArtistDetailPanel)collectionScrollPane.getViewport().getView()).showCurrentSong(queue.get(songIndex));
+        }
     }
 
     private void pause() {
@@ -766,30 +733,80 @@ public class MainFrame extends JFrame implements Runnable {
         perform(audioPlayer, AudioPlayer::pause);
 
         timer.stop();
+
+        if (collectionTabbedPane.getSelectedIndex() == ARTIST_TAB_INDEX) {
+            ((ArtistDetailPanel)collectionScrollPane.getViewport().getView()).showCurrentSong(null);
+        }
     }
 
     private void movePrevious() {
         var elapsedTime = positionProgressBar.getValue();
 
-        stop();
+        var playing = map(audioPlayer, AudioPlayer::isPlaying);
+
+        unload();
 
         if (elapsedTime < 2500 && songIndex > 0) {
             songIndex--;
         }
 
-        play();
+        load();
+
+        if (playing) {
+            play();
+        }
     }
 
     private void moveNext() {
-        stop();
+        var playing = map(audioPlayer, AudioPlayer::isPlaying);
+
+        unload();
 
         songIndex++;
 
-        play();
+        load();
+
+        if (playing) {
+            play();
+        }
     }
 
-    private void stop() {
-        pause();
+    private void load() {
+        var song = queue.get(songIndex);
+
+        var artist = song.getArtist();
+        var album = song.getAlbum();
+
+        currentSongPanel.setVisible(true);
+
+        artworkImagePane.setImage(null);
+
+        taskExecutor.execute(() -> {
+            try (var inputStream = Files.newInputStream(MusicLibrary.getArtworkPath(artist, album))) {
+                return ImageIO.read(inputStream);
+            }
+        }, (image, exception) -> artworkImagePane.setImage(image));
+
+        songTitleLabel.setText(song.getTitle());
+        artistAlbumLabel.setText(String.format(resourceBundle.getString("artistAlbumFormat"), artist, album));
+
+        positionProgressBar.setValue(0);
+
+        positionProgressBar.setMaximum(song.getTime() * 1000);
+
+        if (audioPlayer == null) {
+            audioPlayer = AudioPlayer.create(MusicLibrary.getContentPath(song));
+        }
+
+        updateControls();
+
+        if (queueDialog != null) {
+            queueDialog.update(songIndex);
+        }
+    }
+
+    private void unload() {
+        currentSongPanel.setVisible(false);
 
         artworkImagePane.setImage(null);
 
@@ -801,8 +818,6 @@ public class MainFrame extends JFrame implements Runnable {
         perform(audioPlayer, AudioPlayer::dispose);
 
         audioPlayer = null;
-
-        lastTime = 0;
     }
 
     private void updatePosition() {
@@ -821,7 +836,8 @@ public class MainFrame extends JFrame implements Runnable {
                 totalDuration.toMinutesPart(), totalDuration.toSecondsPart()
             ));
         } else {
-            stop();
+            pause();
+            unload();
 
             songIndex++;
 
@@ -834,8 +850,6 @@ public class MainFrame extends JFrame implements Runnable {
             if (songIndex < n) {
                 play();
             } else {
-                currentSongPanel.setVisible(false);
-
                 songs = emptyListOf(Song.class);
 
                 queue.clear();
