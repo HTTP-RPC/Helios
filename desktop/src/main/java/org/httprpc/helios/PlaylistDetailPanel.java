@@ -38,7 +38,7 @@ public class PlaylistDetailPanel extends StackPanel {
             setText("A");
             setOpaque(true);
 
-            setBorder(new EmptyBorder(4, 4, 4, 4));
+            setBorder(new EmptyBorder(4, 8, 4, 8));
         }
 
         @Override
