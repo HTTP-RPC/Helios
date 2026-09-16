@@ -150,7 +150,7 @@
             </scroll-pane>
         </tabbed-pane>
 
-        <separator orientation="vertical" style="stripeIndent: 0"/>
+        <separator orientation="vertical" style="height: 1, stripeIndent: 0"/>
 
         <scroll-pane name="collectionScrollPane" border="none" weight="2.75"/>
     </row-panel>
