@@ -2,8 +2,8 @@
 
 <!DOCTYPE column-panel SYSTEM "sierra.dtd">
 
-<column-panel>
-    <row-panel spacing="4" alignToBaseline="true" padding="8">
+<column-panel spacing="1" opaque="true" background="Component.borderColor">
+    <row-panel spacing="4" alignToBaseline="true" padding="8" opaque="true" background="Panel.background">
         <label name="nameLabel" styleClass="h1"/>
         <button name="playButton" icon="icons/play_arrow_24dp.svg; 20"
             focusable="false"
@@ -29,8 +29,6 @@
                 style="buttonType: borderless"/>
         </row-panel>
     </row-panel>
-
-    <separator style="height: 1; stripeIndent: 0"/>
 
     <scroll-pane border="none" weight="1">
         <table name="songTable" rowSelectionMode="single-selection"/>

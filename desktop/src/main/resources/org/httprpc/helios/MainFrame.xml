@@ -2,8 +2,8 @@
 
 <!DOCTYPE column-panel SYSTEM "sierra.dtd">
 
-<column-panel opaque="true">
-    <row-panel spacing="16" padding="4">
+<column-panel spacing="1" opaque="true" background="Component.borderColor">
+    <row-panel spacing="16" padding="4" opaque="true" background="Panel.background">
         <row-panel spacing="8" weight="1.25">
             <row-panel spacing="2">
                 <column-panel>
@@ -131,9 +131,7 @@
         </row-panel>
     </row-panel>
 
-    <separator style="height: 1; stripeIndent: 0"/>
-
-    <row-panel weight="1">
+    <row-panel spacing="1" weight="1">
         <tabbed-pane name="collectionTabbedPane" tabPlacement="bottom"
             focusable="false"
             style="tabAreaAlignment: fill" weight="1">
@@ -149,8 +147,6 @@
                 <list name="playlistList" selectionMode="single-selection"/>
             </scroll-pane>
         </tabbed-pane>
-
-        <separator orientation="vertical" style="height: 1, stripeIndent: 0"/>
 
         <scroll-pane name="collectionScrollPane" border="none" weight="2.75"/>
     </row-panel>
