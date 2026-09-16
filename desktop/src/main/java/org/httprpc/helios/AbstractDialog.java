@@ -9,6 +9,7 @@ import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ResourceBundle;
@@ -36,6 +37,8 @@ public abstract class AbstractDialog extends JDialog {
             }
         });
 
+        rootPane.putClientProperty("apple.awt.transparentTitleBar", true);
+
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
         addWindowListener(new WindowAdapter() {
@@ -45,7 +48,7 @@ public abstract class AbstractDialog extends JDialog {
             }
         });
 
-        rootPane.putClientProperty("apple.awt.transparentTitleBar", true);
+        getGlassPane().addMouseListener(new MouseAdapter() {});
     }
 
     public boolean isCanceled() {

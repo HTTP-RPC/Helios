@@ -153,6 +153,10 @@ public class EditSongDialog extends AbstractDialog {
 
         song.setType(this.song.getType());
 
+        getGlassPane().setVisible(true);
+
+        rootPane.requestFocus();
+
         cancelButton.setEnabled(false);
         okButton.setEnabled(false);
 

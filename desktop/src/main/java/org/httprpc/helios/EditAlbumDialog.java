@@ -111,6 +111,10 @@ public class EditAlbumDialog extends AbstractDialog {
             return;
         }
 
+        getGlassPane().setVisible(true);
+
+        rootPane.requestFocus();
+
         cancelButton.setEnabled(false);
         okButton.setEnabled(false);
 
