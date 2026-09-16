@@ -3,12 +3,12 @@
 <!DOCTYPE row-panel SYSTEM "sierra.dtd">
 
 <row-panel spacing="8" padding="2, 4, 2, 4">
-    <label name="trackNumberLabel" horizontalAlignment="trailing" enabled="false"/>
+    <stack-panel>
+        <label name="trackNumberLabel" horizontalAlignment="trailing" enabled="false"/>
+        <label name="nowPlayingLabel" icon="icons/sensors_24dp.svg; 18" horizontalAlignment="trailing" enabled="false"/>
+    </stack-panel>
 
-    <row-panel spacing="4" weight="1">
-        <label name="titleLabel"/>
-        <label name="nowPlayingLabel" icon="icons/sensors_24dp.svg; 18" enabled="false"/>
-    </row-panel>
+    <label name="titleLabel" weight="1"/>
 
     <row-panel spacing="2">
         <button name="playSongButton" icon="icons/play_arrow_24dp.svg; 18"

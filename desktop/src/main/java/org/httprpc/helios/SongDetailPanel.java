@@ -34,10 +34,9 @@ public class SongDetailPanel extends StackPanel {
     private Song song;
 
     private @Outlet JLabel trackNumberLabel = null;
+    private @Outlet JLabel nowPlayingLabel = null;
 
     private @Outlet JLabel titleLabel = null;
-
-    private @Outlet JLabel nowPlayingLabel = null;
 
     private @Outlet JButton playSongButton = null;
 
@@ -256,6 +255,9 @@ public class SongDetailPanel extends StackPanel {
     }
 
     public void showCurrentSong(Song song) {
-        nowPlayingLabel.setVisible(song != null && song.getID().equals(this.song.getID()));
+        var current = song != null && song.getID().equals(this.song.getID());
+
+        trackNumberLabel.setVisible(!current);
+        nowPlayingLabel.setVisible(current);
     }
 }
