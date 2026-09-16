@@ -220,7 +220,7 @@ public class MainFrame extends JFrame implements Runnable {
     private List<Song> songs = emptyListOf(Song.class);
 
     private List<Song> queue = listOf();
-    private int songIndex = 0;
+    private int queueIndex = 0;
 
     private AudioPlayer audioPlayer = null;
     private long lastTime = 0;
@@ -428,7 +428,7 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     public Song getCurrentSong() {
-        return songIndex < queue.size() ? queue.get(songIndex) : null;
+        return queueIndex < queue.size() ? queue.get(queueIndex) : null;
     }
 
     public List<ExpandedPlaylist> getPlaylists() {
@@ -487,7 +487,7 @@ public class MainFrame extends JFrame implements Runnable {
         addSongsMenuItem.addActionListener(event -> addSongs());
         addPlaylistMenuItem.addActionListener(event -> addPlaylist());
 
-        goToSongButton.addActionListener(event -> showSong(queue.get(songIndex)));
+        goToSongButton.addActionListener(event -> showSong(queue.get(queueIndex)));
 
         positionProgressBar.setValue(0);
 
@@ -714,7 +714,7 @@ public class MainFrame extends JFrame implements Runnable {
             java.util.Collections.shuffle(queue);
         }
 
-        songIndex = 0;
+        queueIndex = 0;
 
         loadSong();
         play();
@@ -732,7 +732,7 @@ public class MainFrame extends JFrame implements Runnable {
 
         if (collectionTabbedPane.getSelectedIndex() == ARTIST_TAB_INDEX
             && collectionScrollPane.getViewport().getView() instanceof ArtistDetailPanel artistDetailPanel) {
-            artistDetailPanel.showCurrentSong(queue.get(songIndex));
+            artistDetailPanel.showCurrentSong(queue.get(queueIndex));
         }
     }
 
@@ -757,8 +757,8 @@ public class MainFrame extends JFrame implements Runnable {
 
         unloadSong();
 
-        if (elapsedTime < 2500 && songIndex > 0) {
-            songIndex--;
+        if (elapsedTime < 2500 && queueIndex > 0) {
+            queueIndex--;
         }
 
         loadSong();
@@ -773,7 +773,7 @@ public class MainFrame extends JFrame implements Runnable {
 
         unloadSong();
 
-        songIndex++;
+        queueIndex++;
 
         loadSong();
 
@@ -783,7 +783,7 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     private void loadSong() {
-        var song = queue.get(songIndex);
+        var song = queue.get(queueIndex);
 
         var artist = song.getArtist();
         var album = song.getAlbum();
@@ -812,7 +812,7 @@ public class MainFrame extends JFrame implements Runnable {
         updateControls();
 
         if (queueDialog != null) {
-            queueDialog.update(songIndex);
+            queueDialog.update(queueIndex);
         }
     }
 
@@ -850,15 +850,15 @@ public class MainFrame extends JFrame implements Runnable {
             pause();
             unloadSong();
 
-            songIndex++;
+            queueIndex++;
 
             var n = queue.size();
 
-            if (songIndex == n && repeatButton.isSelected()) {
-                songIndex = 0;
+            if (queueIndex == n && repeatButton.isSelected()) {
+                queueIndex = 0;
             }
 
-            if (songIndex < n) {
+            if (queueIndex < n) {
                 loadSong();
                 play();
             } else {
@@ -866,7 +866,7 @@ public class MainFrame extends JFrame implements Runnable {
 
                 queue.clear();
 
-                songIndex = 0;
+                queueIndex = 0;
             }
 
             updateControls();
@@ -879,12 +879,12 @@ public class MainFrame extends JFrame implements Runnable {
         playPauseButton.setEnabled(n > 0);
 
         previousButton.setEnabled(playPauseButton.isEnabled());
-        nextButton.setEnabled(songIndex < n - 1);
+        nextButton.setEnabled(queueIndex < n - 1);
     }
 
     private void toggleQueueDialog() {
         if (queueButton.isSelected()) {
-            queueDialog = new QueueDialog(this, queue, songIndex);
+            queueDialog = new QueueDialog(this, queue, queueIndex);
 
             queueDialog.pack();
             queueDialog.setLocationRelativeTo(this);

@@ -77,7 +77,7 @@ public class QueueDialog extends AbstractDialog {
 
     private static ResourceBundle resourceBundle = ResourceBundle.getBundle(QueueDialog.class.getName());
 
-    public QueueDialog(MainFrame owner, List<Song> queue, int nextSongIndex) {
+    public QueueDialog(MainFrame owner, List<Song> queue, int queueIndex) {
         super(owner, false);
 
         this.queue = queue;
@@ -88,16 +88,16 @@ public class QueueDialog extends AbstractDialog {
 
         queueList.setCellRenderer(new SongCellRenderer());
 
-        update(nextSongIndex);
+        update(queueIndex);
 
         setResizable(false);
     }
 
-    public void update(int nextSongIndex) {
+    public void update(int queueIndex) {
         var n = queue.size();
 
-        if (nextSongIndex < n) {
-            queueList.setModel(new BasicListModel<>(queue.subList(nextSongIndex + 1, n)));
+        if (queueIndex < n) {
+            queueList.setModel(new BasicListModel<>(queue.subList(queueIndex + 1, n)));
         } else {
             queueList.setModel(new BasicListModel<>(emptyListOf(Song.class)));
         }
