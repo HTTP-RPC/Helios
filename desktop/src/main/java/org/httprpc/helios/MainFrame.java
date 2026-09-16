@@ -423,6 +423,10 @@ public class MainFrame extends JFrame implements Runnable {
         return instance;
     }
 
+    public static TaskExecutor getTaskExecutor() {
+        return taskExecutor;
+    }
+
     public Song getCurrentSong() {
         return songIndex < queue.size() ? queue.get(songIndex) : null;
     }

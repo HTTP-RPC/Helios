@@ -205,13 +205,13 @@ public class GenreDetailPanel extends StackPanel {
     private void deleteSong() {
         var song = ((BasicTableModel<Song>)songTable.getModel()).getRow(songTable.getSelectedRow());
 
-        var result = JOptionPane.showConfirmDialog(getTopLevelAncestor(),
+        var option = JOptionPane.showConfirmDialog(getTopLevelAncestor(),
             String.format(resourceBundle.getString("confirmDeleteMessageFormat"), song.getTitle()),
             resourceBundle.getString("deleteSong"),
             JOptionPane.YES_NO_OPTION,
             JOptionPane.WARNING_MESSAGE);
 
-        if (result == JOptionPane.YES_OPTION) {
+        if (option == JOptionPane.YES_OPTION) {
             MusicLibrary.deleteSong(song);
 
             var mainFrame = MainFrame.getInstance();

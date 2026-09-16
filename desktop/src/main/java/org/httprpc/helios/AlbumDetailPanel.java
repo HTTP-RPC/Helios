@@ -6,7 +6,6 @@ import org.httprpc.sierra.ColumnPanel;
 import org.httprpc.sierra.ImagePane;
 import org.httprpc.sierra.Outlet;
 import org.httprpc.sierra.StackPanel;
-import org.httprpc.sierra.TaskExecutor;
 import org.httprpc.sierra.UILoader;
 
 import javax.imageio.ImageIO;
@@ -30,7 +29,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.concurrent.Executors;
 
 import static org.httprpc.kilo.util.Optionals.*;
 
@@ -65,14 +63,6 @@ public class AlbumDetailPanel extends StackPanel {
     private @Outlet ColumnPanel songListPanel = null;
 
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(AlbumDetailPanel.class.getName());
-
-    private static final TaskExecutor taskExecutor = new TaskExecutor(Executors.newCachedThreadPool(runnable -> {
-        var thread = new Thread(runnable);
-
-        thread.setDaemon(true);
-
-        return thread;
-    }));
 
     public AlbumDetailPanel(Artist artist, String name, List<Song> songs) {
         this.artist = artist;
@@ -126,7 +116,7 @@ public class AlbumDetailPanel extends StackPanel {
             }
         });
 
-        taskExecutor.execute(() -> {
+        MainFrame.getTaskExecutor().execute(() -> {
             try (var inputStream = Files.newInputStream(MusicLibrary.getArtworkPath(artist.getName(), name))) {
                 return ImageIO.read(inputStream);
             } catch (IOException exception) {
@@ -179,22 +169,32 @@ public class AlbumDetailPanel extends StackPanel {
     }
 
     private void deleteAlbum() {
-        var result = JOptionPane.showConfirmDialog(getTopLevelAncestor(),
+        var option = JOptionPane.showConfirmDialog(getTopLevelAncestor(),
             String.format(resourceBundle.getString("confirmDeleteAlbumMessageFormat"), name),
             resourceBundle.getString("deleteAlbum"),
             JOptionPane.YES_NO_OPTION,
             JOptionPane.WARNING_MESSAGE);
 
-        if (result == JOptionPane.YES_OPTION) {
-            for (var song : songs) {
-                MusicLibrary.deleteSong(song);
-            }
-
+        if (option == JOptionPane.YES_OPTION) {
             var mainFrame = MainFrame.getInstance();
 
-            mainFrame.loadArtists();
-            mainFrame.loadGenres();
-            mainFrame.loadPlaylists();
+            var glassPane = mainFrame.getGlassPane();
+
+            glassPane.setVisible(true);
+
+            MainFrame.getTaskExecutor().execute(() -> {
+                for (var song : songs) {
+                    MusicLibrary.deleteSong(song);
+                }
+
+                return null;
+            }, (result, exception) -> {
+                glassPane.setVisible(false);
+
+                mainFrame.loadArtists();
+                mainFrame.loadGenres();
+                mainFrame.loadPlaylists();
+            });
         }
     }
 
@@ -229,13 +229,13 @@ public class AlbumDetailPanel extends StackPanel {
     }
 
     private void deleteArtwork() {
-        var result = JOptionPane.showConfirmDialog(getTopLevelAncestor(),
+        var option = JOptionPane.showConfirmDialog(getTopLevelAncestor(),
             resourceBundle.getString("confirmDeleteArtworkMessage"),
             resourceBundle.getString("deleteArtwork"),
             JOptionPane.YES_NO_OPTION,
             JOptionPane.WARNING_MESSAGE);
 
-        if (result == JOptionPane.YES_OPTION) {
+        if (option == JOptionPane.YES_OPTION) {
             updateArtwork(null);
         }
     }
@@ -257,7 +257,7 @@ public class AlbumDetailPanel extends StackPanel {
         editArtworkButton.setEnabled(false);
         deleteArtworkButton.setEnabled(false);
 
-        taskExecutor.execute(() -> {
+        MainFrame.getTaskExecutor().execute(() -> {
             if (artwork != null) {
                 MusicLibrary.updateAlbumArtwork(artist.getName(), name, artwork);
             } else {

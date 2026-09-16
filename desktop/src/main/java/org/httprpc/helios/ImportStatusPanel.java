@@ -9,7 +9,6 @@ import org.httprpc.sierra.UILoader;
 
 import javax.swing.JButton;
 import javax.swing.JProgressBar;
-import javax.swing.RootPaneContainer;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -48,7 +47,7 @@ public class ImportStatusPanel extends StackPanel {
         progressBar.setMinimum(0);
         progressBar.setMaximum(paths.size());
 
-        ((RootPaneContainer)getTopLevelAncestor()).getGlassPane().setVisible(true);
+        MainFrame.getInstance().getGlassPane().setVisible(true);
 
         setVisible(paths.size() > 1);
 
@@ -78,7 +77,7 @@ public class ImportStatusPanel extends StackPanel {
     }
 
     private void close() {
-        ((RootPaneContainer)getTopLevelAncestor()).getGlassPane().setVisible(false);
+        MainFrame.getInstance().getGlassPane().setVisible(false);
 
         setVisible(false);
 

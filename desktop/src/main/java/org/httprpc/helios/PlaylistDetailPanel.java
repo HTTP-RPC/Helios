@@ -198,13 +198,13 @@ public class PlaylistDetailPanel extends StackPanel {
     }
 
     private void removeFromPlaylist() {
-        var result = JOptionPane.showConfirmDialog(getTopLevelAncestor(),
+        var option = JOptionPane.showConfirmDialog(getTopLevelAncestor(),
             resourceBundle.getString("confirmRemoveSongsMessage"),
             resourceBundle.getString("removeFromPlaylist"),
             JOptionPane.YES_NO_OPTION,
             JOptionPane.WARNING_MESSAGE);
 
-        if (result == JOptionPane.YES_OPTION) {
+        if (option == JOptionPane.YES_OPTION) {
             var selectedRows = songTable.getSelectedRows();
 
             var selectedSongs = new ArrayList<Song>(selectedRows.length);
@@ -266,13 +266,13 @@ public class PlaylistDetailPanel extends StackPanel {
     }
 
     private void deletePlaylist() {
-        var result = JOptionPane.showConfirmDialog(getTopLevelAncestor(),
+        var option = JOptionPane.showConfirmDialog(getTopLevelAncestor(),
             resourceBundle.getString("confirmDeleteMessage"),
             resourceBundle.getString("deletePlaylist"),
             JOptionPane.YES_NO_OPTION,
             JOptionPane.WARNING_MESSAGE);
 
-        if (result == JOptionPane.YES_OPTION) {
+        if (option == JOptionPane.YES_OPTION) {
             MusicLibrary.deletePlaylist(playlist);
 
             MainFrame.getInstance().loadPlaylists();
