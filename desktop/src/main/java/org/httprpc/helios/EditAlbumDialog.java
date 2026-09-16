@@ -139,11 +139,7 @@ public class EditAlbumDialog extends AbstractDialog {
 
             return null;
         }, (result, exception) -> {
-            var mainFrame = MainFrame.getInstance();
-
-            mainFrame.loadArtists();
-            mainFrame.loadGenres();
-            mainFrame.loadPlaylists();
+            MainFrame.getInstance().refresh();
 
             dispose();
         });

@@ -162,11 +162,7 @@ public class EditSongDialog extends AbstractDialog {
 
         MainFrame.getTaskExecutor().execute(() -> MusicLibrary.updateSong(song, this.song), (result, exception) -> {
             if (coalesce(result, () -> false)) {
-                var mainFrame = MainFrame.getInstance();
-
-                mainFrame.loadArtists();
-                mainFrame.loadGenres();
-                mainFrame.loadPlaylists();
+                MainFrame.getInstance().refresh();
 
                 dispose();
             } else {

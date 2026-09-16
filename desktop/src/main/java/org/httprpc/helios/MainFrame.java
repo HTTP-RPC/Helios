@@ -650,6 +650,12 @@ public class MainFrame extends JFrame implements Runnable {
         super.dispose();
     }
 
+    public void refresh() {
+        loadArtists();
+        loadGenres();
+        loadPlaylists();
+    }
+
     public void loadArtists() {
         var artists = MusicLibrary.getArtists();
 
