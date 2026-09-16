@@ -562,7 +562,7 @@ public class MainFrame extends JFrame implements Runnable {
         loadAll();
 
         pause();
-        unload();
+        unloadSong();
 
         updateControls();
 
@@ -643,7 +643,7 @@ public class MainFrame extends JFrame implements Runnable {
 
     @Override
     public void dispose() {
-        unload();
+        unloadSong();
 
         super.dispose();
     }
@@ -703,7 +703,7 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     public void playAll(List<Song> songs) {
-        unload();
+        unloadSong();
 
         this.songs = songs;
 
@@ -716,7 +716,7 @@ public class MainFrame extends JFrame implements Runnable {
 
         songIndex = 0;
 
-        load();
+        loadSong();
         play();
     }
 
@@ -755,13 +755,13 @@ public class MainFrame extends JFrame implements Runnable {
 
         var playing = map(audioPlayer, AudioPlayer::isPlaying);
 
-        unload();
+        unloadSong();
 
         if (elapsedTime < 2500 && songIndex > 0) {
             songIndex--;
         }
 
-        load();
+        loadSong();
 
         if (playing) {
             play();
@@ -771,18 +771,18 @@ public class MainFrame extends JFrame implements Runnable {
     private void moveNext() {
         var playing = map(audioPlayer, AudioPlayer::isPlaying);
 
-        unload();
+        unloadSong();
 
         songIndex++;
 
-        load();
+        loadSong();
 
         if (playing) {
             play();
         }
     }
 
-    private void load() {
+    private void loadSong() {
         var song = queue.get(songIndex);
 
         var artist = song.getArtist();
@@ -816,7 +816,7 @@ public class MainFrame extends JFrame implements Runnable {
         }
     }
 
-    private void unload() {
+    private void unloadSong() {
         currentSongPanel.setVisible(false);
 
         artworkImagePane.setImage(null);
@@ -848,7 +848,7 @@ public class MainFrame extends JFrame implements Runnable {
             ));
         } else {
             pause();
-            unload();
+            unloadSong();
 
             songIndex++;
 
@@ -859,7 +859,7 @@ public class MainFrame extends JFrame implements Runnable {
             }
 
             if (songIndex < n) {
-                load();
+                loadSong();
                 play();
             } else {
                 songs = emptyListOf(Song.class);
