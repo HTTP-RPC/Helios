@@ -12,7 +12,7 @@
 
         <spacer weight="1"/>
 
-        <row-panel spacing="2">
+        <row-panel>
             <button name="editAlbumButton" icon="icons/edit_24dp.svg; 16"
                 focusable="false"
                 toolTipText="editAlbum"
@@ -31,7 +31,7 @@
                 <column-panel name="artworkButtonPanel" background="Component.borderColor; 0.6" padding="4">
                     <spacer weight="1"/>
 
-                    <row-panel spacing="2">
+                    <row-panel>
                         <spacer weight="1"/>
 
                         <button name="editArtworkButton" icon="icons/edit_24dp.svg; 14"

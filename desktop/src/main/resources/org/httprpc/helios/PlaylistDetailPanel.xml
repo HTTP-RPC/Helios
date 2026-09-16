@@ -12,7 +12,7 @@
 
         <spacer weight="1"/>
 
-        <row-panel spacing="2">
+        <row-panel>
             <menu-button name="removeFromPlaylistButton" icon="icons/remove_24dp.svg; 18"
                 focusable="false"
                 toolTipText="removeFromPlaylist"
