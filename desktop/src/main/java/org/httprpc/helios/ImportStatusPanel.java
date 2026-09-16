@@ -77,11 +77,11 @@ public class ImportStatusPanel extends StackPanel {
     }
 
     private void close() {
-        MainFrame.getInstance().getGlassPane().setVisible(false);
-
         setVisible(false);
 
         var mainFrame = MainFrame.getInstance();
+
+        mainFrame.getGlassPane().setVisible(false);
 
         mainFrame.loadArtists();
         mainFrame.loadGenres();

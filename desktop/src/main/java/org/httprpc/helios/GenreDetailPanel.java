@@ -225,7 +225,7 @@ public class GenreDetailPanel extends StackPanel {
             }, (result, exception) -> {
                 glassPane.setVisible(false);
 
-                mainFrame.refresh();
+                mainFrame.loadAll();
             });
         }
     }

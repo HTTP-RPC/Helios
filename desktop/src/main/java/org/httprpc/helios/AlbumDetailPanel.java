@@ -191,7 +191,7 @@ public class AlbumDetailPanel extends StackPanel {
             }, (result, exception) -> {
                 glassPane.setVisible(false);
 
-                mainFrame.refresh();
+                mainFrame.loadAll();
             });
         }
     }

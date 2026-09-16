@@ -203,7 +203,7 @@ public class SongDetailPanel extends StackPanel {
             }, (result, exception) -> {
                 glassPane.setVisible(false);
 
-                mainFrame.refresh();
+                mainFrame.loadAll();
             });
         }
     }

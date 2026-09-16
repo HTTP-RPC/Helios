@@ -559,9 +559,7 @@ public class MainFrame extends JFrame implements Runnable {
         setLocation(preferences.getInt(LOCATION_X_KEY, getX()), preferences.getInt(LOCATION_Y_KEY, getY()));
         setSize(preferences.getInt(SIZE_WIDTH_KEY, getWidth()), preferences.getInt(SIZE_HEIGHT_KEY, getHeight()));
 
-        loadArtists();
-        loadGenres();
-        loadPlaylists();
+        loadAll();
 
         pause();
         unload();
@@ -650,7 +648,7 @@ public class MainFrame extends JFrame implements Runnable {
         super.dispose();
     }
 
-    public void refresh() {
+    public void loadAll() {
         loadArtists();
         loadGenres();
         loadPlaylists();
