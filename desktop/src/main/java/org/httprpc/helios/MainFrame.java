@@ -53,7 +53,6 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.Duration;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -903,6 +902,7 @@ public class MainFrame extends JFrame implements Runnable {
         var fileChooser = new JFileChooser();
 
         fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+        fileChooser.setMultiSelectionEnabled(true);
 
         fileChooser.setFileFilter(new FileFilter() {
             @Override
@@ -925,24 +925,21 @@ public class MainFrame extends JFrame implements Runnable {
         var result = fileChooser.showOpenDialog(this);
 
         if (result == JFileChooser.APPROVE_OPTION) {
-            addSongs(fileChooser.getSelectedFile().toPath());
-        }
-    }
+            var paths = listOf(flatten(mapAll(iterableOf(fileChooser.getSelectedFiles()), File::toPath), root -> {
+                try (var stream = Files.walk(root)) {
+                    return listOf(filter(iterableOf(stream), path -> {
+                        var fileName = path.getFileName().toString();
 
-    private void addSongs(Path root) {
-        List<Path> paths;
-        try (var stream = Files.walk(root)) {
-            paths = listOf(filter(iterableOf(stream), path -> {
-                var fileName = path.getFileName().toString();
-
-                return fileName.endsWith(MP3_EXTENSION) || fileName.endsWith(M4A_EXTENSION);
+                        return fileName.endsWith(MP3_EXTENSION) || fileName.endsWith(M4A_EXTENSION);
+                    }));
+                } catch (IOException exception) {
+                    throw new RuntimeException(exception);
+                }
             }));
-        } catch (IOException exception) {
-            throw new RuntimeException(exception);
-        }
 
-        if (!paths.isEmpty()) {
-            importStatusPanel.addAll(paths);
+            if (!paths.isEmpty()) {
+                importStatusPanel.addAll(paths);
+            }
         }
     }
 
