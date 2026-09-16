@@ -5,12 +5,20 @@ package org.httprpc.helios;
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.ResourceBundle;
 
 public abstract class AbstractDialog extends JDialog {
+    private boolean canceled = false;
+
     private static final String ESCAPE_ACTION_KEY = "escape";
+
+    private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(AbstractDialog.class.getName());
 
     public AbstractDialog(MainFrame owner) {
         this(owner, true);
@@ -28,8 +36,36 @@ public abstract class AbstractDialog extends JDialog {
             }
         });
 
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent event) {
+                cancel();
+            }
+        });
 
         rootPane.putClientProperty("apple.awt.transparentTitleBar", true);
+    }
+
+    public boolean isCanceled() {
+        return canceled;
+    }
+
+    protected void cancel() {
+        canceled = true;
+
+        dispose();
+    }
+
+    protected void alertRequired(String key, JComponent component) {
+        var message = String.format(resourceBundle.getString("requiredFieldFormat"),
+            ResourceBundle.getBundle(getClass().getName()).getString(key));
+
+        JOptionPane.showMessageDialog(this, message,
+            resourceBundle.getString("error"),
+            JOptionPane.ERROR_MESSAGE);
+
+        component.requestFocus();
     }
 }

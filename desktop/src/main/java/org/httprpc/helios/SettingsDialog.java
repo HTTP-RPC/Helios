@@ -27,7 +27,7 @@ public class SettingsDialog extends AbstractDialog {
 
         setContentPane(UILoader.load(this, "SettingsDialog.xml", resourceBundle));
 
-        cancelButton.addActionListener(event -> dispose());
+        cancelButton.addActionListener(event -> cancel());
         okButton.addActionListener(event -> save());
 
         rootPane.setDefaultButton(okButton);

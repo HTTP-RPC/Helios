@@ -9,8 +9,6 @@ import org.httprpc.sierra.UILoader;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import java.text.NumberFormat;
@@ -56,7 +54,7 @@ public class EditSongDialog extends AbstractDialog {
         trackNumberTextField.setFormat(integerFormat);
         discNumberTextField.setFormat(integerFormat);
 
-        cancelButton.addActionListener(event -> dispose());
+        cancelButton.addActionListener(event -> cancel());
         okButton.addActionListener(event -> save());
 
         rootPane.setDefaultButton(okButton);
@@ -159,16 +157,5 @@ public class EditSongDialog extends AbstractDialog {
         } else {
             UIManager.getLookAndFeel().provideErrorFeedback(artistTextField);
         }
-    }
-
-    private void alertRequired(String key, JComponent component) {
-        var message = String.format(resourceBundle.getString("requiredFieldFormat"),
-            ResourceBundle.getBundle(getClass().getName()).getString(key));
-
-        JOptionPane.showMessageDialog(this, message,
-            resourceBundle.getString("error"),
-            JOptionPane.ERROR_MESSAGE);
-
-        component.requestFocus();
     }
 }

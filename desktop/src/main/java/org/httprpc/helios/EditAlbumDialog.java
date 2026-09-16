@@ -7,8 +7,6 @@ import org.httprpc.sierra.UILoader;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import java.text.NumberFormat;
 import java.util.List;
@@ -59,7 +57,7 @@ public class EditAlbumDialog extends AbstractDialog {
 
         yearTextField.setFormat(integerFormat);
 
-        cancelButton.addActionListener(event -> dispose());
+        cancelButton.addActionListener(event -> cancel());
         okButton.addActionListener(event -> save());
 
         rootPane.setDefaultButton(okButton);
@@ -131,16 +129,5 @@ public class EditAlbumDialog extends AbstractDialog {
         mainFrame.loadPlaylists();
 
         dispose();
-    }
-
-    private void alertRequired(String key, JComponent component) {
-        var message = String.format(resourceBundle.getString("requiredFieldFormat"),
-            ResourceBundle.getBundle(getClass().getName()).getString(key));
-
-        JOptionPane.showMessageDialog(this, message,
-            resourceBundle.getString("error"),
-            JOptionPane.ERROR_MESSAGE);
-
-        component.requestFocus();
     }
 }
