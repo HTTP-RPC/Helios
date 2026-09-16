@@ -2,8 +2,8 @@
 
 <!DOCTYPE column-panel SYSTEM "sierra.dtd">
 
-<column-panel spacing="4" padding="4, 8, 8, 8" opaque="true">
-    <row-panel spacing="16">
+<column-panel opaque="true">
+    <row-panel spacing="16" padding="4, 8, 4, 8">
         <row-panel spacing="8" weight="1.25">
             <row-panel spacing="2">
                 <column-panel>
@@ -131,27 +131,27 @@
         </row-panel>
     </row-panel>
 
-    <row-panel spacing="4" weight="1">
-        <stack-panel border="Component.borderColor, 1, solid, 4" weight="1">
-            <tabbed-pane name="collectionTabbedPane" tabPlacement="bottom"
-                focusable="false"
-                style="tabAreaAlignment: fill">
-                <scroll-pane tabTitle="artists" tabIcon="icons/mic_24dp.svg; 18" border="none">
-                    <list name="artistList" selectionMode="single-selection"/>
-                </scroll-pane>
+    <separator style="height: 1; stripeIndent: 0"/>
 
-                <scroll-pane tabTitle="genres" tabIcon="icons/piano_24dp.svg; 18" border="none">
-                    <list name="genreList" selectionMode="single-selection"/>
-                </scroll-pane>
+    <row-panel weight="1">
+        <tabbed-pane name="collectionTabbedPane" tabPlacement="bottom"
+            focusable="false"
+            style="tabAreaAlignment: fill">
+            <scroll-pane tabTitle="artists" tabIcon="icons/mic_24dp.svg; 18" border="none">
+                <list name="artistList" selectionMode="single-selection"/>
+            </scroll-pane>
 
-                <scroll-pane tabTitle="playlists" tabIcon="icons/music_note_24dp.svg; 18" border="none">
-                    <list name="playlistList" selectionMode="single-selection"/>
-                </scroll-pane>
-            </tabbed-pane>
-        </stack-panel>
+            <scroll-pane tabTitle="genres" tabIcon="icons/piano_24dp.svg; 18" border="none">
+                <list name="genreList" selectionMode="single-selection"/>
+            </scroll-pane>
 
-        <stack-panel border="Component.borderColor, 1, solid, 4" weight="2.75">
-            <scroll-pane name="collectionScrollPane" border="none"/>
-        </stack-panel>
+            <scroll-pane tabTitle="playlists" tabIcon="icons/music_note_24dp.svg; 18" border="none">
+                <list name="playlistList" selectionMode="single-selection"/>
+            </scroll-pane>
+        </tabbed-pane>
+
+        <separator orientation="vertical" style="stripeIndent: 0"/>
+
+        <scroll-pane name="collectionScrollPane" border="none" weight="1"/>
     </row-panel>
 </column-panel>
