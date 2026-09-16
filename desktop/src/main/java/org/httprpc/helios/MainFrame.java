@@ -707,7 +707,6 @@ public class MainFrame extends JFrame implements Runnable {
         songIndex = 0;
 
         load();
-
         play();
     }
 
@@ -849,7 +848,6 @@ public class MainFrame extends JFrame implements Runnable {
 
             if (songIndex < n) {
                 load();
-
                 play();
             } else {
                 songs = emptyListOf(Song.class);
