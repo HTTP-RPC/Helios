@@ -162,6 +162,9 @@ public class AlbumDetailPanel extends StackPanel {
 
         genreLabel.setText(genre);
         yearLabel.setText(map(year, String::valueOf));
+
+        editAlbumButton.setEnabled(!compilation);
+        deleteAlbumButton.setEnabled(!compilation);
     }
 
     private void editAlbum() {
