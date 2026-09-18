@@ -11,6 +11,7 @@ import org.httprpc.sierra.UILoader;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -77,6 +78,8 @@ public class GenreDetailPanel extends StackPanel {
     private @Outlet JMenuItem deleteArtworkMenuItem = null;
     private @Outlet JMenuItem deleteSongMenuItem = null;
 
+    private @Outlet JList<ArtistAlbum> albumList = null;
+
     private @Outlet JTable songTable = null;
 
     private static final FlatSVGIcon playlistIcon;
@@ -93,6 +96,7 @@ public class GenreDetailPanel extends StackPanel {
 
         nameLabel.setText(genre.getName());
 
+        // TODO
         playButton.addActionListener(event -> {
             var i = songTable.getSelectedRow();
 
@@ -108,6 +112,8 @@ public class GenreDetailPanel extends StackPanel {
         deleteAlbumMenuItem.addActionListener(event -> deleteAlbum());
         deleteArtworkMenuItem.addActionListener(event -> deleteArtwork());
         deleteSongMenuItem.addActionListener(event -> deleteSong());
+
+        // TODO Group songs by artist/compilation ("" for compilation artist)
 
         var songTableHeader = songTable.getTableHeader();
 
