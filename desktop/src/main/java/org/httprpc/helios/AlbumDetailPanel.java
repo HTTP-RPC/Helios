@@ -170,7 +170,7 @@ public class AlbumDetailPanel extends StackPanel {
 
     private void deleteAlbum() {
         var option = JOptionPane.showConfirmDialog(getTopLevelAncestor(),
-            String.format(resourceBundle.getString("confirmDeleteAlbumMessageFormat"), name),
+            String.format(resourceBundle.getString("confirmDeleteMessageFormat"), name),
             resourceBundle.getString("deleteAlbum"),
             JOptionPane.YES_NO_OPTION,
             JOptionPane.WARNING_MESSAGE);
@@ -228,7 +228,7 @@ public class AlbumDetailPanel extends StackPanel {
 
     private void deleteArtwork() {
         var option = JOptionPane.showConfirmDialog(getTopLevelAncestor(),
-            resourceBundle.getString("confirmDeleteArtworkMessage"),
+            String.format(resourceBundle.getString("confirmDeleteArtworkMessageFormat"), name),
             resourceBundle.getString("deleteArtwork"),
             JOptionPane.YES_NO_OPTION,
             JOptionPane.WARNING_MESSAGE);

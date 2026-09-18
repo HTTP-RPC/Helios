@@ -47,7 +47,7 @@
 
             <column-panel>
                 <spacer weight="1"/>
-                <toggle-button name="queueButton" icon="icons/queue_music_24dp.svg; 20"
+                <toggle-button name="queueButton" icon="icons/segment_24dp.svg; 20"
                     focusable="false"
                     style="buttonType: borderless"
                     toolTipText="queue"/>
@@ -61,7 +61,7 @@
                     style="buttonType: borderless"
                     toolTipText="add">
                     <menu-item name="addSongsMenuItem" text="songs" icon="icons/folder_24dp.svg; 18"/>
-                    <menu-item name="addPlaylistMenuItem" text="playlist" icon="icons/music_note_24dp.svg; 18"/>
+                    <menu-item name="addPlaylistMenuItem" text="playlist" icon="icons/queue_music_24dp.svg; 18"/>
                 </menu-button>
                 <spacer weight="1"/>
             </column-panel>
@@ -143,7 +143,7 @@
                 <list name="genreList" selectionMode="single-selection"/>
             </scroll-pane>
 
-            <scroll-pane tabTitle="playlists" tabIcon="icons/music_note_24dp.svg; 18" border="none">
+            <scroll-pane tabTitle="playlists" tabIcon="icons/queue_music_24dp.svg; 18" border="none">
                 <list name="playlistList" selectionMode="single-selection"/>
             </scroll-pane>
         </tabbed-pane>

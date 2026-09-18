@@ -66,14 +66,22 @@ public class GenreDetailPanel extends StackPanel {
     private @Outlet JButton playButton = null;
 
     private @Outlet MenuButton addToPlaylistButton = null;
-    private @Outlet JButton editSongButton = null;
-    private @Outlet JButton deleteSongButton = null;
+
+    private @Outlet MenuButton editButton = null;
+    private @Outlet JMenuItem editAlbumMenuItem = null;
+    private @Outlet JMenuItem editArtworkMenuItem = null;
+    private @Outlet JMenuItem editSongMenuItem = null;
+
+    private @Outlet MenuButton deleteButton = null;
+    private @Outlet JMenuItem deleteAlbumMenuItem = null;
+    private @Outlet JMenuItem deleteArtworkMenuItem = null;
+    private @Outlet JMenuItem deleteSongMenuItem = null;
 
     private @Outlet JTable songTable = null;
 
     private static final FlatSVGIcon playlistIcon;
     static {
-        playlistIcon = new FlatSVGIcon(GenreDetailPanel.class.getResource("icons/music_note_24dp.svg")).derive(18, 18);
+        playlistIcon = new FlatSVGIcon(GenreDetailPanel.class.getResource("icons/queue_music_24dp.svg")).derive(18, 18);
 
         playlistIcon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> UIManager.getColor("Button.foreground")));
     }
@@ -93,11 +101,7 @@ public class GenreDetailPanel extends StackPanel {
 
         addToPlaylistButton.setEnabled(false);
 
-        editSongButton.addActionListener(event -> editSong());
-        editSongButton.setEnabled(false);
-
-        deleteSongButton.addActionListener(event -> deleteSong());
-        deleteSongButton.setEnabled(false);
+        // TODO
 
         var songTableHeader = songTable.getTableHeader();
 
@@ -108,7 +112,7 @@ public class GenreDetailPanel extends StackPanel {
         songTable.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, null);
 
         songTable.setModel(new BasicTableModel<>(Song.class, songs,
-            listOf("album", "title", "artist"),
+            listOf("title", "artist"),
             resourceBundle));
 
         var genreCellRenderer = new GenreCellRenderer();
@@ -121,12 +125,10 @@ public class GenreDetailPanel extends StackPanel {
                 return;
             }
 
-            if (songTable.getSelectedRow() != -1) {
-                enableButtons();
-            } else {
-                disableButtons();
-            }
+            updateControls();
         });
+
+        updateControls();
 
         setScrollableTracksViewportWidth(true);
         setScrollableTracksViewportHeight(true);
@@ -204,7 +206,7 @@ public class GenreDetailPanel extends StackPanel {
         var song = ((BasicTableModel<Song>)songTable.getModel()).getRow(songTable.getSelectedRow());
 
         var option = JOptionPane.showConfirmDialog(getTopLevelAncestor(),
-            String.format(resourceBundle.getString("confirmDeleteMessageFormat"), song.getTitle()),
+            String.format(resourceBundle.getString("confirmDeleteSongMessageFormat"), song.getTitle()),
             resourceBundle.getString("deleteSong"),
             JOptionPane.YES_NO_OPTION,
             JOptionPane.WARNING_MESSAGE);
@@ -228,16 +230,18 @@ public class GenreDetailPanel extends StackPanel {
         }
     }
 
-    private void enableButtons() {
-        addToPlaylistButton.setEnabled(addToPlaylistButton.getComponentPopupMenu().getComponentCount() > 0);
-        editSongButton.setEnabled(true);
-        deleteSongButton.setEnabled(true);
-    }
+    private void updateControls() {
+        if (songTable.getSelectedRow() != -1) {
+            addToPlaylistButton.setEnabled(addToPlaylistButton.getComponentPopupMenu().getComponentCount() > 0);
 
-    private void disableButtons() {
-        addToPlaylistButton.setEnabled(false);
-        editSongButton.setEnabled(false);
-        deleteSongButton.setEnabled(false);
+            editSongMenuItem.setEnabled(true);
+            deleteSongMenuItem.setEnabled(true);
+        } else {
+            addToPlaylistButton.setEnabled(false);
+
+            editSongMenuItem.setEnabled(false);
+            deleteSongMenuItem.setEnabled(false);
+        }
     }
 
     @SuppressWarnings("unchecked")

@@ -23,6 +23,8 @@
             toolTipText="addToPlaylist"
             style="buttonType: borderless"/>
 
+        <spacer width="2"/>
+
         <button name="editSongButton" icon="icons/edit_24dp.svg; 16"
             focusable="false"
             toolTipText="editSong"

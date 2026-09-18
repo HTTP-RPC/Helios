@@ -50,7 +50,7 @@ public class SongDetailPanel extends StackPanel {
 
     private static final FlatSVGIcon playlistIcon;
     static {
-        playlistIcon = new FlatSVGIcon(SongDetailPanel.class.getResource("icons/music_note_24dp.svg")).derive(18, 18);
+        playlistIcon = new FlatSVGIcon(SongDetailPanel.class.getResource("icons/queue_music_24dp.svg")).derive(18, 18);
 
         playlistIcon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> UIManager.getColor("Button.foreground")));
     }
