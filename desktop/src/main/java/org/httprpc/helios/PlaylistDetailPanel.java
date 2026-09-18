@@ -25,11 +25,11 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
 import static org.httprpc.kilo.util.Collections.*;
+import static org.httprpc.kilo.util.Iterables.*;
 import static org.httprpc.kilo.util.Optionals.*;
 
 public class PlaylistDetailPanel extends StackPanel {
@@ -203,15 +203,7 @@ public class PlaylistDetailPanel extends StackPanel {
             JOptionPane.WARNING_MESSAGE);
 
         if (option == JOptionPane.YES_OPTION) {
-            var selectedRows = songTable.getSelectedRows();
-
-            var selectedSongs = new ArrayList<Song>(selectedRows.length);
-
-            for (var i = 0; i < selectedRows.length; i++) {
-                selectedSongs.add(this.songs.get(selectedRows[i]));
-            }
-
-            MusicLibrary.removeFromPlaylist(playlist, selectedSongs);
+            MusicLibrary.removeFromPlaylist(playlist, listOf(mapAll(iterableOf(songTable.getSelectedRows()), songs::get)));
 
             MainFrame.getInstance().loadPlaylists();
         }
