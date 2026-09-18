@@ -101,7 +101,13 @@ public class GenreDetailPanel extends StackPanel {
 
         addToPlaylistButton.setEnabled(false);
 
-        // TODO
+        editAlbumMenuItem.addActionListener(event -> editAlbum());
+        editArtworkMenuItem.addActionListener(event -> editArtwork());
+        editSongMenuItem.addActionListener(event -> editSong());
+
+        deleteAlbumMenuItem.addActionListener(event -> deleteAlbum());
+        deleteArtworkMenuItem.addActionListener(event -> deleteArtwork());
+        deleteSongMenuItem.addActionListener(event -> deleteSong());
 
         var songTableHeader = songTable.getTableHeader();
 
@@ -187,6 +193,14 @@ public class GenreDetailPanel extends StackPanel {
         MainFrame.getInstance().loadPlaylists();
     }
 
+    private void editAlbum() {
+        // TODO
+    }
+
+    private void editArtwork() {
+        // TODO
+    }
+
     @SuppressWarnings("unchecked")
     private void editSong() {
         var song = ((BasicTableModel<Song>)songTable.getModel()).getRow(songTable.getSelectedRow());
@@ -201,12 +215,20 @@ public class GenreDetailPanel extends StackPanel {
         editSongDialog.setVisible(true);
     }
 
+    private void deleteAlbum() {
+        // TODO
+    }
+
+    private void deleteArtwork() {
+        // TODO
+    }
+
     @SuppressWarnings("unchecked")
     private void deleteSong() {
         var song = ((BasicTableModel<Song>)songTable.getModel()).getRow(songTable.getSelectedRow());
 
         var option = JOptionPane.showConfirmDialog(getTopLevelAncestor(),
-            String.format(resourceBundle.getString("confirmDeleteSongMessageFormat"), song.getTitle()),
+            String.format(resourceBundle.getString("confirmDeleteMessageFormat"), song.getTitle()),
             resourceBundle.getString("deleteSong"),
             JOptionPane.YES_NO_OPTION,
             JOptionPane.WARNING_MESSAGE);
@@ -231,6 +253,10 @@ public class GenreDetailPanel extends StackPanel {
     }
 
     private void updateControls() {
+        // TODO Enable/disable menu buttons
+
+        // TODO Enable/disable album/artwork buttons
+
         if (songTable.getSelectedRow() != -1) {
             addToPlaylistButton.setEnabled(addToPlaylistButton.getComponentPopupMenu().getComponentCount() > 0);
 
