@@ -116,9 +116,13 @@ public class PlaylistDetailPanel extends StackPanel {
         });
 
         playButton.addActionListener(event -> {
-            var i = songTable.getSelectedRow();
+            var selectedRows = songTable.getSelectedRows();
 
-            MainFrame.getInstance().playAll(i == -1 ? songs : songs.subList(i, songs.size()));
+            if (selectedRows.length == 0) {
+                MainFrame.getInstance().playAll(songs);
+            } else {
+                MainFrame.getInstance().playAll(listOf(mapAll(iterableOf(selectedRows), songs::get)));
+            }
         });
 
         removeFromPlaylistButton.addActionListener(event -> removeFromPlaylist());
