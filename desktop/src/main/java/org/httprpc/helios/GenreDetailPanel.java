@@ -189,8 +189,22 @@ public class GenreDetailPanel extends StackPanel {
 
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(GenreDetailPanel.class.getName());
 
-    private static Comparator<ArtistAlbum> artistAlbumComparator = Comparator.comparing(ArtistAlbum::getSortableArtist)
-        .thenComparing(ArtistAlbum::getSortableAlbum);
+    private static Comparator<ArtistAlbum> artistComparator = (albumArtist1, albumArtist2) -> {
+        var artist1 = albumArtist1.getArtist();
+        var artist2 = albumArtist2.getArtist();
+
+        if (artist1.isEmpty() && artist2.isEmpty()) {
+            return 0;
+        } else if (artist1.isEmpty()) {
+            return 1;
+        } else if (artist2.isEmpty()) {
+            return -1;
+        } else {
+            return artist1.compareTo(artist2);
+        }
+    };
+
+    private static Comparator<ArtistAlbum> artistAlbumComparator = artistComparator.thenComparing(ArtistAlbum::getAlbum);
 
     public GenreDetailPanel(Genre genre, Map<String, List<Song>> albums) {
         add(UILoader.load(this, "GenreDetailPanel.xml", resourceBundle));

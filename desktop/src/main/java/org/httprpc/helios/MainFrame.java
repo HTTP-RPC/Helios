@@ -1123,11 +1123,6 @@ public class MainFrame extends JFrame implements Runnable {
             public boolean getScrollableTracksViewportWidth() {
                 return true;
             }
-
-            @Override
-            public boolean getScrollableTracksViewportHeight() {
-                return false;
-            }
         });
 
         MusicLibrary.initialize();
