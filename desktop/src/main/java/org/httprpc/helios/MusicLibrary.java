@@ -134,7 +134,7 @@ public class MusicLibrary {
         .thenComparing(Song::getSortableTitle)
         .thenComparing(Song::getSortableAlbum);
 
-    private static final Comparator<ArtistAlbum> artistAlbumComparator = Comparator.comparing(ArtistAlbum::getSortableArtist)
+    private static final Comparator<ArtistAlbum> albumArtworkComparator = Comparator.comparing(ArtistAlbum::getSortableArtist)
         .thenComparing(ArtistAlbum::getSortableAlbum);
 
     private static List<String> articles;
@@ -803,7 +803,7 @@ public class MusicLibrary {
         try (var connection = openConnection();
             var statement = queryBuilder.prepare(connection);
             var results = queryBuilder.executeQuery(statement)) {
-            artistAlbums = sortBy(mapAll(results, BeanAdapter.toType(ArtistAlbum.class)), artistAlbumComparator);
+            artistAlbums = sortBy(mapAll(results, BeanAdapter.toType(ArtistAlbum.class)), albumArtworkComparator);
         } catch (SQLException exception) {
             throw new RuntimeException(exception);
         }
