@@ -638,7 +638,7 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
         }
 
         if (songList.getSelectedValue() != null) {
-            addToPlaylistButton.setEnabled(true);
+            addToPlaylistButton.setEnabled(addToPlaylistButton.getComponentPopupMenu().getComponentCount() > 0);
 
             editSongMenuItem.setEnabled(true);
             deleteSongMenuItem.setEnabled(true);
