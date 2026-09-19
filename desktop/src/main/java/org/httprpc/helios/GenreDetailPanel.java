@@ -35,7 +35,6 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.SequencedMap;
 
@@ -232,61 +231,6 @@ public class GenreDetailPanel extends StackPanel {
     public GenreDetailPanel(Genre genre, SequencedMap<String, List<Song>> albums) {
         this.albums = albums;
 
-        add(UILoader.load(this, "GenreDetailPanel.xml", resourceBundle));
-
-        nameLabel.setText(genre.getName());
-
-        playButton.addActionListener(event -> {
-            var artistAlbum = artistAlbumList.getSelectedValue();
-
-            List<Song> songs;
-            if (artistAlbum != null) {
-                var song = songList.getSelectedValue();
-
-                if (song != null) {
-                    songs = listOf(song);
-                } else {
-                    songs = albums.get(artistAlbum.getAlbum());
-                }
-            } else {
-                // TODO Sort by artist
-                songs = listOf(flatten(albums.entrySet(), Map.Entry::getValue));
-            }
-
-            MainFrame.getInstance().playAll(songs);
-        });
-
-        addToPlaylistButton.setEnabled(false);
-
-        editAlbumMenuItem.addActionListener(event -> editAlbum());
-        editArtworkMenuItem.addActionListener(event -> editArtwork());
-        editSongMenuItem.addActionListener(event -> editSong());
-
-        deleteAlbumMenuItem.addActionListener(event -> deleteAlbum());
-        deleteArtworkMenuItem.addActionListener(event -> deleteArtwork());
-        deleteSongMenuItem.addActionListener(event -> deleteSong());
-
-        artistAlbumList.setCellRenderer(new ArtistAlbumCellRenderer());
-
-        artistAlbumList.addListSelectionListener(event -> {
-            if (event.getValueIsAdjusting()) {
-                return;
-            }
-
-            var artistAlbum = artistAlbumList.getSelectedValue();
-
-            List<Song> songs;
-            if (artistAlbum != null) {
-                songs = albums.get(artistAlbum.getAlbum());
-            } else {
-                songs = listOf();
-            }
-
-            songList.setModel(new BasicListModel<>(songs));
-
-            updateControls();
-        });
-
         var artistAlbums = new ArrayList<ArtistAlbum>();
 
         for (var entry : albums.entrySet()) {
@@ -313,7 +257,60 @@ public class GenreDetailPanel extends StackPanel {
 
         artistAlbums.sort(artistAlbumComparator);
 
+        add(UILoader.load(this, "GenreDetailPanel.xml", resourceBundle));
+
+        nameLabel.setText(genre.getName());
+
+        playButton.addActionListener(event -> {
+            var artistAlbum = artistAlbumList.getSelectedValue();
+
+            List<Song> songs;
+            if (artistAlbum != null) {
+                var song = songList.getSelectedValue();
+
+                if (song != null) {
+                    songs = listOf(song);
+                } else {
+                    songs = albums.get(artistAlbum.getAlbum());
+                }
+            } else {
+                songs = listOf(flatten(mapAll(artistAlbums, ArtistAlbum::getAlbum), albums::get));
+            }
+
+            MainFrame.getInstance().playAll(songs);
+        });
+
+        addToPlaylistButton.setEnabled(false);
+
+        editAlbumMenuItem.addActionListener(event -> editAlbum());
+        editArtworkMenuItem.addActionListener(event -> editArtwork());
+        editSongMenuItem.addActionListener(event -> editSong());
+
+        deleteAlbumMenuItem.addActionListener(event -> deleteAlbum());
+        deleteArtworkMenuItem.addActionListener(event -> deleteArtwork());
+        deleteSongMenuItem.addActionListener(event -> deleteSong());
+
+        artistAlbumList.setCellRenderer(new ArtistAlbumCellRenderer());
         artistAlbumList.setModel(new BasicListModel<>(artistAlbums));
+
+        artistAlbumList.addListSelectionListener(event -> {
+            if (event.getValueIsAdjusting()) {
+                return;
+            }
+
+            var artistAlbum = artistAlbumList.getSelectedValue();
+
+            List<Song> songs;
+            if (artistAlbum != null) {
+                songs = albums.get(artistAlbum.getAlbum());
+            } else {
+                songs = listOf();
+            }
+
+            songList.setModel(new BasicListModel<>(songs));
+
+            updateControls();
+        });
 
         songList.setCellRenderer(new SongCellRenderer());
 
