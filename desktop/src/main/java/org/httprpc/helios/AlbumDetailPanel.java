@@ -209,7 +209,8 @@ public class AlbumDetailPanel extends StackPanel {
                 } else {
                     var path = file.getPath();
 
-                    return path.endsWith(".jpg") || path.endsWith(".jpeg");
+                    return path.endsWith(MusicLibrary.JPG_EXTENSION)
+                        || path.endsWith(MusicLibrary.JPEG_EXTENSION);
                 }
             }
 
@@ -252,9 +253,6 @@ public class AlbumDetailPanel extends StackPanel {
 
         artworkImagePane.setImage(artwork);
 
-        editArtworkButton.setEnabled(false);
-        deleteArtworkButton.setEnabled(false);
-
         var glassPane = MainFrame.getInstance().getGlassPane();
 
         glassPane.setVisible(true);
@@ -267,12 +265,7 @@ public class AlbumDetailPanel extends StackPanel {
             }
 
             return null;
-        }, (result, exception) -> {
-            glassPane.setVisible(false);
-
-            editArtworkButton.setEnabled(true);
-            deleteArtworkButton.setEnabled(artwork != null);
-        });
+        }, (result, exception) -> glassPane.setVisible(false));
     }
 
     private void showArtworkButtons() {

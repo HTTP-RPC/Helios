@@ -119,6 +119,12 @@ public class MusicLibrary {
         }
     }
 
+    public static final String MP3_EXTENSION = ".mp3";
+    public static final String M4A_EXTENSION = ".m4a";
+
+    public static final String JPG_EXTENSION = ".jpg";
+    public static final String JPEG_EXTENSION = ".jpeg";
+
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(MusicLibrary.class.getName());
 
     private static final Path rootDirectory = Path.of(System.getProperty("user.home"), ".helios");

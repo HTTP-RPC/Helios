@@ -15,6 +15,7 @@ import org.httprpc.sierra.UILoader;
 
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
@@ -24,6 +25,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
+import javax.swing.filechooser.FileFilter;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
@@ -32,8 +34,11 @@ import java.awt.Dimension;
 import java.awt.FocusTraversalPolicy;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -494,11 +499,84 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
     }
 
     private void editArtwork() {
-        // TODO
+        var fileChooser = new JFileChooser();
+
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+
+        fileChooser.setFileFilter(new FileFilter() {
+            @Override
+            public boolean accept(File file) {
+                if (file.isDirectory()) {
+                    return true;
+                } else {
+                    var path = file.getPath();
+
+                    return path.endsWith(MusicLibrary.JPG_EXTENSION)
+                        || path.endsWith(MusicLibrary.JPEG_EXTENSION);
+                }
+            }
+
+            @Override
+            public String getDescription() {
+                return resourceBundle.getString("imageFileFilterDescription");
+            }
+        });
+
+        var result = fileChooser.showOpenDialog(getTopLevelAncestor());
+
+        if (result == JFileChooser.APPROVE_OPTION) {
+            updateArtwork(fileChooser.getSelectedFile().toPath());
+        }
     }
 
     private void deleteArtwork() {
-        // TODO
+        var artistAlbum = artistAlbumList.getSelectedValue();
+
+        var option = JOptionPane.showConfirmDialog(getTopLevelAncestor(),
+            String.format(resourceBundle.getString("confirmDeleteArtworkMessageFormat"), artistAlbum.getAlbum()),
+            resourceBundle.getString("deleteArtwork"),
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.WARNING_MESSAGE);
+
+        if (option == JOptionPane.YES_OPTION) {
+            updateArtwork(null);
+        }
+    }
+
+    private void updateArtwork(Path path) {
+        BufferedImage artwork;
+        if (path != null) {
+            try (var inputStream = Files.newInputStream(path)) {
+                artwork = ImageIO.read(inputStream);
+            } catch (IOException exception) {
+                throw new RuntimeException(exception);
+            }
+        } else {
+            artwork = null;
+        }
+
+        var artistAlbum = artistAlbumList.getSelectedValue();
+
+        artistAlbum.setArtwork(artwork);
+
+        artistAlbumList.repaint();
+
+        var glassPane = MainFrame.getInstance().getGlassPane();
+
+        glassPane.setVisible(true);
+
+        var artist = artistAlbum.getArtist();
+        var album = artistAlbum.getAlbum();
+
+        MainFrame.getTaskExecutor().execute(() -> {
+            if (artwork != null) {
+                MusicLibrary.updateAlbumArtwork(artist, album, artwork);
+            } else {
+                MusicLibrary.deleteAlbumArtwork(artist, album);
+            }
+
+            return null;
+        }, (result, exception) -> glassPane.setVisible(false));
     }
 
     private void editSong() {

@@ -240,9 +240,6 @@ public class MainFrame extends JFrame implements Runnable {
 
     public static final String DARK_MODE_KEY = "darkMode";
 
-    public static final String MP3_EXTENSION = ".mp3";
-    public static final String M4A_EXTENSION = ".m4a";
-
     private static final String PLAY_PAUSE_KEY = "playPause";
     private static final String PREVIOUS_KEY = "previous";
     private static final String NEXT_KEY = "next";
@@ -647,7 +644,8 @@ public class MainFrame extends JFrame implements Runnable {
                         return listOf(filter(iterableOf(stream), path -> {
                             var fileName = path.getFileName().toString();
 
-                            return fileName.endsWith(MP3_EXTENSION) || fileName.endsWith(M4A_EXTENSION);
+                            return fileName.endsWith(MusicLibrary.MP3_EXTENSION)
+                                || fileName.endsWith(MusicLibrary.M4A_EXTENSION);
                         }));
                     } catch (IOException exception) {
                         throw new RuntimeException(exception);
@@ -969,7 +967,8 @@ public class MainFrame extends JFrame implements Runnable {
                 } else {
                     var path = file.getPath();
 
-                    return path.endsWith(MP3_EXTENSION) || path.endsWith(M4A_EXTENSION);
+                    return path.endsWith(MusicLibrary.MP3_EXTENSION)
+                        || path.endsWith(MusicLibrary.M4A_EXTENSION);
                 }
             }
 
@@ -987,7 +986,8 @@ public class MainFrame extends JFrame implements Runnable {
                     return listOf(filter(iterableOf(stream), path -> {
                         var fileName = path.getFileName().toString();
 
-                        return fileName.endsWith(MP3_EXTENSION) || fileName.endsWith(M4A_EXTENSION);
+                        return fileName.endsWith(MusicLibrary.MP3_EXTENSION)
+                            || fileName.endsWith(MusicLibrary.M4A_EXTENSION);
                     }));
                 } catch (IOException exception) {
                     throw new RuntimeException(exception);
