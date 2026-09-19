@@ -6,7 +6,6 @@ import org.httprpc.kilo.Name;
 import org.httprpc.kilo.sql.Column;
 import org.httprpc.kilo.sql.ForeignKey;
 import org.httprpc.kilo.sql.Identifier;
-import org.httprpc.kilo.sql.Index;
 import org.httprpc.kilo.sql.PrimaryKey;
 import org.httprpc.kilo.sql.Table;
 
@@ -81,7 +80,6 @@ public class Song {
 
     @Column("title")
     @Identifier(3)
-    @Index
     public String getTitle() {
         return title;
     }
