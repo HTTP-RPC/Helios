@@ -144,6 +144,7 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
 
     private static class SongCellRenderer extends ColumnPanel implements ListCellRenderer<Song> {
         JLabel titleLabel;
+        JLabel nowPlayingLabel;
         JLabel timeLabel;
         JLabel artistLabel;
 
@@ -151,7 +152,19 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
             setOpaque(true);
 
             add(new RowPanel(), rowPanel -> {
+                rowPanel.setSpacing(4);
+
                 rowPanel.add(new JLabel(), label -> titleLabel = label, 1.0);
+                rowPanel.add(new JLabel(), label -> {
+                    var icon = new FlatSVGIcon(GenreDetailPanel.class.getResource("icons/sensors_24dp.svg")).derive(18, 18);
+
+                    icon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> UIManager.getColor("Label.foreground")));
+
+                    label.setIcon(icon);
+                    label.setEnabled(false);
+
+                    nowPlayingLabel = label;
+                });
                 rowPanel.add(new JLabel(), label -> {
                     label.setText(String.format(resourceBundle.getString("timeFormat"), 60, 0));
                     label.setPreferredSize(label.getPreferredSize());
@@ -175,6 +188,10 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
             Song song, int index,
             boolean selected, boolean cellHasFocus) {
             titleLabel.setText(song.getTitle());
+
+            var currentSong = MainFrame.getInstance().getCurrentSong();
+
+            nowPlayingLabel.setVisible(currentSong != null && song.getID().equals(currentSong.getID()));
 
             var duration = Duration.ofSeconds(song.getTime());
 
