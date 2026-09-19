@@ -3,6 +3,7 @@
 package org.httprpc.helios;
 
 import org.httprpc.kilo.sql.Column;
+import org.httprpc.kilo.sql.Index;
 import org.httprpc.kilo.sql.Table;
 
 import java.awt.image.BufferedImage;
@@ -20,6 +21,7 @@ public class ArtistAlbum {
     private BufferedImage artwork;
 
     @Column("artist")
+    @Index(1)
     public String getArtist() {
         return artist;
     }
@@ -31,10 +33,11 @@ public class ArtistAlbum {
     }
 
     public String getSortableArtist() {
-        return coalesce(sortableArtist, () -> "");
+        return sortableArtist;
     }
 
     @Column("album")
+    @Index(2)
     public String getAlbum() {
         return album;
     }
@@ -55,10 +58,5 @@ public class ArtistAlbum {
 
     public void setArtwork(BufferedImage artwork) {
         this.artwork = artwork;
-    }
-
-    @Override
-    public String toString() {
-        return getSortableArtist();
     }
 }
