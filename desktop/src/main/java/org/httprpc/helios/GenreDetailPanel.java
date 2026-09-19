@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Optionals.*;
 
 public class GenreDetailPanel extends StackPanel {
@@ -227,6 +228,25 @@ public class GenreDetailPanel extends StackPanel {
 
         artistAlbumList.setCellRenderer(new ArtistAlbumCellRenderer());
 
+        artistAlbumList.addListSelectionListener(event -> {
+            if (event.getValueIsAdjusting()) {
+                return;
+            }
+
+            var artistAlbum = artistAlbumList.getSelectedValue();
+
+            List<Song> songs;
+            if (artistAlbum != null) {
+                songs = albums.get(artistAlbum.getAlbum());
+            } else {
+                songs = listOf();
+            }
+
+            songList.setModel(new BasicListModel<>(songs));
+
+            updateControls();
+        });
+
         var artistAlbums = new ArrayList<ArtistAlbum>();
 
         for (var entry : albums.entrySet()) {
@@ -254,6 +274,16 @@ public class GenreDetailPanel extends StackPanel {
         artistAlbums.sort(artistAlbumComparator);
 
         artistAlbumList.setModel(new BasicListModel<>(artistAlbums));
+
+        songList.setCellRenderer(new SongCellRenderer());
+
+        songList.addListSelectionListener(event -> {
+            if (event.getValueIsAdjusting()) {
+                return;
+            }
+
+            updateControls();
+        });
 
         updateControls();
 
