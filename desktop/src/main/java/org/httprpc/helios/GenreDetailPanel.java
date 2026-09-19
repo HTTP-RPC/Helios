@@ -437,20 +437,59 @@ public class GenreDetailPanel extends StackPanel {
         editAlbumDialog.setVisible(true);
     }
 
-    private void editArtwork() {
-        // TODO
-    }
-
-    private void editSong() {
-        // TODO
-    }
-
     private void deleteAlbum() {
+        var artistAlbum = artistAlbumList.getSelectedValue();
+
+        var album = artistAlbum.getAlbum();
+
+        var songs = albums.get(album);
+
+        var option = JOptionPane.showConfirmDialog(getTopLevelAncestor(),
+            String.format(resourceBundle.getString("confirmDeleteMessageFormat"), album),
+            resourceBundle.getString("deleteAlbum"),
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.WARNING_MESSAGE);
+
+        if (option == JOptionPane.YES_OPTION) {
+            var mainFrame = MainFrame.getInstance();
+
+            var glassPane = mainFrame.getGlassPane();
+
+            glassPane.setVisible(true);
+
+            MainFrame.getTaskExecutor().execute(() -> {
+                for (var song : songs) {
+                    MusicLibrary.deleteSong(song);
+                }
+
+                return null;
+            }, (result, exception) -> {
+                glassPane.setVisible(false);
+
+                mainFrame.loadAll();
+            });
+        }
+    }
+
+    private void editArtwork() {
         // TODO
     }
 
     private void deleteArtwork() {
         // TODO
+    }
+
+    private void editSong() {
+        var song = songList.getSelectedValue();
+
+        var mainFrame = MainFrame.getInstance();
+
+        var editSongDialog = new EditSongDialog(mainFrame, song);
+
+        editSongDialog.pack();
+        editSongDialog.setLocationRelativeTo(mainFrame);
+
+        editSongDialog.setVisible(true);
     }
 
     private void deleteSong() {
@@ -487,12 +526,32 @@ public class GenreDetailPanel extends StackPanel {
         // TODO Enable/disable album/artwork buttons
     }
 
-    public void scrollToSong(Song song) {
-        // TODO Select artist album, then scroll to song
-    }
-
     public void clearSelection() {
         artistAlbumList.clearSelection();
         songList.clearSelection();
+    }
+
+    public void scrollToSong(Song song) {
+        var artistAlbumModel = artistAlbumList.getModel();
+
+        var n = artistAlbumModel.getSize();
+
+        var album = song.getAlbum();
+
+        for (var i = 0; i < n; i++) {
+            if (artistAlbumModel.getElementAt(i).getAlbum().equals(album)) {
+                selectAlbum(i);
+
+                break;
+            }
+        }
+    }
+
+    private void selectAlbum(int index) {
+        SwingUtilities.invokeLater(() -> {
+            artistAlbumList.setSelectedIndex(index);
+            artistAlbumList.ensureIndexIsVisible(index);
+            artistAlbumList.requestFocus();
+        });
     }
 }
