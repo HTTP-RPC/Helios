@@ -3,7 +3,6 @@
 package org.httprpc.helios;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
-import org.httprpc.sierra.BasicListModel;
 import org.httprpc.sierra.ColumnPanel;
 import org.httprpc.sierra.ImagePane;
 import org.httprpc.sierra.MenuButton;
@@ -32,11 +31,8 @@ import java.awt.FocusTraversalPolicy;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.SequencedMap;
-
-import static org.httprpc.kilo.util.Collections.*;
-import static org.httprpc.kilo.util.Iterables.*;
 
 public class GenreDetailPanel extends StackPanel {
     private static class ArtistAlbumCellRenderer extends ColumnPanel implements ListCellRenderer<ArtistAlbum> {
@@ -161,8 +157,6 @@ public class GenreDetailPanel extends StackPanel {
         }
     }
 
-    private SequencedMap<String, SequencedMap<String, List<Song>>> albums;
-
     private @Outlet JLabel nameLabel = null;
     private @Outlet JButton playButton = null;
 
@@ -178,7 +172,7 @@ public class GenreDetailPanel extends StackPanel {
     private @Outlet JMenuItem deleteArtworkMenuItem = null;
     private @Outlet JMenuItem deleteSongMenuItem = null;
 
-    private @Outlet JList<ArtistAlbum> artistAlbumList = null;
+    private @Outlet JList<?> artistAlbumList = null;
     private @Outlet JList<Song> songList = null;
 
     private static final FlatSVGIcon playlistIcon;
@@ -190,14 +184,8 @@ public class GenreDetailPanel extends StackPanel {
 
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(GenreDetailPanel.class.getName());
 
-    public GenreDetailPanel(Genre genre, List<Song> songs) {
+    public GenreDetailPanel(Genre genre, Map<String, List<Song>> albums) {
         add(UILoader.load(this, "GenreDetailPanel.xml", resourceBundle));
-
-        albums = mapOf(mapAll(groupBy(songs, Song::getSortableArtist).entrySet(), entry -> {
-            var sortableArtist = entry.getKey();
-
-            return entry(sortableArtist, groupBy(entry.getValue(), Song::getSortableAlbum));
-        }));
 
         nameLabel.setText(genre.getName());
 
@@ -215,29 +203,7 @@ public class GenreDetailPanel extends StackPanel {
         deleteArtworkMenuItem.addActionListener(event -> deleteArtwork());
         deleteSongMenuItem.addActionListener(event -> deleteSong());
 
-        var artistAlbums = listOf(flatten(mapAll(albums.entrySet(), entry -> {
-            var sortableArtist = entry.getKey();
-
-            return entry(sortableArtist, entry.getValue().keySet());
-        }), entry -> {
-            var sortableArtist = entry.getKey();
-
-            return mapAll(entry.getValue(), sortableAlbum -> {
-                var artistAlbum = new ArtistAlbum();
-
-                artistAlbum.setArtist(sortableArtist);
-                artistAlbum.setAlbum(sortableAlbum);
-
-                return artistAlbum;
-            });
-        }));
-
-        artistAlbumList.setCellRenderer(new ArtistAlbumCellRenderer());
-        artistAlbumList.setModel(new BasicListModel<>(artistAlbums));
-
-        // TODO Add listeners
-
-        // TODO Song table (including listeners)
+        // TODO
 
         updateControls();
 

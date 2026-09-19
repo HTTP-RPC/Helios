@@ -1090,7 +1090,7 @@ public class MainFrame extends JFrame implements Runnable {
     private void showSelectedCollection() {
         var collectionDetailPanel = switch (collectionTabbedPane.getSelectedIndex()) {
             case ARTIST_TAB_INDEX -> map(artistList.getSelectedValue(), artist -> new ArtistDetailPanel(artist, MusicLibrary.getAlbums(artist)));
-            case GENRE_TAB_INDEX -> map(genreList.getSelectedValue(), genre -> new GenreDetailPanel(genre, MusicLibrary.getSongs(genre)));
+            case GENRE_TAB_INDEX -> map(genreList.getSelectedValue(), genre -> new GenreDetailPanel(genre, MusicLibrary.getAlbums(genre)));
             case PLAYLIST_TAB_INDEX -> map(playlistList.getSelectedValue(), playlist -> new PlaylistDetailPanel(playlist, MusicLibrary.getSongs(playlist)));
             default -> throw new UnsupportedOperationException();
         };

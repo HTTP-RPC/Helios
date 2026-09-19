@@ -40,8 +40,8 @@ import java.time.ZoneOffset;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.SequencedMap;
 import java.util.function.Predicate;
 
 import static org.httprpc.kilo.util.Collections.*;
@@ -126,12 +126,7 @@ public class MusicLibrary {
 
     private static final Predicate<Path> dsStoreFilter = path -> !path.getFileName().toString().equals(".DS_Store");
 
-    private static final Comparator<Song> artistComparator = Comparator.comparing(Song::getSortableAlbum)
-        .thenComparing(song -> coalesce(song.getDiscNumber(), () -> 0))
-        .thenComparing(song -> coalesce(song.getTrackNumber(), () -> 0));
-
-    private static final Comparator<Song> genreComparator = Comparator.comparing(Song::getSortableArtist)
-        .thenComparing(Song::getSortableAlbum)
+    private static final Comparator<Song> albumComparator = Comparator.comparing(Song::getSortableAlbum)
         .thenComparing(song -> coalesce(song.getDiscNumber(), () -> 0))
         .thenComparing(song -> coalesce(song.getTrackNumber(), () -> 0));
 
@@ -242,7 +237,7 @@ public class MusicLibrary {
         }
     }
 
-    public static Map<String, List<Song>> getAlbums(Artist artist) {
+    public static SequencedMap<String, List<Song>> getAlbums(Artist artist) {
         var queryBuilder = QueryBuilder.select(Song.class).filterByForeignKey(Artist.class, "artist");
 
         try (var connection = openConnection();
@@ -250,13 +245,13 @@ public class MusicLibrary {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("artist", artist.getName())
             ))) {
-            return groupBy(sortBy(mapAll(results, BeanAdapter.toType(Song.class)), artistComparator), Song::getAlbum);
+            return groupBy(sortBy(mapAll(results, BeanAdapter.toType(Song.class)), albumComparator), Song::getAlbum);
         } catch (SQLException exception) {
             throw new RuntimeException(exception);
         }
     }
 
-    public static List<Song> getSongs(Genre genre) {
+    public static SequencedMap<String, List<Song>> getAlbums(Genre genre) {
         var queryBuilder = QueryBuilder.select(Song.class).filterByForeignKey(Genre.class, "genre");
 
         try (var connection = openConnection();
@@ -264,7 +259,7 @@ public class MusicLibrary {
             var results = queryBuilder.executeQuery(statement, mapOf(
                 entry("genre", genre.getName())
             ))) {
-            return sortBy(mapAll(results, BeanAdapter.toType(Song.class)), genreComparator);
+            return groupBy(sortBy(mapAll(results, BeanAdapter.toType(Song.class)), albumComparator), Song::getAlbum);
         } catch (SQLException exception) {
             throw new RuntimeException(exception);
         }
