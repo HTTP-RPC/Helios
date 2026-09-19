@@ -19,12 +19,10 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
-import javax.swing.table.TableCellRenderer;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
@@ -39,7 +37,6 @@ import java.util.SequencedMap;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
-import static org.httprpc.kilo.util.Optionals.*;
 
 public class GenreDetailPanel extends StackPanel {
     private static class ArtistAlbumCellRenderer extends ColumnPanel implements ListCellRenderer<ArtistAlbum> {
@@ -121,33 +118,44 @@ public class GenreDetailPanel extends StackPanel {
         }
     }
 
-    private static class SongCellRenderer extends JLabel implements TableCellRenderer {
+    private static class SongCellRenderer extends ColumnPanel implements ListCellRenderer<Song> {
+        JLabel titleLabel = new JLabel();
+        JLabel artistLabel = new JLabel();
+
         SongCellRenderer() {
-            setText("A");
             setOpaque(true);
 
-            setBorder(new EmptyBorder(4, 8, 4, 8));
+            setBorder(new EmptyBorder(4, 4, 4, 4));
+
+            add(titleLabel);
+            add(artistLabel);
+
+            artistLabel.putClientProperty("FlatLaf.styleClass", "small");
         }
 
         @Override
-        public Component getTableCellRendererComponent(JTable table,
-            Object value,
-            boolean selected, boolean hasFocus,
-            int row, int column) {
-            setText(map(value, Object::toString));
+        public Component getListCellRendererComponent(JList<? extends Song> list,
+            Song song, int index,
+            boolean selected, boolean cellHasFocus) {
+            titleLabel.setText(song.getTitle());
+            artistLabel.setText(song.getArtist());
 
             Color background;
             Color foreground;
             if (selected) {
-                background = table.getSelectionBackground();
-                foreground = table.getSelectionForeground();
+                background = list.getSelectionBackground();
+                foreground = list.getSelectionForeground();
             } else {
-                background = table.getBackground();
-                foreground = table.getForeground();
+                background = list.getBackground();
+                foreground = list.getForeground();
             }
 
             setBackground(background);
-            setForeground(foreground);
+
+            titleLabel.setForeground(foreground);
+            artistLabel.setForeground(foreground);
+
+            artistLabel.setEnabled(selected);
 
             return this;
         }
