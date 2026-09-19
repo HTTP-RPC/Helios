@@ -45,7 +45,7 @@ import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
 import static org.httprpc.kilo.util.Optionals.*;
 
-public class GenreDetailPanel extends StackPanel {
+public class GenreDetailPanel extends StackPanel implements LibraryDetail {
     private static class ArtistAlbumCellRenderer extends ColumnPanel implements ListCellRenderer<ArtistAlbum> {
         ImagePane artworkImagePane;
 
@@ -402,6 +402,11 @@ public class GenreDetailPanel extends StackPanel {
                 }
             }
         });
+    }
+
+    @Override
+    public void showCurrentSong(Song song) {
+        songList.repaint();
     }
 
     private void addToPlaylist(Playlist playlist) {

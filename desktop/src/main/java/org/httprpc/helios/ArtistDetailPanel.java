@@ -18,7 +18,7 @@ import java.util.SequencedMap;
 import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
 
-public class ArtistDetailPanel extends StackPanel {
+public class ArtistDetailPanel extends StackPanel implements LibraryDetail {
     private @Outlet JLabel nameLabel = null;
     private @Outlet JButton playAllButton = null;
 
@@ -43,6 +43,7 @@ public class ArtistDetailPanel extends StackPanel {
         setScrollableTracksViewportWidth(true);
     }
 
+    @Override
     public void showCurrentSong(Song song) {
         var n = albumListPanel.getComponentCount();
 

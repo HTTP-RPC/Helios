@@ -759,9 +759,8 @@ public class MainFrame extends JFrame implements Runnable {
 
         timer.start();
 
-        if (collectionTabbedPane.getSelectedIndex() == ARTIST_TAB_INDEX
-            && getCollectionDetailView() instanceof ArtistDetailPanel artistDetailPanel) {
-            artistDetailPanel.showCurrentSong(queue.get(queueIndex));
+        if (getCollectionDetailView() instanceof LibraryDetail libraryDetail) {
+            libraryDetail.showCurrentSong(queue.get(queueIndex));
         }
     }
 
@@ -773,9 +772,8 @@ public class MainFrame extends JFrame implements Runnable {
 
         timer.stop();
 
-        if (collectionTabbedPane.getSelectedIndex() == ARTIST_TAB_INDEX
-            && getCollectionDetailView() instanceof ArtistDetailPanel artistDetailPanel) {
-            artistDetailPanel.showCurrentSong(null);
+        if (getCollectionDetailView() instanceof LibraryDetail libraryDetail) {
+            libraryDetail.showCurrentSong(null);
         }
     }
 
