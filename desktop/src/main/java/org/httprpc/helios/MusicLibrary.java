@@ -130,8 +130,8 @@ public class MusicLibrary {
         .thenComparing(song -> coalesce(song.getDiscNumber(), () -> 0))
         .thenComparing(song -> coalesce(song.getTrackNumber(), () -> 0));
 
-    private static final Comparator<Song> genreComparator = Comparator.comparing(Song::getSortableAlbum)
-        .thenComparing(song -> song.isCompilation() ? "" : song.getSortableArtist())
+    private static final Comparator<Song> genreComparator = Comparator.comparing(Song::getSortableArtist)
+        .thenComparing(Song::getSortableAlbum)
         .thenComparing(song -> coalesce(song.getDiscNumber(), () -> 0))
         .thenComparing(song -> coalesce(song.getTrackNumber(), () -> 0));
 

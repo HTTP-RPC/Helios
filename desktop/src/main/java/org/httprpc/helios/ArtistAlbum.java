@@ -27,7 +27,7 @@ public class ArtistAlbum {
     }
 
     public String getSortableArtist() {
-        return sortableArtist;
+        return coalesce(sortableArtist, () -> "");
     }
 
     @Column("album")
@@ -43,5 +43,10 @@ public class ArtistAlbum {
 
     public String getSortableAlbum() {
         return sortableAlbum;
+    }
+
+    @Override
+    public String toString() {
+        return getSortableArtist();
     }
 }

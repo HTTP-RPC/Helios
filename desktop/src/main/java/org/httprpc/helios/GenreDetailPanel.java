@@ -3,9 +3,13 @@
 package org.httprpc.helios;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
-import org.httprpc.sierra.BasicTableModel;
+import org.httprpc.sierra.BasicListModel;
+import org.httprpc.sierra.ColumnPanel;
+import org.httprpc.sierra.ImagePane;
 import org.httprpc.sierra.MenuButton;
 import org.httprpc.sierra.Outlet;
+import org.httprpc.sierra.RowPanel;
+import org.httprpc.sierra.Spacer;
 import org.httprpc.sierra.StackPanel;
 import org.httprpc.sierra.UILoader;
 
@@ -15,24 +19,88 @@ import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
+import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.TableCellRenderer;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.FocusTraversalPolicy;
-import java.awt.KeyboardFocusManager;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.SequencedMap;
 
 import static org.httprpc.kilo.util.Collections.*;
+import static org.httprpc.kilo.util.Iterables.*;
 import static org.httprpc.kilo.util.Optionals.*;
 
 public class GenreDetailPanel extends StackPanel {
-    private static class GenreCellRenderer extends JLabel implements TableCellRenderer {
-        GenreCellRenderer() {
+    private static class ArtistAlbumCellRenderer extends ColumnPanel implements ListCellRenderer<ArtistAlbum> {
+        ImagePane artworkImagePane = new ImagePane();
+
+        JLabel albumLabel = new JLabel();
+        JLabel artistLabel = new JLabel();
+
+        ArtistAlbumCellRenderer() {
+            setOpaque(true);
+
+            setBorder(new EmptyBorder(4, 8, 4, 8));
+
+            var artworkPanel = new RowPanel();
+
+            artworkImagePane.setPreferredSize(new Dimension(90, 90));
+            artworkImagePane.setBorder(UILoader.createRoundedLineBorder(UIManager.getColor("Component.borderColor"),
+                new BasicStroke(1,
+                    BasicStroke.CAP_ROUND,
+                    BasicStroke.JOIN_ROUND), 4));
+
+            artworkPanel.add(artworkImagePane);
+            artworkPanel.add(new Spacer(), 1.0);
+
+            add(artworkPanel);
+
+            add(new Spacer(4));
+
+            add(albumLabel);
+            add(artistLabel);
+
+            artistLabel.putClientProperty("FlatLaf.styleClass", "small");
+        }
+
+        @Override
+        public Component getListCellRendererComponent(JList<? extends ArtistAlbum> list,
+            ArtistAlbum artistAlbum, int index,
+            boolean selected, boolean cellHasFocus) {
+            // TODO Artwork
+
+            albumLabel.setText(artistAlbum.getAlbum());
+            artistLabel.setText(artistAlbum.getArtist());
+
+            Color background;
+            Color foreground;
+            if (selected) {
+                background = list.getSelectionBackground();
+                foreground = list.getSelectionForeground();
+            } else {
+                background = list.getBackground();
+                foreground = list.getForeground();
+            }
+
+            setBackground(background);
+
+            albumLabel.setForeground(foreground);
+            artistLabel.setEnabled(selected);
+
+            return this;
+        }
+    }
+
+    private static class SongCellRenderer extends JLabel implements TableCellRenderer {
+        SongCellRenderer() {
             setText("A");
             setOpaque(true);
 
@@ -63,6 +131,8 @@ public class GenreDetailPanel extends StackPanel {
         }
     }
 
+    private SequencedMap<String, SequencedMap<String, List<Song>>> albums;
+
     private @Outlet JLabel nameLabel = null;
     private @Outlet JButton playButton = null;
 
@@ -78,9 +148,8 @@ public class GenreDetailPanel extends StackPanel {
     private @Outlet JMenuItem deleteArtworkMenuItem = null;
     private @Outlet JMenuItem deleteSongMenuItem = null;
 
-    private @Outlet JList<ArtistAlbum> albumList = null;
-
-    private @Outlet JTable songTable = null;
+    private @Outlet JList<ArtistAlbum> artistAlbumList = null;
+    private @Outlet JList<Song> songList = null;
 
     private static final FlatSVGIcon playlistIcon;
     static {
@@ -94,13 +163,16 @@ public class GenreDetailPanel extends StackPanel {
     public GenreDetailPanel(Genre genre, List<Song> songs) {
         add(UILoader.load(this, "GenreDetailPanel.xml", resourceBundle));
 
+        albums = mapOf(mapAll(groupBy(songs, Song::getSortableArtist).entrySet(), entry -> {
+            var sortableArtist = entry.getKey();
+
+            return entry(sortableArtist, groupBy(entry.getValue(), Song::getSortableAlbum));
+        }));
+
         nameLabel.setText(genre.getName());
 
-        // TODO
         playButton.addActionListener(event -> {
-            var i = songTable.getSelectedRow();
-
-            MainFrame.getInstance().playAll(i == -1 ? songs : songs.subList(i, songs.size()));
+            // TODO
         });
 
         addToPlaylistButton.setEnabled(false);
@@ -113,32 +185,29 @@ public class GenreDetailPanel extends StackPanel {
         deleteArtworkMenuItem.addActionListener(event -> deleteArtwork());
         deleteSongMenuItem.addActionListener(event -> deleteSong());
 
-        // TODO Group songs by artist/compilation ("" for compilation artist)
+        var artistAlbums = listOf(flatten(mapAll(albums.entrySet(), entry -> {
+            var sortableArtist = entry.getKey();
 
-        var songTableHeader = songTable.getTableHeader();
+            return entry(sortableArtist, entry.getValue().keySet());
+        }), entry -> {
+            var sortableArtist = entry.getKey();
 
-        songTableHeader.setReorderingAllowed(false);
-        songTableHeader.setResizingAllowed(false);
+            return mapAll(entry.getValue(), sortableAlbum -> {
+                var artistAlbum = new ArtistAlbum();
 
-        songTable.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, null);
-        songTable.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, null);
+                artistAlbum.setArtist(sortableArtist);
+                artistAlbum.setAlbum(sortableAlbum);
 
-        songTable.setModel(new BasicTableModel<>(Song.class, songs,
-            listOf("title", "artist"),
-            resourceBundle));
+                return artistAlbum;
+            });
+        }));
 
-        var genreCellRenderer = new GenreCellRenderer();
+        artistAlbumList.setCellRenderer(new ArtistAlbumCellRenderer());
+        artistAlbumList.setModel(new BasicListModel<>(artistAlbums));
 
-        songTable.setDefaultRenderer(Object.class, genreCellRenderer);
-        songTable.setRowHeight(genreCellRenderer.getPreferredSize().height);
+        // TODO Add listeners
 
-        songTable.getSelectionModel().addListSelectionListener(event -> {
-            if (event.getValueIsAdjusting()) {
-                return;
-            }
-
-            updateControls();
-        });
+        // TODO Song table (including listeners)
 
         updateControls();
 
@@ -190,13 +259,8 @@ public class GenreDetailPanel extends StackPanel {
         });
     }
 
-    @SuppressWarnings("unchecked")
     private void addToPlaylist(Playlist playlist) {
-        var song = ((BasicTableModel<Song>)songTable.getModel()).getRow(songTable.getSelectedRow());
-
-        MusicLibrary.addToPlaylist(playlist, song);
-
-        MainFrame.getInstance().loadPlaylists();
+        // TODO
     }
 
     private void editAlbum() {
@@ -207,18 +271,8 @@ public class GenreDetailPanel extends StackPanel {
         // TODO
     }
 
-    @SuppressWarnings("unchecked")
     private void editSong() {
-        var song = ((BasicTableModel<Song>)songTable.getModel()).getRow(songTable.getSelectedRow());
-
-        var mainFrame = MainFrame.getInstance();
-
-        var editSongDialog = new EditSongDialog(mainFrame, song);
-
-        editSongDialog.pack();
-        editSongDialog.setLocationRelativeTo(mainFrame);
-
-        editSongDialog.setVisible(true);
+        // TODO
     }
 
     private void deleteAlbum() {
@@ -229,9 +283,8 @@ public class GenreDetailPanel extends StackPanel {
         // TODO
     }
 
-    @SuppressWarnings("unchecked")
     private void deleteSong() {
-        var song = ((BasicTableModel<Song>)songTable.getModel()).getRow(songTable.getSelectedRow());
+        Song song = songList.getSelectedValue();
 
         var option = JOptionPane.showConfirmDialog(getTopLevelAncestor(),
             String.format(resourceBundle.getString("confirmDeleteMessageFormat"), song.getTitle()),
@@ -262,37 +315,9 @@ public class GenreDetailPanel extends StackPanel {
         // TODO Enable/disable menu buttons
 
         // TODO Enable/disable album/artwork buttons
-
-        if (songTable.getSelectedRow() != -1) {
-            addToPlaylistButton.setEnabled(addToPlaylistButton.getComponentPopupMenu().getComponentCount() > 0);
-
-            editSongMenuItem.setEnabled(true);
-            deleteSongMenuItem.setEnabled(true);
-        } else {
-            addToPlaylistButton.setEnabled(false);
-
-            editSongMenuItem.setEnabled(false);
-            deleteSongMenuItem.setEnabled(false);
-        }
     }
 
-    @SuppressWarnings("unchecked")
     public void scrollToSong(Song song) {
-        var songID = song.getID();
-
-        var songTableModel = (BasicTableModel<Song>)songTable.getModel();
-
-        var n = songTableModel.getRowCount();
-
-        for (var i = 0; i < n; i++) {
-            if (songID.equals(songTableModel.getRow(i).getID())) {
-                songTable.getSelectionModel().setSelectionInterval(i, i);
-                songTable.scrollRectToVisible(songTable.getCellRect(i, 1, true));
-
-                songTable.requestFocus();
-
-                break;
-            }
-        }
+        // TODO Select artist album, then scroll to song
     }
 }

@@ -60,7 +60,7 @@ public class Song {
     }
 
     public String getSortableArtist() {
-        return sortableArtist;
+        return coalesce(sortableArtist, () -> "");
     }
 
     @Column("album")
