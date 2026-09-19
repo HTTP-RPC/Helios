@@ -26,12 +26,14 @@ public class SearchDialog extends AbstractDialog {
         ResultCellRenderer() {
             setOpaque(true);
 
-            setBorder(new EmptyBorder(4, 8, 4, 8));
-
             add(new JLabel(), label -> titleLabel = label);
-            add(new JLabel(), label -> artistAlbumLabel = label);
+            add(new JLabel(), label -> {
+                label.putClientProperty("FlatLaf.styleClass", "small");
 
-            artistAlbumLabel.putClientProperty("FlatLaf.styleClass", "small");
+                artistAlbumLabel = label;
+            });
+
+            setBorder(new EmptyBorder(4, 8, 4, 8));
         }
 
         @Override

@@ -75,12 +75,14 @@ public class MainFrame extends JFrame implements Runnable {
         CollectionCellRenderer() {
             setOpaque(true);
 
-            setBorder(new EmptyBorder(4, 8, 4, 8));
-
             add(new JLabel(), label -> nameLabel = label);
-            add(new JLabel(), label -> countLabel = label);
+            add(new JLabel(), label -> {
+                label.putClientProperty("FlatLaf.styleClass", "mini");
 
-            countLabel.putClientProperty("FlatLaf.styleClass", "mini");
+                countLabel = label;
+            });
+
+            setBorder(new EmptyBorder(4, 8, 4, 8));
         }
 
         @Override
