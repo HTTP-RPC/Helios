@@ -26,7 +26,7 @@ public class SearchDialog extends AbstractDialog {
         ResultCellRenderer() {
             setOpaque(true);
 
-            setBorder(new EmptyBorder(4, 4, 4, 4));
+            setBorder(new EmptyBorder(4, 8, 4, 8));
 
             add(titleLabel);
             add(artistAlbumLabel);
