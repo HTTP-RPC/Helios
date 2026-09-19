@@ -32,6 +32,7 @@ import java.awt.Dimension;
 import java.awt.FocusTraversalPolicy;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -139,12 +140,23 @@ public class GenreDetailPanel extends StackPanel {
 
     private static class SongCellRenderer extends ColumnPanel implements ListCellRenderer<Song> {
         JLabel titleLabel;
+        JLabel timeLabel;
         JLabel artistLabel;
 
         SongCellRenderer() {
             setOpaque(true);
 
-            add(new JLabel(), label -> titleLabel = label);
+            add(new RowPanel(), rowPanel -> {
+                rowPanel.add(new JLabel(), label -> titleLabel = label, 1.0);
+                rowPanel.add(new JLabel(), label -> {
+                    label.setText(String.format(resourceBundle.getString("timeFormat"), 60, 0));
+                    label.setPreferredSize(label.getPreferredSize());
+                    label.setEnabled(false);
+
+                    timeLabel = label;
+                });
+            });
+
             add(new JLabel(), label -> {
                 label.putClientProperty("FlatLaf.styleClass", "small");
 
@@ -159,6 +171,13 @@ public class GenreDetailPanel extends StackPanel {
             Song song, int index,
             boolean selected, boolean cellHasFocus) {
             titleLabel.setText(song.getTitle());
+
+            var duration = Duration.ofSeconds(song.getTime());
+
+            timeLabel.setText(String.format(resourceBundle.getString("timeFormat"),
+                duration.toMinutesPart(),
+                duration.toSecondsPart()));
+
             artistLabel.setText(song.getArtist());
 
             Color background;
