@@ -42,6 +42,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
+import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -1108,6 +1109,16 @@ public class MainFrame extends JFrame implements Runnable {
         UIManager.put("TextComponent.arc", 8);
 
         UILoader.bind("list", JList.class, () -> new JList<>() {
+            @Override
+            public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
+                return 24;
+            }
+
+            @Override
+            public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
+                return getScrollableUnitIncrement(visibleRect, orientation, direction) * 4;
+            }
+
             @Override
             public boolean getScrollableTracksViewportWidth() {
                 return true;
