@@ -13,6 +13,7 @@ import javax.swing.SwingUtilities;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.SequencedMap;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
@@ -25,7 +26,7 @@ public class ArtistDetailPanel extends StackPanel {
 
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(ArtistDetailPanel.class.getName());
 
-    public ArtistDetailPanel(Artist artist, Map<String, List<Song>> albums) {
+    public ArtistDetailPanel(Artist artist, SequencedMap<String, List<Song>> albums) {
         add(UILoader.load(this, "ArtistDetailPanel.xml", resourceBundle));
 
         nameLabel.setText(artist.getName());

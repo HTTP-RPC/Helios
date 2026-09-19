@@ -36,8 +36,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.SequencedMap;
 
 import static org.httprpc.kilo.util.Collections.*;
+import static org.httprpc.kilo.util.Iterables.*;
 import static org.httprpc.kilo.util.Optionals.*;
 
 public class GenreDetailPanel extends StackPanel {
@@ -163,6 +165,8 @@ public class GenreDetailPanel extends StackPanel {
         }
     }
 
+    private SequencedMap<String, List<Song>> albums;
+
     private @Outlet JLabel nameLabel = null;
     private @Outlet JButton playButton = null;
 
@@ -207,13 +211,31 @@ public class GenreDetailPanel extends StackPanel {
 
     private static Comparator<ArtistAlbum> artistAlbumComparator = artistComparator.thenComparing(ArtistAlbum::getAlbum);
 
-    public GenreDetailPanel(Genre genre, Map<String, List<Song>> albums) {
+    public GenreDetailPanel(Genre genre, SequencedMap<String, List<Song>> albums) {
+        this.albums = albums;
+
         add(UILoader.load(this, "GenreDetailPanel.xml", resourceBundle));
 
         nameLabel.setText(genre.getName());
 
         playButton.addActionListener(event -> {
-            // TODO
+            var artistAlbum = artistAlbumList.getSelectedValue();
+
+            List<Song> songs;
+            if (artistAlbum != null) {
+                var song = songList.getSelectedValue();
+
+                if (song != null) {
+                    songs = listOf(song);
+                } else {
+                    songs = albums.get(artistAlbum.getAlbum());
+                }
+            } else {
+                // TODO Sort by artist
+                songs = listOf(flatten(albums.entrySet(), Map.Entry::getValue));
+            }
+
+            MainFrame.getInstance().playAll(songs);
         });
 
         addToPlaylistButton.setEnabled(false);
@@ -336,11 +358,36 @@ public class GenreDetailPanel extends StackPanel {
     }
 
     private void addToPlaylist(Playlist playlist) {
-        // TODO
+        MusicLibrary.addToPlaylist(playlist, songList.getSelectedValue());
+
+        MainFrame.getInstance().loadPlaylists();
     }
 
     private void editAlbum() {
-        // TODO
+        var artistAlbum = artistAlbumList.getSelectedValue();
+
+        var album = artistAlbum.getAlbum();
+
+        var songs = albums.get(album);
+
+        String genre = null;
+        Integer year = null;
+
+        for (var song : songs) {
+            genre = coalesce(genre, song::getGenre);
+            year = coalesce(year, song::getYear);
+        }
+
+        var compilation = artistAlbum.getArtist().isEmpty();
+
+        var mainFrame = MainFrame.getInstance();
+
+        var editAlbumDialog = new EditAlbumDialog(mainFrame, album, songs, genre, year, compilation);
+
+        editAlbumDialog.pack();
+        editAlbumDialog.setLocationRelativeTo(mainFrame);
+
+        editAlbumDialog.setVisible(true);
     }
 
     private void editArtwork() {
