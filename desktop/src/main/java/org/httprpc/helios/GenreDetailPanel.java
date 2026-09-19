@@ -80,7 +80,7 @@ public class GenreDetailPanel extends StackPanel {
             var artist = artistAlbum.getArtist();
             var album = artistAlbum.getAlbum();
 
-            artworkImagePane.setImage(artistAlbum.getArtwork());
+            artworkImagePane.setImage(null); // TODO
 
             if (artworkImagePane.getImage() == null) {
                 MainFrame.getTaskExecutor().execute(() -> {
@@ -90,7 +90,7 @@ public class GenreDetailPanel extends StackPanel {
                         return null;
                     }
                 }, (artwork, exception) -> {
-                    artistAlbum.setArtwork(artwork);
+                    // TODO
 
                     list.repaint();
                 });

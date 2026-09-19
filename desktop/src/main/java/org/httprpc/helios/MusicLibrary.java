@@ -802,7 +802,7 @@ public class MusicLibrary {
     }
 
     public static void getAlbumArtwork() {
-        var queryBuilder = QueryBuilder.select(ArtistAlbum.class).ordered(true);
+        var queryBuilder = QueryBuilder.select(ArtistAlbum.class);
 
         List<ArtistAlbum> artistAlbums;
         try (var connection = openConnection();
