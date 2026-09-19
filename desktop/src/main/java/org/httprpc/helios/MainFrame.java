@@ -1107,6 +1107,18 @@ public class MainFrame extends JFrame implements Runnable {
 
         UIManager.put("TextComponent.arc", 8);
 
+        UILoader.bind("list", JList.class, () -> new JList<>() {
+            @Override
+            public boolean getScrollableTracksViewportWidth() {
+                return true;
+            }
+
+            @Override
+            public boolean getScrollableTracksViewportHeight() {
+                return false;
+            }
+        });
+
         MusicLibrary.initialize();
 
         instance = new MainFrame();
