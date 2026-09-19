@@ -48,6 +48,8 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DnDConstants;
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.WindowAdapter;
@@ -532,6 +534,15 @@ public class MainFrame extends JFrame implements Runnable {
 
             if (collectionTabbedPane.getSelectedIndex() == GENRE_TAB_INDEX) {
                 showSelectedCollection();
+            }
+        });
+
+        genreList.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent event) {
+                if (collectionScrollPane.getViewport().getView() instanceof GenreDetailPanel genreDetailPanel) {
+                    genreDetailPanel.clearSelection();
+                }
             }
         });
 

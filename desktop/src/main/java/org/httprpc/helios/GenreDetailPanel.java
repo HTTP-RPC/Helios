@@ -30,6 +30,8 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FocusTraversalPolicy;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.time.Duration;
@@ -331,6 +333,13 @@ public class GenreDetailPanel extends StackPanel {
             updateControls();
         });
 
+        artistAlbumList.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent event) {
+                songList.clearSelection();
+            }
+        });
+
         songList.setCellRenderer(new SongCellRenderer());
 
         songList.addListSelectionListener(event -> {
@@ -476,5 +485,10 @@ public class GenreDetailPanel extends StackPanel {
 
     public void scrollToSong(Song song) {
         // TODO Select artist album, then scroll to song
+    }
+
+    public void clearSelection() {
+        artistAlbumList.clearSelection();
+        songList.clearSelection();
     }
 }
