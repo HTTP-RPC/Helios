@@ -55,9 +55,8 @@ public class GenreDetailPanel extends StackPanel {
 
             var artworkPanel = new RowPanel();
 
-            artworkImagePane.setScaleMode(ImagePane.ScaleMode.FILL_WIDTH);
-
             artworkImagePane.setPreferredSize(new Dimension(90, 90));
+            artworkImagePane.setScaleMode(ImagePane.ScaleMode.FILL_WIDTH);
             artworkImagePane.setBorder(UILoader.createRoundedLineBorder(UIManager.getColor("Component.borderColor"),
                 new BasicStroke(1,
                     BasicStroke.CAP_ROUND,
