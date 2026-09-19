@@ -20,16 +20,16 @@ import java.util.ResourceBundle;
 
 public class SearchDialog extends AbstractDialog {
     private static class ResultCellRenderer extends ColumnPanel implements ListCellRenderer<Song> {
-        JLabel titleLabel = new JLabel();
-        JLabel artistAlbumLabel = new JLabel();
+        JLabel titleLabel;
+        JLabel artistAlbumLabel;
 
         ResultCellRenderer() {
             setOpaque(true);
 
             setBorder(new EmptyBorder(4, 8, 4, 8));
 
-            add(titleLabel);
-            add(artistAlbumLabel);
+            add(new JLabel(), label -> titleLabel = label);
+            add(new JLabel(), label -> artistAlbumLabel = label);
 
             artistAlbumLabel.putClientProperty("FlatLaf.styleClass", "small");
         }

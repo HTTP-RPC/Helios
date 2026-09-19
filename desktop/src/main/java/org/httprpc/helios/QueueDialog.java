@@ -21,16 +21,16 @@ import static org.httprpc.kilo.util.Collections.*;
 
 public class QueueDialog extends AbstractDialog {
     private static class SongCellRenderer extends ColumnPanel implements ListCellRenderer<Song> {
-        JLabel titleTimeLabel = new JLabel();
-        JLabel artistAlbumLabel = new JLabel();
+        JLabel titleTimeLabel;
+        JLabel artistAlbumLabel;
 
         SongCellRenderer() {
             setOpaque(true);
 
             setBorder(new EmptyBorder(4, 8, 4, 8));
 
-            add(titleTimeLabel);
-            add(artistAlbumLabel);
+            add(new JLabel(), label -> titleTimeLabel = label);
+            add(new JLabel(), label -> artistAlbumLabel = label);
 
             artistAlbumLabel.putClientProperty("FlatLaf.styleClass", "small");
         }

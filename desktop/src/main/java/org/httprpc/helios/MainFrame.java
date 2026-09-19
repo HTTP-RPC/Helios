@@ -69,16 +69,16 @@ import static org.httprpc.kilo.util.Optionals.*;
 
 public class MainFrame extends JFrame implements Runnable {
     private abstract static class CollectionCellRenderer<T> extends ColumnPanel implements ListCellRenderer<T> {
-        JLabel nameLabel = new JLabel();
-        JLabel countLabel = new JLabel();
+        JLabel nameLabel;
+        JLabel countLabel;
 
         CollectionCellRenderer() {
             setOpaque(true);
 
             setBorder(new EmptyBorder(4, 8, 4, 8));
 
-            add(nameLabel);
-            add(countLabel);
+            add(new JLabel(), label -> nameLabel = label);
+            add(new JLabel(), label -> countLabel = label);
 
             countLabel.putClientProperty("FlatLaf.styleClass", "mini");
         }
