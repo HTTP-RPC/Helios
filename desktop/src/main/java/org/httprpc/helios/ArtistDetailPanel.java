@@ -36,9 +36,7 @@ public class ArtistDetailPanel extends StackPanel {
             var name = entry.getKey();
             var songs = entry.getValue();
 
-            var albumDetailPanel = new AlbumDetailPanel(artist, name, songs);
-
-            albumListPanel.add(albumDetailPanel);
+            albumListPanel.add(new AlbumDetailPanel(artist, name, songs));
         }
 
         setScrollableTracksViewportWidth(true);

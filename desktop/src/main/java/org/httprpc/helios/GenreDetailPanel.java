@@ -3,6 +3,7 @@
 package org.httprpc.helios;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import org.httprpc.sierra.BasicListModel;
 import org.httprpc.sierra.ColumnPanel;
 import org.httprpc.sierra.ImagePane;
 import org.httprpc.sierra.MenuButton;
@@ -30,9 +31,13 @@ import java.awt.Dimension;
 import java.awt.FocusTraversalPolicy;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+
+import static org.httprpc.kilo.util.Optionals.*;
 
 public class GenreDetailPanel extends StackPanel {
     private static class ArtistAlbumCellRenderer extends ColumnPanel implements ListCellRenderer<ArtistAlbum> {
@@ -76,7 +81,7 @@ public class GenreDetailPanel extends StackPanel {
             var artist = artistAlbum.getArtist();
             var album = artistAlbum.getAlbum();
 
-            artworkImagePane.setImage(null); // TODO
+            artworkImagePane.setImage(artistAlbum.getArtwork());
 
             if (artworkImagePane.getImage() == null) {
                 MainFrame.getTaskExecutor().execute(() -> {
@@ -86,14 +91,14 @@ public class GenreDetailPanel extends StackPanel {
                         return null;
                     }
                 }, (artwork, exception) -> {
-                    // TODO
+                    artistAlbum.setArtwork(artwork);
 
                     list.repaint();
                 });
             }
 
-            albumLabel.setText(artistAlbum.getAlbum());
-            artistLabel.setText(artistAlbum.getArtist());
+            albumLabel.setText(album);
+            artistLabel.setText(artist.isEmpty() ? resourceBundle.getString("compilation") : artist);
 
             Color background;
             Color foreground;
@@ -172,7 +177,7 @@ public class GenreDetailPanel extends StackPanel {
     private @Outlet JMenuItem deleteArtworkMenuItem = null;
     private @Outlet JMenuItem deleteSongMenuItem = null;
 
-    private @Outlet JList<?> artistAlbumList = null;
+    private @Outlet JList<ArtistAlbum> artistAlbumList = null;
     private @Outlet JList<Song> songList = null;
 
     private static final FlatSVGIcon playlistIcon;
@@ -183,6 +188,9 @@ public class GenreDetailPanel extends StackPanel {
     }
 
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(GenreDetailPanel.class.getName());
+
+    private static Comparator<ArtistAlbum> artistAlbumComparator = Comparator.comparing(ArtistAlbum::getSortableArtist)
+        .thenComparing(ArtistAlbum::getSortableAlbum);
 
     public GenreDetailPanel(Genre genre, Map<String, List<Song>> albums) {
         add(UILoader.load(this, "GenreDetailPanel.xml", resourceBundle));
@@ -203,7 +211,35 @@ public class GenreDetailPanel extends StackPanel {
         deleteArtworkMenuItem.addActionListener(event -> deleteArtwork());
         deleteSongMenuItem.addActionListener(event -> deleteSong());
 
-        // TODO
+        artistAlbumList.setCellRenderer(new ArtistAlbumCellRenderer());
+
+        var artistAlbums = new ArrayList<ArtistAlbum>();
+
+        for (var entry : albums.entrySet()) {
+            var name = entry.getKey();
+            var songs = entry.getValue();
+
+            String artist = null;
+
+            boolean compilation = false;
+
+            for (var song : songs) {
+                artist = coalesce(artist, song::getArtist);
+
+                compilation |= song.isCompilation();
+            }
+
+            var artistAlbum = new ArtistAlbum();
+
+            artistAlbum.setArtist(compilation ? "" : artist);
+            artistAlbum.setAlbum(name);
+
+            artistAlbums.add(artistAlbum);
+        }
+
+        artistAlbums.sort(artistAlbumComparator);
+
+        artistAlbumList.setModel(new BasicListModel<>(artistAlbums));
 
         updateControls();
 
