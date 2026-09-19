@@ -5,6 +5,8 @@ package org.httprpc.helios;
 import org.httprpc.kilo.sql.Column;
 import org.httprpc.kilo.sql.Table;
 
+import java.awt.image.BufferedImage;
+
 import static org.httprpc.kilo.util.Optionals.*;
 
 @Table("ArtistAlbum")
@@ -14,6 +16,8 @@ public class ArtistAlbum {
 
     private String album;
     private String sortableAlbum;
+
+    private BufferedImage artwork;
 
     @Column("artist")
     public String getArtist() {
@@ -43,6 +47,14 @@ public class ArtistAlbum {
 
     public String getSortableAlbum() {
         return sortableAlbum;
+    }
+
+    public BufferedImage getArtwork() {
+        return artwork;
+    }
+
+    public void setArtwork(BufferedImage artwork) {
+        this.artwork = artwork;
     }
 
     @Override

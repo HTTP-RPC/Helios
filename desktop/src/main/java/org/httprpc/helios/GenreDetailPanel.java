@@ -13,6 +13,7 @@ import org.httprpc.sierra.Spacer;
 import org.httprpc.sierra.StackPanel;
 import org.httprpc.sierra.UILoader;
 
+import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -30,6 +31,8 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FocusTraversalPolicy;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.SequencedMap;
@@ -52,6 +55,8 @@ public class GenreDetailPanel extends StackPanel {
 
             var artworkPanel = new RowPanel();
 
+            artworkImagePane.setScaleMode(ImagePane.ScaleMode.FILL_WIDTH);
+
             artworkImagePane.setPreferredSize(new Dimension(90, 90));
             artworkImagePane.setBorder(UILoader.createRoundedLineBorder(UIManager.getColor("Component.borderColor"),
                 new BasicStroke(1,
@@ -59,6 +64,7 @@ public class GenreDetailPanel extends StackPanel {
                     BasicStroke.JOIN_ROUND), 4));
 
             artworkPanel.add(artworkImagePane);
+
             artworkPanel.add(new Spacer(), 1.0);
 
             add(artworkPanel);
@@ -75,7 +81,24 @@ public class GenreDetailPanel extends StackPanel {
         public Component getListCellRendererComponent(JList<? extends ArtistAlbum> list,
             ArtistAlbum artistAlbum, int index,
             boolean selected, boolean cellHasFocus) {
-            // TODO Artwork
+            var artist = artistAlbum.getArtist();
+            var album = artistAlbum.getAlbum();
+
+            artworkImagePane.setImage(artistAlbum.getArtwork());
+
+            if (artworkImagePane.getImage() == null) {
+                MainFrame.getTaskExecutor().execute(() -> {
+                    try (var inputStream = Files.newInputStream(MusicLibrary.getArtworkPath(artist, album))) {
+                        return ImageIO.read(inputStream);
+                    } catch (IOException exception) {
+                        return null;
+                    }
+                }, (artwork, exception) -> {
+                    artistAlbum.setArtwork(artwork);
+
+                    list.repaint();
+                });
+            }
 
             albumLabel.setText(artistAlbum.getAlbum());
             artistLabel.setText(artistAlbum.getArtist());
