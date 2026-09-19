@@ -134,6 +134,8 @@ public class GenreDetailPanel extends StackPanel {
             setBackground(background);
 
             albumLabel.setForeground(foreground);
+            artistLabel.setForeground(foreground);
+
             artistLabel.setEnabled(selected);
 
             return this;
@@ -195,8 +197,10 @@ public class GenreDetailPanel extends StackPanel {
             setBackground(background);
 
             titleLabel.setForeground(foreground);
+            timeLabel.setForeground(foreground);
             artistLabel.setForeground(foreground);
 
+            timeLabel.setEnabled(selected);
             artistLabel.setEnabled(selected);
 
             return this;

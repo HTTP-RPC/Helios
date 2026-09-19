@@ -540,9 +540,7 @@ public class MainFrame extends JFrame implements Runnable {
         genreList.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent event) {
-                if (collectionScrollPane.getViewport().getView() instanceof GenreDetailPanel genreDetailPanel) {
-                    genreDetailPanel.clearSelection();
-                }
+                perform(cast(getCollectionDetailView(), GenreDetailPanel.class), GenreDetailPanel::clearSelection);
             }
         });
 
@@ -762,7 +760,7 @@ public class MainFrame extends JFrame implements Runnable {
         timer.start();
 
         if (collectionTabbedPane.getSelectedIndex() == ARTIST_TAB_INDEX
-            && collectionScrollPane.getViewport().getView() instanceof ArtistDetailPanel artistDetailPanel) {
+            && getCollectionDetailView() instanceof ArtistDetailPanel artistDetailPanel) {
             artistDetailPanel.showCurrentSong(queue.get(queueIndex));
         }
     }
@@ -776,7 +774,7 @@ public class MainFrame extends JFrame implements Runnable {
         timer.stop();
 
         if (collectionTabbedPane.getSelectedIndex() == ARTIST_TAB_INDEX
-            && collectionScrollPane.getViewport().getView() instanceof ArtistDetailPanel artistDetailPanel) {
+            && getCollectionDetailView() instanceof ArtistDetailPanel artistDetailPanel) {
             artistDetailPanel.showCurrentSong(null);
         }
     }
@@ -1029,7 +1027,7 @@ public class MainFrame extends JFrame implements Runnable {
                     artistList.ensureIndexIsVisible(i);
 
                     SwingUtilities.invokeLater(() -> {
-                        if (collectionScrollPane.getViewport().getView() instanceof ArtistDetailPanel artistDetailPanel) {
+                        if (getCollectionDetailView() instanceof ArtistDetailPanel artistDetailPanel) {
                             artistDetailPanel.scrollToSong(song);
                         }
                     });
@@ -1052,7 +1050,7 @@ public class MainFrame extends JFrame implements Runnable {
                     genreList.ensureIndexIsVisible(i);
 
                     SwingUtilities.invokeLater(() -> {
-                        if (collectionScrollPane.getViewport().getView() instanceof GenreDetailPanel genreDetailPanel) {
+                        if (getCollectionDetailView() instanceof GenreDetailPanel genreDetailPanel) {
                             genreDetailPanel.scrollToSong(song);
                         }
                     });
@@ -1110,6 +1108,10 @@ public class MainFrame extends JFrame implements Runnable {
         };
 
         collectionScrollPane.setViewportView(collectionDetailPanel);
+    }
+
+    private Component getCollectionDetailView() {
+        return collectionScrollPane.getViewport().getView();
     }
 
     public static void main(String[] args) throws Exception {
