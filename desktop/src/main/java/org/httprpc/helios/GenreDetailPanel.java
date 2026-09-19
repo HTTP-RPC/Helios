@@ -20,6 +20,7 @@ import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.ListCellRenderer;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
@@ -53,15 +54,28 @@ public class GenreDetailPanel extends StackPanel {
             setOpaque(true);
 
             add(new RowPanel(), rowPanel -> {
-                rowPanel.add(new ImagePane(), imagePane -> {
-                    imagePane.setPreferredSize(new Dimension(90, 90));
-                    imagePane.setScaleMode(ImagePane.ScaleMode.FILL_WIDTH);
-                    imagePane.setBorder(UILoader.createRoundedLineBorder(UIManager.getColor("Component.borderColor"),
-                        new BasicStroke(1,
-                            BasicStroke.CAP_ROUND,
-                            BasicStroke.JOIN_ROUND), 4));
+                rowPanel.add(new StackPanel(), stackPanel -> {
+                    stackPanel.add(new ImagePane(), imagePane -> {
+                        imagePane.setPreferredSize(new Dimension(90, 90));
+                        imagePane.setScaleMode(ImagePane.ScaleMode.FILL_WIDTH);
+                        imagePane.setBorder(UILoader.createRoundedLineBorder(UIManager.getColor("Component.borderColor"),
+                            new BasicStroke(1,
+                                BasicStroke.CAP_ROUND,
+                                BasicStroke.JOIN_ROUND), 4));
 
-                    artworkImagePane = imagePane;
+                        artworkImagePane = imagePane;
+                    });
+
+                    stackPanel.add(new JLabel(), label -> {
+                        var icon = new FlatSVGIcon(GenreDetailPanel.class.getResource("icons/photo_24dp.svg"));
+
+                        icon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> UIManager.getColor("Label.foreground")));
+
+                        label.setIcon(icon);
+
+                        label.setHorizontalAlignment(SwingConstants.CENTER);
+                        label.setVerticalAlignment(SwingConstants.CENTER);
+                    });
                 });
 
                 rowPanel.add(new Spacer(), 1.0);
