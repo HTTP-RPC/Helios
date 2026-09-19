@@ -621,12 +621,20 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
     }
 
     private void updateControls() {
-        if (artistAlbumList.getSelectedValue() != null) {
+        var artistAlbum = artistAlbumList.getSelectedValue();
+
+        if (artistAlbum != null) {
             editButton.setEnabled(true);
+            editArtworkMenuItem.setEnabled(!artistAlbum.getArtist().isEmpty());
+
             deleteButton.setEnabled(true);
+            deleteArtworkMenuItem.setEnabled(!artistAlbum.getArtist().isEmpty());
         } else {
             editButton.setEnabled(false);
+            editArtworkMenuItem.setEnabled(false);
+
             deleteButton.setEnabled(false);
+            deleteArtworkMenuItem.setEnabled(false);
         }
 
         if (songList.getSelectedValue() != null) {
