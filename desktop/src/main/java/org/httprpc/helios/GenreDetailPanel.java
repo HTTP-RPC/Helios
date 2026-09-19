@@ -44,37 +44,39 @@ import static org.httprpc.kilo.util.Optionals.*;
 
 public class GenreDetailPanel extends StackPanel {
     private static class ArtistAlbumCellRenderer extends ColumnPanel implements ListCellRenderer<ArtistAlbum> {
-        ImagePane artworkImagePane = new ImagePane();
+        ImagePane artworkImagePane;
 
-        JLabel albumLabel = new JLabel();
-        JLabel artistLabel = new JLabel();
+        JLabel albumLabel;
+        JLabel artistLabel;
 
         ArtistAlbumCellRenderer() {
             setOpaque(true);
 
-            setBorder(new EmptyBorder(4, 8, 4, 8));
+            add(new RowPanel(), rowPanel -> {
+                rowPanel.add(new ImagePane(), imagePane -> {
+                    imagePane.setPreferredSize(new Dimension(90, 90));
+                    imagePane.setScaleMode(ImagePane.ScaleMode.FILL_WIDTH);
+                    imagePane.setBorder(UILoader.createRoundedLineBorder(UIManager.getColor("Component.borderColor"),
+                        new BasicStroke(1,
+                            BasicStroke.CAP_ROUND,
+                            BasicStroke.JOIN_ROUND), 4));
 
-            var artworkPanel = new RowPanel();
+                    artworkImagePane = imagePane;
+                });
 
-            artworkImagePane.setPreferredSize(new Dimension(90, 90));
-            artworkImagePane.setScaleMode(ImagePane.ScaleMode.FILL_WIDTH);
-            artworkImagePane.setBorder(UILoader.createRoundedLineBorder(UIManager.getColor("Component.borderColor"),
-                new BasicStroke(1,
-                    BasicStroke.CAP_ROUND,
-                    BasicStroke.JOIN_ROUND), 4));
-
-            artworkPanel.add(artworkImagePane);
-
-            artworkPanel.add(new Spacer(), 1.0);
-
-            add(artworkPanel);
+                rowPanel.add(new Spacer(), 1.0);
+            });
 
             add(new Spacer(4));
 
-            add(albumLabel);
-            add(artistLabel);
+            add(new JLabel(), label -> albumLabel = label);
+            add(new JLabel(), label -> {
+                label.putClientProperty("FlatLaf.styleClass", "small");
 
-            artistLabel.putClientProperty("FlatLaf.styleClass", "small");
+                artistLabel = label;
+            });
+
+            setBorder(new EmptyBorder(4, 8, 4, 8));
         }
 
         @Override
@@ -123,18 +125,20 @@ public class GenreDetailPanel extends StackPanel {
     }
 
     private static class SongCellRenderer extends ColumnPanel implements ListCellRenderer<Song> {
-        JLabel titleLabel = new JLabel();
-        JLabel artistLabel = new JLabel();
+        JLabel titleLabel;
+        JLabel artistLabel;
 
         SongCellRenderer() {
             setOpaque(true);
 
+            add(new JLabel(), label -> titleLabel = label);
+            add(new JLabel(), label -> {
+                label.putClientProperty("FlatLaf.styleClass", "small");
+
+                artistLabel = label;
+            });
+
             setBorder(new EmptyBorder(4, 8, 4, 8));
-
-            add(titleLabel);
-            add(artistLabel);
-
-            artistLabel.putClientProperty("FlatLaf.styleClass", "small");
         }
 
         @Override
