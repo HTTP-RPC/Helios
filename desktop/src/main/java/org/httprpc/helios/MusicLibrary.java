@@ -476,12 +476,12 @@ public class MusicLibrary {
             throw new RuntimeException(exception);
         }
 
-        var contentPath = getContentPath(song);
+        var previousContentPath = getContentPath(previousSong);
 
         AudioFile audioFile;
         try {
             try {
-                audioFile = AudioFileIO.read(contentPath.toFile());
+                audioFile = AudioFileIO.read(previousContentPath.toFile());
             } catch (CannotReadException | TagException | InvalidAudioFrameException | ReadOnlyFileException exception) {
                 throw new IOException(exception);
             }
@@ -547,21 +547,14 @@ public class MusicLibrary {
             throw new RuntimeException(exception);
         }
 
-        var previousContentPath = getContentPath(previousSong);
+        var contentPath = getContentPath(song);
 
         if (!contentPath.equals(previousContentPath)) {
             try {
-                var albumContentPath = contentPath.getParent();
-
-                Files.createDirectories(albumContentPath);
-
-                var temporaryContentPath = albumContentPath.resolve(String.format("%s.tmp", escape(song.getTitle())));
-
-                Files.copy(previousContentPath, temporaryContentPath, StandardCopyOption.REPLACE_EXISTING);
+                Files.createDirectories(contentPath.getParent());
+                Files.copy(previousContentPath, contentPath, StandardCopyOption.REPLACE_EXISTING);
 
                 deleteSong(previousContentPath);
-
-                Files.move(temporaryContentPath, contentPath, StandardCopyOption.REPLACE_EXISTING);
 
                 extractAlbumArtwork(song, tag);
             } catch (IOException exception) {
@@ -729,7 +722,7 @@ public class MusicLibrary {
                 c = '_';
             }
 
-            componentBuilder.append(c);
+            componentBuilder.append(Character.toLowerCase(c));
         }
 
         return componentBuilder.toString();
