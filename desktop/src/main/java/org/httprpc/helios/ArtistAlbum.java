@@ -6,6 +6,7 @@ import org.httprpc.kilo.sql.Column;
 import org.httprpc.kilo.sql.Table;
 
 import java.awt.image.BufferedImage;
+import java.lang.ref.SoftReference;
 
 import static org.httprpc.kilo.util.Optionals.*;
 
@@ -17,7 +18,7 @@ public class ArtistAlbum {
     private String album;
     private String sortableAlbum;
 
-    private BufferedImage artwork;
+    private SoftReference<BufferedImage> artwork = new SoftReference<>(null);
 
     @Column("artist")
     public String getArtist() {
@@ -50,11 +51,11 @@ public class ArtistAlbum {
     }
 
     public BufferedImage getArtwork() {
-        return artwork;
+        return artwork.get();
     }
 
     public void setArtwork(BufferedImage artwork) {
-        this.artwork = artwork;
+        this.artwork = new SoftReference<>(artwork);
     }
 
     @Override
