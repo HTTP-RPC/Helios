@@ -169,7 +169,7 @@ public class MainFrame extends JFrame implements Runnable {
         }
     }
 
-    private @Outlet JButton playPauseButton = null;
+    private @Outlet JToggleButton playPauseButton = null;
 
     private @Outlet JButton previousButton = null;
     private @Outlet JButton nextButton = null;
@@ -254,16 +254,6 @@ public class MainFrame extends JFrame implements Runnable {
     private static final int ARTIST_TAB_INDEX = 0;
     private static final int GENRE_TAB_INDEX = 1;
     private static final int PLAYLIST_TAB_INDEX = 2;
-
-    private static final FlatSVGIcon playIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/play_arrow_24dp.svg")).derive(32, 32);
-    private static final FlatSVGIcon pauseIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/pause_24dp.svg")).derive(32, 32);
-
-    static {
-        var playButtonColorFilter = new FlatSVGIcon.ColorFilter(color -> UIManager.getColor("Button.foreground"));
-
-        playIcon.setColorFilter(playButtonColorFilter);
-        pauseIcon.setColorFilter(playButtonColorFilter);
-    }
 
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(MainFrame.class.getName());
 
@@ -437,6 +427,24 @@ public class MainFrame extends JFrame implements Runnable {
     @Override
     public void run() {
         setContentPane(UILoader.load(this, "MainFrame.xml", resourceBundle));
+
+        var playIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/play_arrow_24dp.svg")).derive(32, 32);
+
+        playIcon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> UIManager.getColor("Button.foreground")));
+
+        playPauseButton.setIcon(playIcon);
+
+        var pauseIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/pause_24dp.svg")).derive(32, 32);
+
+        pauseIcon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> {
+            if (playPauseButton.isSelected()) {
+                return UIManager.getColor("Slider.thumbColor");
+            } else {
+                return UILoader.getColor("Button.foreground");
+            }
+        }));
+
+        playPauseButton.setSelectedIcon(pauseIcon);
 
         playPauseButton.addActionListener(event -> {
             if (audioPlayer == null || !audioPlayer.isPlaying()) {
@@ -738,7 +746,7 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     private void play() {
-        playPauseButton.setIcon(pauseIcon);
+        playPauseButton.setSelected(true);
         playPauseButton.setToolTipText(resourceBundle.getString("pause"));
 
         audioPlayer.play();
@@ -753,7 +761,7 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     private void pause() {
-        playPauseButton.setIcon(playIcon);
+        playPauseButton.setSelected(false);
         playPauseButton.setToolTipText(resourceBundle.getString("play"));
 
         perform(audioPlayer, AudioPlayer::pause);

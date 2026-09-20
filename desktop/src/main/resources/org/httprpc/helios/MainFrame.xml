@@ -8,7 +8,7 @@
             <row-panel spacing="2">
                 <column-panel>
                     <spacer weight="1"/>
-                    <button name="playPauseButton" focusable="false" style="buttonType: borderless"/>
+                    <toggle-button name="playPauseButton" focusable="false" style="buttonType: borderless"/>
                     <spacer weight="1"/>
                 </column-panel>
 
