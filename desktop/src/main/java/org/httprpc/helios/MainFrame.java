@@ -169,17 +169,6 @@ public class MainFrame extends JFrame implements Runnable {
         }
     }
 
-    private static class CollectionListSelectionModel extends DefaultListSelectionModel {
-        CollectionListSelectionModel() {
-            setSelectionMode(SINGLE_SELECTION);
-        }
-
-        @Override
-        public void removeSelectionInterval(int index0, int index1) {
-            // No-op
-        }
-    }
-
     private @Outlet JButton playPauseButton = null;
 
     private @Outlet JButton previousButton = null;
@@ -513,7 +502,6 @@ public class MainFrame extends JFrame implements Runnable {
         collectionTabbedPane.addChangeListener(event -> showSelectedCollection());
 
         artistList.setCellRenderer(new ArtistCellRenderer());
-        artistList.setSelectionModel(new CollectionListSelectionModel());
 
         artistList.addListSelectionListener(event -> {
             if (event.getValueIsAdjusting()) {
@@ -526,7 +514,6 @@ public class MainFrame extends JFrame implements Runnable {
         });
 
         genreList.setCellRenderer(new GenreCellRenderer());
-        genreList.setSelectionModel(new CollectionListSelectionModel());
 
         genreList.addListSelectionListener(event -> {
             if (event.getValueIsAdjusting()) {
@@ -546,7 +533,6 @@ public class MainFrame extends JFrame implements Runnable {
         });
 
         playlistList.setCellRenderer(new PlaylistCellRenderer());
-        playlistList.setSelectionModel(new CollectionListSelectionModel());
 
         playlistList.addListSelectionListener(event -> {
             if (event.getValueIsAdjusting()) {
@@ -1125,21 +1111,34 @@ public class MainFrame extends JFrame implements Runnable {
 
         UIManager.put("TextComponent.arc", 8);
 
-        UILoader.bind("list", JList.class, () -> new JList<>() {
-            @Override
-            public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
-                return 24;
-            }
+        UILoader.bind("list", JList.class, () -> {
+            var list = new JList<>() {
+                @Override
+                public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
+                    return 24;
+                }
 
-            @Override
-            public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
-                return getScrollableUnitIncrement(visibleRect, orientation, direction) * 4;
-            }
+                @Override
+                public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
+                    return getScrollableUnitIncrement(visibleRect, orientation, direction) * 4;
+                }
 
-            @Override
-            public boolean getScrollableTracksViewportWidth() {
-                return true;
-            }
+                @Override
+                public boolean getScrollableTracksViewportWidth() {
+                    return true;
+                }
+            };
+
+            list.setSelectionModel(new DefaultListSelectionModel() {
+                @Override
+                public void removeSelectionInterval(int index0, int index1) {
+                    if (getSelectionMode() != SINGLE_SELECTION) {
+                        super.removeSelectionInterval(index0, index1);
+                    }
+                }
+            });
+
+            return list;
         });
 
         MusicLibrary.initialize();
