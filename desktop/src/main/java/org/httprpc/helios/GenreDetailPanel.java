@@ -15,7 +15,6 @@ import org.httprpc.sierra.UILoader;
 
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
@@ -25,7 +24,6 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
-import javax.swing.filechooser.FileFilter;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
@@ -34,11 +32,8 @@ import java.awt.Dimension;
 import java.awt.FocusTraversalPolicy;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -236,15 +231,8 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
 
     private @Outlet MenuButton addToPlaylistButton = null;
 
-    private @Outlet MenuButton editButton = null;
-    private @Outlet JMenuItem editAlbumMenuItem = null;
-    private @Outlet JMenuItem editArtworkMenuItem = null;
-    private @Outlet JMenuItem editSongMenuItem = null;
-
-    private @Outlet MenuButton deleteButton = null;
-    private @Outlet JMenuItem deleteAlbumMenuItem = null;
-    private @Outlet JMenuItem deleteArtworkMenuItem = null;
-    private @Outlet JMenuItem deleteSongMenuItem = null;
+    private @Outlet JButton editButton = null;
+    private @Outlet JButton deleteButton = null;
 
     private @Outlet JList<ArtistAlbum> artistAlbumList = null;
     private @Outlet JList<Song> songList = null;
@@ -329,13 +317,8 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
 
         addToPlaylistButton.setEnabled(false);
 
-        editAlbumMenuItem.addActionListener(event -> editAlbum());
-        editArtworkMenuItem.addActionListener(event -> editArtwork());
-        editSongMenuItem.addActionListener(event -> editSong());
-
-        deleteAlbumMenuItem.addActionListener(event -> deleteAlbum());
-        deleteArtworkMenuItem.addActionListener(event -> deleteArtwork());
-        deleteSongMenuItem.addActionListener(event -> deleteSong());
+        editButton.addActionListener(event -> edit());
+        deleteButton.addActionListener(event -> delete());
 
         artistAlbumList.setCellRenderer(new ArtistAlbumCellRenderer());
         artistAlbumList.setModel(new BasicListModel<>(artistAlbums));
@@ -437,9 +420,27 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
         MainFrame.getInstance().loadPlaylists();
     }
 
-    private void editAlbum() {
-        var artistAlbum = artistAlbumList.getSelectedValue();
+    private void edit() {
+        var song = songList.getSelectedValue();
 
+        if (song != null) {
+            editSong(song);
+        } else {
+            editAlbum(artistAlbumList.getSelectedValue());
+        }
+    }
+
+    private void delete() {
+        var song = songList.getSelectedValue();
+
+        if (song != null) {
+            deleteSong(song);
+        } else {
+            deleteAlbum(artistAlbumList.getSelectedValue());
+        }
+    }
+
+    private void editAlbum(ArtistAlbum artistAlbum) {
         var album = artistAlbum.getAlbum();
 
         var songs = albums.get(album);
@@ -464,9 +465,7 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
         editAlbumDialog.setVisible(true);
     }
 
-    private void deleteAlbum() {
-        var artistAlbum = artistAlbumList.getSelectedValue();
-
+    private void deleteAlbum(ArtistAlbum artistAlbum) {
         var album = artistAlbum.getAlbum();
 
         var songs = albums.get(album);
@@ -498,90 +497,7 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
         }
     }
 
-    private void editArtwork() {
-        var fileChooser = new JFileChooser();
-
-        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-
-        fileChooser.setFileFilter(new FileFilter() {
-            @Override
-            public boolean accept(File file) {
-                if (file.isDirectory()) {
-                    return true;
-                } else {
-                    var path = file.getPath();
-
-                    return path.endsWith(MusicLibrary.JPG_EXTENSION)
-                        || path.endsWith(MusicLibrary.JPEG_EXTENSION);
-                }
-            }
-
-            @Override
-            public String getDescription() {
-                return resourceBundle.getString("imageFileFilterDescription");
-            }
-        });
-
-        var result = fileChooser.showOpenDialog(getTopLevelAncestor());
-
-        if (result == JFileChooser.APPROVE_OPTION) {
-            updateArtwork(fileChooser.getSelectedFile().toPath());
-        }
-    }
-
-    private void deleteArtwork() {
-        var artistAlbum = artistAlbumList.getSelectedValue();
-
-        var option = JOptionPane.showConfirmDialog(getTopLevelAncestor(),
-            String.format(resourceBundle.getString("confirmDeleteArtworkMessageFormat"), artistAlbum.getAlbum()),
-            resourceBundle.getString("deleteArtwork"),
-            JOptionPane.YES_NO_OPTION,
-            JOptionPane.WARNING_MESSAGE);
-
-        if (option == JOptionPane.YES_OPTION) {
-            updateArtwork(null);
-        }
-    }
-
-    private void updateArtwork(Path path) {
-        BufferedImage artwork;
-        if (path != null) {
-            try (var inputStream = Files.newInputStream(path)) {
-                artwork = ImageIO.read(inputStream);
-            } catch (IOException exception) {
-                throw new RuntimeException(exception);
-            }
-        } else {
-            artwork = null;
-        }
-
-        var artistAlbum = artistAlbumList.getSelectedValue();
-
-        artistAlbum.setArtwork(artwork);
-
-        artistAlbumList.repaint();
-
-        var glassPane = MainFrame.getInstance().getGlassPane();
-
-        glassPane.setVisible(true);
-
-        var artist = artistAlbum.getArtist();
-        var album = artistAlbum.getAlbum();
-
-        MainFrame.getTaskExecutor().execute(() -> {
-            if (artwork != null) {
-                MusicLibrary.updateAlbumArtwork(artist, album, artwork);
-            } else {
-                MusicLibrary.deleteAlbumArtwork(artist, album);
-            }
-
-            return null;
-        }, (result, exception) -> glassPane.setVisible(false));
-    }
-
-    private void editSong() {
-        var song = songList.getSelectedValue();
-
+    private void editSong(Song song) {
         var mainFrame = MainFrame.getInstance();
 
         var editSongDialog = new EditSongDialog(mainFrame, song);
@@ -592,9 +508,7 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
         editSongDialog.setVisible(true);
     }
 
-    private void deleteSong() {
-        Song song = songList.getSelectedValue();
-
+    private void deleteSong(Song song) {
         var option = JOptionPane.showConfirmDialog(getTopLevelAncestor(),
             String.format(resourceBundle.getString("confirmDeleteMessageFormat"), song.getTitle()),
             resourceBundle.getString("deleteSong"),
@@ -621,32 +535,17 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
     }
 
     private void updateControls() {
-        var artistAlbum = artistAlbumList.getSelectedValue();
+        if (artistAlbumList.getSelectedValue() != null) {
+            addToPlaylistButton.setEnabled(songList.getSelectedValue() != null
+                && addToPlaylistButton.getComponentPopupMenu().getComponentCount() > 0);
 
-        if (artistAlbum != null) {
             editButton.setEnabled(true);
-            editArtworkMenuItem.setEnabled(!artistAlbum.getArtist().isEmpty());
-
             deleteButton.setEnabled(true);
-            deleteArtworkMenuItem.setEnabled(!artistAlbum.getArtist().isEmpty());
-        } else {
-            editButton.setEnabled(false);
-            editArtworkMenuItem.setEnabled(false);
-
-            deleteButton.setEnabled(false);
-            deleteArtworkMenuItem.setEnabled(false);
-        }
-
-        if (songList.getSelectedValue() != null) {
-            addToPlaylistButton.setEnabled(addToPlaylistButton.getComponentPopupMenu().getComponentCount() > 0);
-
-            editSongMenuItem.setEnabled(true);
-            deleteSongMenuItem.setEnabled(true);
         } else {
             addToPlaylistButton.setEnabled(false);
 
-            editSongMenuItem.setEnabled(false);
-            deleteSongMenuItem.setEnabled(false);
+            editButton.setEnabled(false);
+            deleteButton.setEnabled(false);
         }
     }
 

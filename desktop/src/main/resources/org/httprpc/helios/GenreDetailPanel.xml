@@ -20,23 +20,15 @@
 
             <spacer width="2"/>
 
-            <menu-button name="editButton" icon="icons/edit_24dp.svg; 16"
+            <button name="editButton" icon="icons/edit_24dp.svg; 16"
                 focusable="false"
                 toolTipText="edit"
-                style="buttonType: borderless">
-                <menu-item name="editAlbumMenuItem" text="album" icon="icons/album_24dp.svg; 18"/>
-                <menu-item name="editArtworkMenuItem" text="artwork" icon="icons/photo_24dp.svg; 18"/>
-                <menu-item name="editSongMenuItem" text="song" icon="icons/queue_music_24dp.svg; 18"/>
-            </menu-button>
+                style="buttonType: borderless"/>
 
-            <menu-button name="deleteButton" icon="icons/delete_24dp.svg; 18"
+            <button name="deleteButton" icon="icons/delete_24dp.svg; 18"
                 focusable="false"
                 toolTipText="delete"
-                style="buttonType: borderless">
-                <menu-item name="deleteAlbumMenuItem" text="album" icon="icons/album_24dp.svg; 18"/>
-                <menu-item name="deleteArtworkMenuItem" text="artwork" icon="icons/photo_24dp.svg; 18"/>
-                <menu-item name="deleteSongMenuItem" text="song" icon="icons/queue_music_24dp.svg; 18"/>
-            </menu-button>
+                style="buttonType: borderless"/>
         </row-panel>
     </row-panel>
 
