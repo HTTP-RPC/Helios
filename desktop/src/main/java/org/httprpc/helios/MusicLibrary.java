@@ -129,6 +129,7 @@ public class MusicLibrary {
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(MusicLibrary.class.getName());
 
     private static final Path rootDirectory = Path.of(System.getProperty("user.home"), ".helios");
+    private static final Path artworkDirectory = rootDirectory.resolve("artwork");
     private static final Path dbFile = rootDirectory.resolve("music.db");
 
     private static final Predicate<Path> dsStoreFilter = path -> !path.getFileName().toString().equals(".DS_Store");
@@ -153,7 +154,7 @@ public class MusicLibrary {
     }
 
     public static void initialize() throws Exception {
-        Files.createDirectories(rootDirectory);
+        Files.createDirectories(artworkDirectory);
 
         if (!Files.exists(dbFile)) {
             String sql;
@@ -566,11 +567,7 @@ public class MusicLibrary {
     }
 
     private static void extractAlbumArtwork(Song song, Tag tag) throws IOException {
-        if (song.isCompilation()) {
-            return;
-        }
-
-        var artworkPath = getArtworkPath(song.getArtist(), song.getAlbum());
+        var artworkPath = getArtworkPath(song.getArtist(), song.getAlbum(), song.isCompilation());
 
         if (!Files.exists(artworkPath, LinkOption.NOFOLLOW_LINKS)) {
             var artwork = tag.getFirstArtwork();
@@ -702,8 +699,12 @@ public class MusicLibrary {
         return getPath(artist, album).resolve("content");
     }
 
-    public static Path getArtworkPath(String artist, String album) {
-        return getPath(artist, album).resolve("artwork.jpg");
+    public static Path getArtworkPath(String artist, String album, boolean compilation) {
+        if (compilation) {
+            return rootDirectory.resolve("artwork").resolve(escape(String.format("%s.jpg", album)));
+        } else {
+            return getPath(artist, album).resolve("artwork.jpg");
+        }
     }
 
     private static Path getPath(String artist, String album) {
@@ -804,7 +805,7 @@ public class MusicLibrary {
             var artist = artistAlbum.getArtist();
             var album = artistAlbum.getAlbum();
 
-            var artworkPath = getArtworkPath(artist, album);
+            var artworkPath = getArtworkPath(artist, album, false);
 
             if (Files.exists(artworkPath)) {
                 continue;
@@ -824,7 +825,7 @@ public class MusicLibrary {
                         var artwork = ArtworkAPI.getArtwork(artworkURL100);
 
                         if (artwork != null) {
-                            updateAlbumArtwork(artist, album, artwork);
+                            updateAlbumArtwork(artist, album, false, artwork);
                         }
                     }
                 }
@@ -846,8 +847,8 @@ public class MusicLibrary {
         }
     }
 
-    public static void updateAlbumArtwork(String artist, String album, BufferedImage artwork) {
-        var artworkPath = getArtworkPath(artist, album);
+    public static void updateAlbumArtwork(String artist, String album, boolean compilation, BufferedImage artwork) {
+        var artworkPath = getArtworkPath(artist, album, compilation);
 
         try (var outputStream = Files.newOutputStream(artworkPath,
             StandardOpenOption.CREATE,
@@ -902,9 +903,9 @@ public class MusicLibrary {
         }
     }
 
-    public static void deleteAlbumArtwork(String artist, String album) {
+    public static void deleteAlbumArtwork(String artist, String album, boolean compilation) {
         try {
-            Files.deleteIfExists(getArtworkPath(artist, album));
+            Files.deleteIfExists(getArtworkPath(artist, album, compilation));
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }

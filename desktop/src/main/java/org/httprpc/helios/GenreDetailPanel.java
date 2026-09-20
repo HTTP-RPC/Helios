@@ -114,7 +114,7 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
                 artistAlbum.setArtwork(emptyImage);
 
                 MainFrame.getTaskExecutor().execute(() -> {
-                    try (var inputStream = Files.newInputStream(MusicLibrary.getArtworkPath(artist, album))) {
+                    try (var inputStream = Files.newInputStream(MusicLibrary.getArtworkPath(artist, album, artist.isEmpty()))) {
                         return ImageIO.read(inputStream);
                     } catch (IOException exception) {
                         return null;

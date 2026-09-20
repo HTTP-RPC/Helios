@@ -84,8 +84,6 @@ public class AlbumDetailPanel extends StackPanel {
         deleteArtworkButton.addActionListener(event -> deleteArtwork());
         deleteArtworkButton.setVisible(false);
 
-        deleteArtworkButton.setEnabled(Files.exists(MusicLibrary.getArtworkPath(artist.getName(), name)));
-
         artworkPanel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent event) {
@@ -115,14 +113,6 @@ public class AlbumDetailPanel extends StackPanel {
                 hideArtworkButtons();
             }
         });
-
-        MainFrame.getTaskExecutor().execute(() -> {
-            try (var inputStream = Files.newInputStream(MusicLibrary.getArtworkPath(artist.getName(), name))) {
-                return ImageIO.read(inputStream);
-            } catch (IOException exception) {
-                return null;
-            }
-        }, (artwork, exception) -> artworkImagePane.setImage(artwork));
 
         songListPanel.setBorder(new CompoundBorder(
             new MatteBorder(1, 0, 0, 0, UIManager.getColor("Component.borderColor")),
@@ -155,6 +145,20 @@ public class AlbumDetailPanel extends StackPanel {
 
         editAlbumButton.setEnabled(!compilation);
         deleteAlbumButton.setEnabled(!compilation);
+
+        var artworkPath = MusicLibrary.getArtworkPath(artist.getName(), name, compilation);
+
+        if (Files.exists(artworkPath)) {
+            MainFrame.getTaskExecutor().execute(() -> {
+                try (var inputStream = Files.newInputStream(artworkPath)) {
+                    return ImageIO.read(inputStream);
+                } catch (IOException exception) {
+                    return null;
+                }
+            }, (artwork, exception) -> artworkImagePane.setImage(artwork));
+        } else {
+            deleteArtworkButton.setEnabled(false);
+        }
     }
 
     private void editAlbum() {
@@ -259,9 +263,9 @@ public class AlbumDetailPanel extends StackPanel {
 
         MainFrame.getTaskExecutor().execute(() -> {
             if (artwork != null) {
-                MusicLibrary.updateAlbumArtwork(artist.getName(), name, artwork);
+                MusicLibrary.updateAlbumArtwork(artist.getName(), name, false, artwork);
             } else {
-                MusicLibrary.deleteAlbumArtwork(artist.getName(), name);
+                MusicLibrary.deleteAlbumArtwork(artist.getName(), name, false);
             }
 
             return null;

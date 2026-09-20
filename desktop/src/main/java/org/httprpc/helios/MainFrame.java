@@ -816,7 +816,7 @@ public class MainFrame extends JFrame implements Runnable {
         artworkImagePane.setImage(null);
 
         taskExecutor.execute(() -> {
-            try (var inputStream = Files.newInputStream(MusicLibrary.getArtworkPath(artist, album))) {
+            try (var inputStream = Files.newInputStream(MusicLibrary.getArtworkPath(artist, album, song.isCompilation()))) {
                 return ImageIO.read(inputStream);
             }
         }, (image, exception) -> artworkImagePane.setImage(image));
