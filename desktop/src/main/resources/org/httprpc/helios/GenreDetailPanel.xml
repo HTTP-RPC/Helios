@@ -20,12 +20,12 @@
 
             <spacer width="2"/>
 
-            <button name="editButton" icon="icons/edit_24dp.svg; 16"
+            <menu-button name="editButton" icon="icons/edit_24dp.svg; 16"
                 focusable="false"
                 toolTipText="edit"
                 style="buttonType: borderless"/>
 
-            <button name="deleteButton" icon="icons/delete_24dp.svg; 18"
+            <menu-button name="deleteButton" icon="icons/delete_24dp.svg; 18"
                 focusable="false"
                 toolTipText="delete"
                 style="buttonType: borderless"/>
