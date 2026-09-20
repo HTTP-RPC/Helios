@@ -15,6 +15,7 @@ import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.tag.FieldDataInvalidException;
 import org.jaudiotagger.tag.FieldKey;
+import org.jaudiotagger.tag.Tag;
 import org.jaudiotagger.tag.TagException;
 import org.jaudiotagger.tag.images.StandardArtwork;
 import org.sqlite.SQLiteErrorCode;
@@ -451,22 +452,7 @@ public class MusicLibrary {
             Files.createDirectories(contentPath.getParent());
             Files.copy(path, contentPath, StandardCopyOption.REPLACE_EXISTING);
 
-            var artworkPath = getArtworkPath(artist, album);
-
-            if (!song.isCompilation() && !Files.exists(artworkPath, LinkOption.NOFOLLOW_LINKS)) {
-                var artwork = tag.getFirstArtwork();
-
-                if (artwork != null) {
-                    try (var inputStream = new ByteArrayInputStream(artwork.getBinaryData());
-                        var outputStream = Files.newOutputStream(artworkPath,
-                            StandardOpenOption.CREATE,
-                            StandardOpenOption.TRUNCATE_EXISTING)) {
-                        ImageIO.write(ImageIO.read(inputStream), "jpeg", outputStream);
-                    } catch (IOException exception) {
-                        Files.deleteIfExists(artworkPath);
-                    }
-                }
-            }
+            extractAlbumArtwork(song, tag);
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }
@@ -491,25 +477,6 @@ public class MusicLibrary {
         }
 
         var contentPath = getContentPath(song);
-        var previousContentPath = getContentPath(previousSong);
-
-        if (!contentPath.equals(previousContentPath)) {
-            try {
-                var albumContentPath = contentPath.getParent();
-
-                Files.createDirectories(albumContentPath);
-
-                var temporaryContentPath = albumContentPath.resolve(String.format("%s.tmp", escape(song.getTitle())));
-
-                Files.copy(previousContentPath, temporaryContentPath, StandardCopyOption.REPLACE_EXISTING);
-
-                deleteSong(previousContentPath);
-
-                Files.move(temporaryContentPath, contentPath, StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException exception) {
-                throw new RuntimeException(exception);
-            }
-        }
 
         AudioFile audioFile;
         try {
@@ -526,10 +493,9 @@ public class MusicLibrary {
 
         try {
             var artist = song.getArtist();
-            var album = song.getAlbum();
 
             tag.setField(FieldKey.ARTIST, artist);
-            tag.setField(FieldKey.ALBUM, album);
+            tag.setField(FieldKey.ALBUM, song.getAlbum());
             tag.setField(FieldKey.TITLE, song.getTitle());
 
             var genre = song.getGenre();
@@ -570,28 +536,6 @@ public class MusicLibrary {
 
             if (!compilation) {
                 tag.setField(FieldKey.ALBUM_ARTIST, artist);
-
-                var artworkPath = getArtworkPath(artist, album);
-
-                if (Files.exists(artworkPath)) {
-                    var artworkField = new StandardArtwork();
-
-                    byte[] binaryData;
-                    try (var inputStream = Files.newInputStream(artworkPath);
-                        var outputStream = new ByteArrayOutputStream()) {
-                        inputStream.transferTo(outputStream);
-
-                        binaryData = outputStream.toByteArray();
-                    } catch (IOException exception) {
-                        throw new RuntimeException(exception);
-                    }
-
-                    artworkField.setBinaryData(binaryData);
-
-                    tag.setField(artworkField);
-                } else {
-                    tag.deleteArtworkField();
-                }
             }
         } catch (FieldDataInvalidException exception) {
             throw new RuntimeException(exception);
@@ -603,7 +547,52 @@ public class MusicLibrary {
             throw new RuntimeException(exception);
         }
 
+        var previousContentPath = getContentPath(previousSong);
+
+        if (!contentPath.equals(previousContentPath)) {
+            try {
+                var albumContentPath = contentPath.getParent();
+
+                Files.createDirectories(albumContentPath);
+
+                var temporaryContentPath = albumContentPath.resolve(String.format("%s.tmp", escape(song.getTitle())));
+
+                Files.copy(previousContentPath, temporaryContentPath, StandardCopyOption.REPLACE_EXISTING);
+
+                deleteSong(previousContentPath);
+
+                Files.move(temporaryContentPath, contentPath, StandardCopyOption.REPLACE_EXISTING);
+
+                extractAlbumArtwork(song, tag);
+            } catch (IOException exception) {
+                throw new RuntimeException(exception);
+            }
+        }
+
         return true;
+    }
+
+    private static void extractAlbumArtwork(Song song, Tag tag) throws IOException {
+        if (song.isCompilation()) {
+            return;
+        }
+
+        var artworkPath = getArtworkPath(song.getArtist(), song.getAlbum());
+
+        if (!Files.exists(artworkPath, LinkOption.NOFOLLOW_LINKS)) {
+            var artwork = tag.getFirstArtwork();
+
+            if (artwork != null) {
+                try (var inputStream = new ByteArrayInputStream(artwork.getBinaryData());
+                    var outputStream = Files.newOutputStream(artworkPath,
+                        StandardOpenOption.CREATE,
+                        StandardOpenOption.TRUNCATE_EXISTING)) {
+                    ImageIO.write(ImageIO.read(inputStream), "jpeg", outputStream);
+                } catch (IOException exception) {
+                    Files.deleteIfExists(artworkPath);
+                }
+            }
+        }
     }
 
     public static void deleteSong(Song song) {
