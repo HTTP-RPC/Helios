@@ -253,6 +253,12 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
     private @Outlet JList<ArtistAlbum> artistAlbumList = null;
     private @Outlet JList<Song> songList = null;
 
+    private JMenuItem editAlbumMenuItem = new JMenuItem(resourceBundle.getString("album"), albumIcon);
+    private JMenuItem editArtworkMenuItem = new JMenuItem(resourceBundle.getString("artwork"), artworkIcon);
+
+    private JMenuItem deleteAlbumMenuItem = new JMenuItem(resourceBundle.getString("album"), albumIcon);
+    private JMenuItem deleteArtworkMenuItem = new JMenuItem(resourceBundle.getString("artwork"), artworkIcon);
+
     private static final FlatSVGIcon playlistIcon;
     static {
         playlistIcon = new FlatSVGIcon(GenreDetailPanel.class.getResource("icons/queue_music_24dp.svg")).derive(18, 18);
@@ -344,7 +350,14 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
         addToPlaylistButton.setEnabled(false);
 
         editButton.addActionListener(event -> editSong());
+
+        editAlbumMenuItem.addActionListener(event -> editAlbum());
+        editArtworkMenuItem.addActionListener(event -> editArtwork());
+
         deleteButton.addActionListener(event -> deleteSong());
+
+        deleteAlbumMenuItem.addActionListener(event -> deleteAlbum());
+        deleteArtworkMenuItem.addActionListener(event -> deleteArtwork());
 
         artistAlbumList.setCellRenderer(new ArtistAlbumCellRenderer());
         artistAlbumList.setModel(new BasicListModel<>(artistAlbums));
@@ -639,28 +652,10 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
             } else {
                 addToPlaylistButton.setEnabled(false);
 
-                var editAlbumMenuItem = new JMenuItem(resourceBundle.getString("album"), albumIcon);
-
-                editAlbumMenuItem.addActionListener(event -> editAlbum());
-
                 editButton.add(editAlbumMenuItem);
-
-                var editArtworkMenuItem = new JMenuItem(resourceBundle.getString("artwork"), artworkIcon);
-
-                editArtworkMenuItem.addActionListener(event -> editArtwork());
-
                 editButton.add(editArtworkMenuItem);
 
-                var deleteAlbumMenuItem = new JMenuItem(resourceBundle.getString("album"), albumIcon);
-
-                deleteAlbumMenuItem.addActionListener(event -> deleteAlbum());
-
                 deleteButton.add(deleteAlbumMenuItem);
-
-                var deleteArtworkMenuItem = new JMenuItem(resourceBundle.getString("artwork"), artworkIcon);
-
-                deleteArtworkMenuItem.addActionListener(event -> deleteArtwork());
-
                 deleteButton.add(deleteArtworkMenuItem);
             }
 
