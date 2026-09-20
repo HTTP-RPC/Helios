@@ -349,12 +349,20 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
 
         addToPlaylistButton.setEnabled(false);
 
-        editButton.addActionListener(event -> editSong());
+        editButton.addActionListener(event -> {
+            if (songList.getSelectedValue() != null) {
+                editSong();
+            }
+        });
 
         editAlbumMenuItem.addActionListener(event -> editAlbum());
         editArtworkMenuItem.addActionListener(event -> editArtwork());
 
-        deleteButton.addActionListener(event -> deleteSong());
+        deleteButton.addActionListener(event -> {
+            if (songList.getSelectedValue() != null) {
+                deleteSong();
+            }
+        });
 
         deleteAlbumMenuItem.addActionListener(event -> deleteAlbum());
         deleteArtworkMenuItem.addActionListener(event -> deleteArtwork());
@@ -592,9 +600,9 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
 
         MainFrame.getTaskExecutor().execute(() -> {
             if (artwork != null) {
-                MusicLibrary.updateAlbumArtwork(artist, album, false, artwork);
+                MusicLibrary.updateAlbumArtwork(artist, album, artist.isEmpty(), artwork);
             } else {
-                MusicLibrary.deleteAlbumArtwork(artist, album, false);
+                MusicLibrary.deleteAlbumArtwork(artist, album, artist.isEmpty());
             }
 
             return null;
