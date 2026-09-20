@@ -30,8 +30,10 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FocusTraversalPolicy;
+import java.awt.RenderingHints;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.time.Duration;
@@ -52,13 +54,17 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
         JLabel albumLabel;
         JLabel artistLabel;
 
+        static final int IMAGE_SIZE = 90;
+
+        static final BufferedImage emptyImage = new BufferedImage(IMAGE_SIZE, IMAGE_SIZE, BufferedImage.TYPE_INT_ARGB);
+
         ArtistAlbumCellRenderer() {
             setOpaque(true);
 
             add(new RowPanel(), rowPanel -> {
                 rowPanel.add(new StackPanel(), stackPanel -> {
                     stackPanel.add(new ImagePane(), imagePane -> {
-                        imagePane.setPreferredSize(new Dimension(90, 90));
+                        imagePane.setPreferredSize(new Dimension(IMAGE_SIZE, IMAGE_SIZE));
                         imagePane.setScaleMode(ImagePane.ScaleMode.FILL_WIDTH);
                         imagePane.setBorder(UILoader.createRoundedLineBorder(UIManager.getColor("Component.borderColor"),
                             new BasicStroke(1,
@@ -104,7 +110,9 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
 
             artworkImagePane.setImage(artistAlbum.getArtwork());
 
-            if (artworkImagePane.getImage() == null) {
+            if (artworkImagePane.getImage() == null && list.isValid()) {
+                artistAlbum.setArtwork(emptyImage);
+
                 MainFrame.getTaskExecutor().execute(() -> {
                     try (var inputStream = Files.newInputStream(MusicLibrary.getArtworkPath(artist, album))) {
                         return ImageIO.read(inputStream);
@@ -113,7 +121,7 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
                     }
                 }, (artwork, exception) -> {
                     if (artwork != null) {
-                        artistAlbum.setArtwork(artwork);
+                        artistAlbum.setArtwork(resizeImage(artwork, IMAGE_SIZE * 2, IMAGE_SIZE * 2));
 
                         if (index >= list.getFirstVisibleIndex() && index <= list.getLastVisibleIndex()) {
                             list.repaint();
@@ -581,4 +589,15 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
             artistAlbumList.requestFocus();
         });
     }
-}
+
+    private static BufferedImage resizeImage(BufferedImage image, int width, int height) {
+        BufferedImage resizedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+
+        var graphics2D = resizedImage.createGraphics();
+
+        graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        graphics2D.drawImage(image, 0, 0, width, height, null);
+        graphics2D.dispose();
+
+        return resizedImage;
+    }}
