@@ -112,9 +112,13 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
                         return null;
                     }
                 }, (artwork, exception) -> {
-                    artistAlbum.setArtwork(artwork);
+                    if (artwork != null) {
+                        artistAlbum.setArtwork(artwork);
 
-                    list.repaint();
+                        if (index >= list.getFirstVisibleIndex() && index <= list.getLastVisibleIndex()) {
+                            list.repaint();
+                        }
+                    }
                 });
             }
 
