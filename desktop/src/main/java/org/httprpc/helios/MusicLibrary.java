@@ -324,6 +324,10 @@ public class MusicLibrary {
     }
 
     public static void addSong(Path path) {
+        if (SwingUtilities.isEventDispatchThread()) {
+            throw new IllegalStateException();
+        }
+
         if (path.startsWith(rootDirectory)) {
             return;
         }
