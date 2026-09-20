@@ -59,6 +59,6 @@ public class ArtistAlbum {
 
     @Override
     public String toString() {
-        return getSortableArtist();
+        return artist.isEmpty() ? sortableAlbum : sortableArtist;
     }
 }
