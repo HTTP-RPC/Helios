@@ -19,7 +19,7 @@ dependencies {
 
 tasks.withType(JavaCompile).configureEach {
     options.compilerArgs = [
-            '-parameters'
+        '-parameters'
     ]
 }
 
@@ -38,9 +38,9 @@ jar {
 
     manifest {
         attributes (
-                'Implementation-Title': application.applicationName,
-                'Implementation-Version': project.version,
-                'Main-Class': application.mainClass
+            'Implementation-Title': application.applicationName,
+            'Implementation-Version': project.version,
+            'Main-Class': application.mainClass
         )
     }
 
@@ -65,11 +65,10 @@ tasks.register("packageWindows", Exec) {
 
     executable = 'jpackage'
     args = [
-            '--name', "${application.applicationName}",
-            '--input', 'build/libs',
-            '--main-jar', "${project.name}.jar",
-            '--app-version', "${version}",
-            '--icon', "${application.applicationName}.ico",
-            '--win-shortcut'
+        '--name', "${application.applicationName}",
+        '--input', 'build/libs',
+        '--main-jar', "${project.name}.jar",
+        '--app-version', "${version}",
+        '--win-shortcut'
     ]
 }

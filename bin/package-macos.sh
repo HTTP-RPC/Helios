@@ -21,7 +21,6 @@ jpackage --name $2 \
   --input build/libs \
   --main-jar $1.jar \
   --app-version $3 \
-  --icon $2.icns \
   --mac-sign \
   --mac-signing-key-user-name "$MAC_SIGNING_KEY_USER_NAME"
 
