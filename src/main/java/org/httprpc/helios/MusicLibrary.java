@@ -603,6 +603,8 @@ public class MusicLibrary {
         }
 
         deleteSong(getContentPath(song));
+
+        deleteCompilationArtwork(song);
     }
 
     public static boolean addPlaylist(Playlist playlist) {
@@ -788,6 +790,33 @@ public class MusicLibrary {
         }
 
         Files.delete(root);
+    }
+
+    private static void deleteCompilationArtwork(Song song) {
+        var album = song.getAlbum();
+
+        var queryBuilder = new QueryBuilder();
+
+        queryBuilder.append("select count(*) as count from Song ");
+        queryBuilder.append("where album = :album and compilation = true");
+
+        try (var connection = openConnection();
+            var statement = queryBuilder.prepare(connection);
+            var results = queryBuilder.executeQuery(statement, mapOf(
+                entry("album", album)
+            ))) {
+            var count = map((Number)firstOf(results).get("count"), Number::intValue);
+
+            if (count == 0) {
+                try {
+                    Files.deleteIfExists(getArtworkPath(null, album, true));
+                } catch (IOException exception) {
+                    // No-op
+                }
+            }
+        } catch (SQLException exception) {
+            throw new RuntimeException(exception);
+        }
     }
 
     public static void getAlbumArtwork() {
