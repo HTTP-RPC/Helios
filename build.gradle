@@ -1,8 +1,75 @@
-subprojects {
-    repositories {
-        mavenCentral()
-        mavenLocal()
+plugins {
+    id 'application'
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    implementation "org.httprpc:kilo-client:${kiloVersion}"
+    implementation "org.httprpc:sierra:${sierraVersion}"
+    implementation "com.formdev:flatlaf:${flatLafVersion}"
+    implementation "com.formdev:flatlaf-extras:${flatLafVersion}"
+    implementation "org.xerial:sqlite-jdbc:${sqliteJDBCVersion}"
+    implementation "net.jthink:jaudiotagger:${jAudioTaggerVersion}"
+    implementation "net.java.dev.jna:jna-platform:${jnaVersion}"
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs = [
+            '-parameters'
+    ]
+}
+
+version = '1.0.0'
+
+application {
+    applicationName = 'Helios'
+
+    mainClass = 'org.httprpc.helios.MainFrame'
+}
+
+jar {
+    dependsOn configurations.runtimeClasspath
+
+    archiveFileName = "${project.name}.jar"
+
+    manifest {
+        attributes (
+                'Implementation-Title': application.applicationName,
+                'Implementation-Version': project.version,
+                'Main-Class': application.mainClass
+        )
     }
 
-    version = '1.0.0'
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+tasks.register("packageMacOS", Exec) {
+    dependsOn 'jar'
+
+    workingDir = projectDir
+
+    executable = 'bin/package-macos.sh'
+    args = ["${project.name}", "${application.applicationName}", "${version}"]
+}
+
+tasks.register("packageWindows", Exec) {
+    dependsOn 'jar'
+
+    executable = 'jpackage'
+    args = [
+            '--name', "${application.applicationName}",
+            '--input', 'build/libs',
+            '--main-jar', "${project.name}.jar",
+            '--app-version', "${version}",
+            '--icon', "${application.applicationName}.ico",
+            '--win-shortcut'
+    ]
 }

@@ -7,3 +7,5 @@
 *.log
 **/build
 **/.DS_Store
+Helios.app
+Helios-*
