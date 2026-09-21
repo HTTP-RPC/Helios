@@ -13,6 +13,9 @@ public interface AudioPlayer {
 
     boolean isPlaying();
 
+    double getPosition();
+    void setPosition(double position);
+
     void dispose();
 
     static AudioPlayer create(Path contentPath) {
@@ -39,6 +42,16 @@ public interface AudioPlayer {
                 @Override
                 public boolean isPlaying() {
                     return false;
+                }
+
+                @Override
+                public double getPosition() {
+                    return 0.0;
+                }
+
+                @Override
+                public void setPosition(double position) {
+                    throw new UnsupportedOperationException();
                 }
 
                 @Override

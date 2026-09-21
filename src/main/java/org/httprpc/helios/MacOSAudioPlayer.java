@@ -2,15 +2,26 @@
 
 package org.httprpc.helios;
 
+import com.sun.jna.FunctionMapper;
 import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 
 import java.nio.file.Path;
 
+import static org.httprpc.kilo.util.Collections.*;
+
 public class MacOSAudioPlayer implements AudioPlayer {
     private interface ObjectiveCRuntime extends Library {
-        ObjectiveCRuntime instance = Native.load("objc.A", ObjectiveCRuntime.class);
+        ObjectiveCRuntime instance = Native.load("objc.A", ObjectiveCRuntime.class, mapOf(
+            entry(Library.OPTION_FUNCTION_MAPPER, (FunctionMapper)(library, method) -> {
+                if (method.getName().equals("objc_msgSend_fpret")) {
+                    return "objc_msgSend";
+                } else {
+                    return method.getName();
+                }
+            })
+        ));
 
         Pointer objc_getClass(String name);
 
@@ -19,6 +30,8 @@ public class MacOSAudioPlayer implements AudioPlayer {
         long objc_msgSend(Pointer self, Pointer selector);
         long objc_msgSend(Pointer self, Pointer selector, Object arg);
         long objc_msgSend(Pointer self, Pointer selector, Object arg1, Object arg2);
+
+        double objc_msgSend_fpret(Pointer self, Pointer selector);
 
         Pointer alloc = instance.sel_registerName("alloc");
         Pointer release = instance.sel_registerName("release");
@@ -55,6 +68,9 @@ public class MacOSAudioPlayer implements AudioPlayer {
             Pointer play = ObjectiveCRuntime.instance.sel_registerName("play");
             Pointer pause = ObjectiveCRuntime.instance.sel_registerName("pause");
             Pointer isPlaying = ObjectiveCRuntime.instance.sel_registerName("isPlaying");
+
+            Pointer currentTime = ObjectiveCRuntime.instance.sel_registerName("currentTime");
+            Pointer setCurrentTime = ObjectiveCRuntime.instance.sel_registerName("setCurrentTime:");
         }
     }
 
@@ -92,6 +108,16 @@ public class MacOSAudioPlayer implements AudioPlayer {
     @Override
     public boolean isPlaying() {
         return ObjectiveCRuntime.instance.objc_msgSend(audioPlayer, AVFoundation.AVAudioPlayer.isPlaying) > 0;
+    }
+
+    @Override
+    public double getPosition() {
+        return ObjectiveCRuntime.instance.objc_msgSend_fpret(audioPlayer, AVFoundation.AVAudioPlayer.currentTime);
+    }
+
+    @Override
+    public void setPosition(double position) {
+        ObjectiveCRuntime.instance.objc_msgSend(audioPlayer, AVFoundation.AVAudioPlayer.setCurrentTime, position);
     }
 
     @Override

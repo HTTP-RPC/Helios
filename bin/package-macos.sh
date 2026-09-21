@@ -20,6 +20,7 @@ cd ../..
 jpackage --name $2 \
   --input build/libs \
   --main-jar $1.jar \
+  --java-options "--enable-native-access=ALL-UNNAMED" \
   --app-version $3 \
   --mac-sign \
   --mac-signing-key-user-name "$MAC_SIGNING_KEY_USER_NAME"

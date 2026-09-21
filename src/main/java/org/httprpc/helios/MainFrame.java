@@ -219,7 +219,6 @@ public class MainFrame extends JFrame implements Runnable {
     private int queueIndex = 0;
 
     private AudioPlayer audioPlayer = null;
-    private long lastTime = 0;
 
     private Timer timer = new Timer(250, event -> updatePosition());
 
@@ -751,8 +750,6 @@ public class MainFrame extends JFrame implements Runnable {
 
         audioPlayer.play();
 
-        lastTime = System.currentTimeMillis();
-
         timer.start();
 
         if (getCollectionDetailView() instanceof LibraryDetail libraryDetail) {
@@ -832,7 +829,7 @@ public class MainFrame extends JFrame implements Runnable {
 
         positionProgressBar.setValue(0);
 
-        positionProgressBar.setMaximum(song.getTime() * 1000);
+        positionProgressBar.setMaximum(song.getTime());
 
         if (audioPlayer == null) {
             audioPlayer = AudioPlayer.create(MusicLibrary.getContentPath(song));
@@ -862,14 +859,10 @@ public class MainFrame extends JFrame implements Runnable {
 
     private void updatePosition() {
         if (audioPlayer.isPlaying()) {
-            var currentTime = System.currentTimeMillis();
+            positionProgressBar.setValue((int)Math.round(audioPlayer.getPosition()));
 
-            positionProgressBar.setValue(positionProgressBar.getValue() + (int)(currentTime - lastTime));
-
-            lastTime = currentTime;
-
-            var elapsedDuration = Duration.ofMillis(positionProgressBar.getValue());
-            var totalDuration = Duration.ofMillis(positionProgressBar.getMaximum());
+            var elapsedDuration = Duration.ofSeconds(positionProgressBar.getValue());
+            var totalDuration = Duration.ofSeconds(positionProgressBar.getMaximum());
 
             timeLabel.setText(String.format(resourceBundle.getString("timeFormat"),
                 elapsedDuration.toMinutesPart(), elapsedDuration.toSecondsPart(),

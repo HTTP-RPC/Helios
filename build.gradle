@@ -68,6 +68,7 @@ tasks.register("packageWindows", Exec) {
         '--name', "${application.applicationName}",
         '--input', 'build/libs',
         '--main-jar', "${project.name}.jar",
+        '--java-options', '--enable-native-access=ALL-UNNAMED',
         '--app-version', "${version}",
         '--win-shortcut'
     ]
