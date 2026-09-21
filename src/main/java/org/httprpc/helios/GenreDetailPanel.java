@@ -125,7 +125,7 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
                     }
                 }, (artwork, exception) -> {
                     if (artwork != null) {
-                        artistAlbum.setArtwork(resizeImage(artwork, IMAGE_SIZE * 2, IMAGE_SIZE * 2));
+                        artistAlbum.setArtwork(MusicLibrary.downscale(artwork, IMAGE_SIZE * 2));
 
                         if (index >= list.getFirstVisibleIndex() && index <= list.getLastVisibleIndex()) {
                             list.repaint();

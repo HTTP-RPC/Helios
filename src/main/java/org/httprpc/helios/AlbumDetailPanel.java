@@ -155,7 +155,13 @@ public class AlbumDetailPanel extends StackPanel {
                 } catch (IOException exception) {
                     return null;
                 }
-            }, (artwork, exception) -> artworkImagePane.setImage(artwork));
+            }, (artwork, exception) -> {
+                if (artwork != null) {
+                    var width = artworkImagePane.getPreferredSize().width * 2;
+
+                    artworkImagePane.setImage(MusicLibrary.downscale(artwork, width));
+                }
+            });
         } else {
             deleteArtworkButton.setEnabled(false);
         }

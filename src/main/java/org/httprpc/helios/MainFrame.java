@@ -819,7 +819,13 @@ public class MainFrame extends JFrame implements Runnable {
             try (var inputStream = Files.newInputStream(MusicLibrary.getArtworkPath(artist, album, song.isCompilation()))) {
                 return ImageIO.read(inputStream);
             }
-        }, (image, exception) -> artworkImagePane.setImage(image));
+        }, (artwork, exception) -> {
+            if (artwork != null) {
+                var width = artworkImagePane.getPreferredSize().width * 4;
+
+                artworkImagePane.setImage(MusicLibrary.downscale(artwork, width));
+            }
+        });
 
         songTitleLabel.setText(song.getTitle());
         artistAlbumLabel.setText(String.format(resourceBundle.getString("artistAlbumFormat"), artist, album));

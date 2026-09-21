@@ -22,6 +22,7 @@ import org.sqlite.SQLiteErrorCode;
 
 import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -936,5 +937,29 @@ public class MusicLibrary {
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }
+    }
+
+    public static BufferedImage downscale(BufferedImage image, int width) {
+        var imageWidth = image.getWidth();
+
+        var aspectRatio = (double)imageWidth / image.getHeight();
+
+        while (imageWidth > width) {
+            imageWidth = Math.max(imageWidth / 2, width);
+
+            var imageHeight = (int)Math.round(imageWidth / aspectRatio);
+
+            var scaledImage = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_RGB);
+
+            var graphics2D = scaledImage.createGraphics();
+
+            graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            graphics2D.drawImage(image, 0, 0, imageWidth, imageHeight, null);
+            graphics2D.dispose();
+
+            image = scaledImage;
+        }
+
+        return image;
     }
 }
