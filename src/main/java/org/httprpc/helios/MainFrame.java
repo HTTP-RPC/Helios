@@ -243,6 +243,9 @@ public class MainFrame extends JFrame implements Runnable {
     private static final String GENRES_KEY = "genres";
     private static final String PLAYLISTS_KEY = "playlists";
 
+    private static final String SKIP_BACKWARD_KEY = "skipBackward";
+    private static final String SKIP_FORWARD_KEY = "skipForward";
+
     private static final String MINIMIZE_KEY = "minimize";
 
     private static final String LOCATION_X_KEY = "locationX";
@@ -253,6 +256,8 @@ public class MainFrame extends JFrame implements Runnable {
     private static final int ARTIST_TAB_INDEX = 0;
     private static final int GENRE_TAB_INDEX = 1;
     private static final int PLAYLIST_TAB_INDEX = 2;
+
+    private static final double SKIP = 5; // seconds
 
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(MainFrame.class.getName());
 
@@ -389,6 +394,30 @@ public class MainFrame extends JFrame implements Runnable {
             @Override
             public void actionPerformed(ActionEvent event) {
                 collectionTabbedPane.setSelectedIndex(PLAYLIST_TAB_INDEX);
+            }
+        });
+
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, shortcutModifier, false), SKIP_BACKWARD_KEY);
+        actionMap.put(SKIP_BACKWARD_KEY, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                if (audioPlayer != null) {
+                    audioPlayer.setPosition(Math.max(audioPlayer.getPosition() - SKIP, 0));
+                }
+            }
+        });
+
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, shortcutModifier, false), SKIP_FORWARD_KEY);
+        actionMap.put(SKIP_FORWARD_KEY, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                if (audioPlayer != null) {
+                    var currentSong = getCurrentSong();
+
+                    if (currentSong != null) {
+                        audioPlayer.setPosition(Math.min(audioPlayer.getPosition() + SKIP, currentSong.getTime()));
+                    }
+                }
             }
         });
 
