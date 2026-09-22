@@ -4,7 +4,7 @@
 
 <column-panel spacing="8" padding="8" opaque="true">
     <form-panel>
-        <text-field name="artistTextField" label="artist" columns="24"/>
+        <text-field name="artistTextField" label="artist" columns="32"/>
         <text-field name="albumTextField" label="album" columns="32"/>
         <text-field name="titleTextField" label="title" columns="32"/>
 

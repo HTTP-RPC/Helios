@@ -4,7 +4,11 @@
 
 <column-panel spacing="8" padding="8" opaque="true">
     <form-panel>
-        <text-field name="nameTextField" label="name" columns="24"/>
+        <text-field name="artistTextField" label="artist" columns="32"/>
+        <text-field name="albumTextField" label="album" columns="32"/>
+
+        <spacer height="4"/>
+
         <suggestion-picker name="genreSuggestionPicker" label="genre" columns="12"/>
         <number-field name="yearTextField" label="year" columns="4"/>
 

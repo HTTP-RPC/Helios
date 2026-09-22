@@ -482,6 +482,7 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
     private void editAlbum() {
         var artistAlbum = artistAlbumList.getSelectedValue();
 
+        var artist = artistAlbum.getArtist();
         var album = artistAlbum.getAlbum();
 
         var songs = albums.get(album);
@@ -498,7 +499,7 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
 
         var mainFrame = MainFrame.getInstance();
 
-        var editAlbumDialog = new EditAlbumDialog(mainFrame, album, songs, genre, year, compilation);
+        var editAlbumDialog = new EditAlbumDialog(mainFrame, artist, album, songs, genre, year, compilation);
 
         editAlbumDialog.pack();
         editAlbumDialog.setLocationRelativeTo(mainFrame);

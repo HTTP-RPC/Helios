@@ -186,7 +186,7 @@ public class AlbumDetailPanel extends StackPanel {
     private void editAlbum() {
         var mainFrame = MainFrame.getInstance();
 
-        var editAlbumDialog = new EditAlbumDialog(mainFrame, name, songs, genre, year, compilation);
+        var editAlbumDialog = new EditAlbumDialog(mainFrame, artist.getName(), name, songs, genre, year, compilation);
 
         editAlbumDialog.pack();
         editAlbumDialog.setLocationRelativeTo(mainFrame);

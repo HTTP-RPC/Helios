@@ -29,7 +29,8 @@ import java.util.ResourceBundle;
 import static org.httprpc.kilo.util.Optionals.*;
 
 public class EditAlbumDialog extends AbstractDialog {
-    private String name;
+    private String artist;
+    private String album;
     private List<Song> songs;
 
     private String genre;
@@ -37,7 +38,9 @@ public class EditAlbumDialog extends AbstractDialog {
 
     private boolean compilation;
 
-    private @Outlet JTextField nameTextField = null;
+    private @Outlet JTextField artistTextField = null;
+    private @Outlet JTextField albumTextField = null;
+
     private @Outlet SuggestionPicker genreSuggestionPicker = null;
     private @Outlet NumberField yearTextField = null;
 
@@ -48,12 +51,13 @@ public class EditAlbumDialog extends AbstractDialog {
 
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(EditAlbumDialog.class.getName());
 
-    public EditAlbumDialog(MainFrame owner, String name, List<Song> songs,
+    public EditAlbumDialog(MainFrame owner, String artist, String album, List<Song> songs,
         String genre, Integer year,
         boolean compilation) {
         super(owner);
 
-        this.name = name;
+        this.artist = artist;
+        this.album = album;
         this.songs = songs;
 
         this.genre = genre;
@@ -65,11 +69,15 @@ public class EditAlbumDialog extends AbstractDialog {
 
         setContentPane(UILoader.load(this, "EditAlbumDialog.xml", resourceBundle));
 
+        artistTextField.setEnabled(!compilation);
+
         var integerFormat = NumberFormat.getIntegerInstance();
 
         integerFormat.setGroupingUsed(false);
 
         yearTextField.setFormat(integerFormat);
+
+        compilationCheckBox.addActionListener(event -> updateCompilation());
 
         cancelButton.addActionListener(event -> cancel());
         okButton.addActionListener(event -> save());
@@ -88,6 +96,16 @@ public class EditAlbumDialog extends AbstractDialog {
         super.setVisible(visible);
     }
 
+    private void updateCompilation() {
+        if (compilationCheckBox.isSelected()) {
+            artistTextField.setText(null);
+            artistTextField.setEnabled(false);
+        } else {
+            artistTextField.setText(artist);
+            artistTextField.setEnabled(true);
+        }
+    }
+
     @Override
     protected void cancel() {
         if (cancelButton.isEnabled()) {
@@ -96,7 +114,8 @@ public class EditAlbumDialog extends AbstractDialog {
     }
 
     private void load() {
-        nameTextField.setText(name);
+        artistTextField.setText(artist);
+        albumTextField.setText(album);
 
         genreSuggestionPicker.setText(genre);
         genreSuggestionPicker.setSuggestions(MusicLibrary.getGenreSuggestions());
@@ -107,10 +126,12 @@ public class EditAlbumDialog extends AbstractDialog {
     }
 
     private void save() {
-        var name = nameTextField.getText().strip();
+        var artist = artistTextField.getText().strip();
 
-        if (name.isEmpty()) {
-            alertRequired("name", nameTextField);
+        var album = albumTextField.getText().strip();
+
+        if (album.isEmpty()) {
+            alertRequired("artist", albumTextField);
             return;
         }
 
@@ -120,9 +141,16 @@ public class EditAlbumDialog extends AbstractDialog {
 
         var compilation = compilationCheckBox.isSelected();
 
-        if (compilation && genre.isEmpty()) {
-            alertRequired("genre", genreSuggestionPicker);
-            return;
+        if (compilation) {
+            if (genre.isEmpty()) {
+                alertRequired("genre", genreSuggestionPicker);
+                return;
+            }
+        } else {
+            if (artist.isEmpty()) {
+                alertRequired("artist", artistTextField);
+                return;
+            }
         }
 
         getGlassPane().setVisible(true);
@@ -137,8 +165,8 @@ public class EditAlbumDialog extends AbstractDialog {
                 var song = new Song();
 
                 song.setID(previousSong.getID());
-                song.setArtist(previousSong.getArtist());
-                song.setAlbum(name);
+                song.setArtist(compilation ? previousSong.getArtist() : artist);
+                song.setAlbum(album);
                 song.setTitle(previousSong.getTitle());
                 song.setTime(previousSong.getTime());
                 song.setGenre(genre);
