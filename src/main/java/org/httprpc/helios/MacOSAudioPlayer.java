@@ -25,9 +25,11 @@ import static org.httprpc.kilo.util.Collections.*;
 
 public class MacOSAudioPlayer implements AudioPlayer {
     private interface ObjectiveCRuntime extends Library {
-        ObjectiveCRuntime instance = Native.load("objc.A", ObjectiveCRuntime.class, mapOf(
+        ObjectiveCRuntime instance = Native.load("objc", ObjectiveCRuntime.class, mapOf(
             entry(Library.OPTION_FUNCTION_MAPPER, (FunctionMapper)(library, method) -> {
-                if (method.getName().equals("objc_msgSend_fpret")) {
+                var name = method.getName();
+
+                if (name.equals("objc_msgSend_float") || name.equals("objc_msgSend_double")) {
                     return "objc_msgSend";
                 } else {
                     return method.getName();
@@ -43,7 +45,9 @@ public class MacOSAudioPlayer implements AudioPlayer {
         long objc_msgSend(Pointer self, Pointer selector, Object arg);
         long objc_msgSend(Pointer self, Pointer selector, Object arg1, Object arg2);
 
-        double objc_msgSend_fpret(Pointer self, Pointer selector);
+        float objc_msgSend_float(Pointer self, Pointer selector);
+
+        double objc_msgSend_double(Pointer self, Pointer selector);
 
         Pointer alloc = instance.sel_registerName("alloc");
         Pointer release = instance.sel_registerName("release");
@@ -83,6 +87,9 @@ public class MacOSAudioPlayer implements AudioPlayer {
 
             Pointer currentTime = ObjectiveCRuntime.instance.sel_registerName("currentTime");
             Pointer setCurrentTime = ObjectiveCRuntime.instance.sel_registerName("setCurrentTime:");
+
+            Pointer volume = ObjectiveCRuntime.instance.sel_registerName("volume");
+            Pointer setVolume = ObjectiveCRuntime.instance.sel_registerName("setVolume:");
         }
     }
 
@@ -124,12 +131,22 @@ public class MacOSAudioPlayer implements AudioPlayer {
 
     @Override
     public double getPosition() {
-        return ObjectiveCRuntime.instance.objc_msgSend_fpret(audioPlayer, AVFoundation.AVAudioPlayer.currentTime);
+        return ObjectiveCRuntime.instance.objc_msgSend_double(audioPlayer, AVFoundation.AVAudioPlayer.currentTime);
     }
 
     @Override
     public void setPosition(double position) {
         ObjectiveCRuntime.instance.objc_msgSend(audioPlayer, AVFoundation.AVAudioPlayer.setCurrentTime, position);
+    }
+
+    @Override
+    public double getVolume() {
+        return ObjectiveCRuntime.instance.objc_msgSend_float(audioPlayer, AVFoundation.AVAudioPlayer.volume);
+    }
+
+    @Override
+    public void setVolume(double volume) {
+        ObjectiveCRuntime.instance.objc_msgSend(audioPlayer, AVFoundation.AVAudioPlayer.setVolume, (float)volume);
     }
 
     @Override

@@ -542,7 +542,13 @@ public class MainFrame extends JFrame implements Runnable {
         positionProgressBar.setValue(0);
 
         volumeSlider.setValue(volumeSlider.getMaximum());
-        volumeSlider.addChangeListener(event -> updateVolume());
+        volumeSlider.addChangeListener(event -> {
+            if (volumeSlider.getValueIsAdjusting()) {
+                return;
+            }
+
+            updateVolume();
+        });
 
         getAlbumArtworkButton.addActionListener(event -> getAlbumArtwork());
 
@@ -883,6 +889,7 @@ public class MainFrame extends JFrame implements Runnable {
         }
 
         updateControls();
+        updateVolume();
 
         if (queueDialog != null) {
             queueDialog.update(queueIndex);
@@ -1104,7 +1111,9 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     private void updateVolume() {
-        // TODO
+        if (audioPlayer != null) {
+            audioPlayer.setVolume((float)volumeSlider.getValue() / volumeSlider.getMaximum());
+        }
     }
 
     private void getAlbumArtwork() {

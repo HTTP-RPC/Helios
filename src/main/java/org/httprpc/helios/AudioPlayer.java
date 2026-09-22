@@ -28,6 +28,9 @@ public interface AudioPlayer {
     double getPosition();
     void setPosition(double position);
 
+    double getVolume();
+    void setVolume(double volume);
+
     void dispose();
 
     static AudioPlayer create(Path contentPath) {
@@ -63,7 +66,17 @@ public interface AudioPlayer {
 
                 @Override
                 public void setPosition(double position) {
-                    throw new UnsupportedOperationException();
+                    // No-op
+                }
+
+                @Override
+                public double getVolume() {
+                    return 0.0;
+                }
+
+                @Override
+                public void setVolume(double volume) {
+                    // No-op
                 }
 
                 @Override

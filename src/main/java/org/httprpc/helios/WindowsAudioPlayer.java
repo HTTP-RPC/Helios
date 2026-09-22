@@ -53,6 +53,17 @@ public class WindowsAudioPlayer implements AudioPlayer {
     }
 
     @Override
+    public double getVolume() {
+        // TODO
+        return 0.0;
+    }
+
+    @Override
+    public void setVolume(double volume) {
+        // TODO
+    }
+
+    @Override
     public void dispose() {
         // TODO
     }
