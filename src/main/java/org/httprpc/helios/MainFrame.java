@@ -263,6 +263,8 @@ public class MainFrame extends JFrame implements Runnable {
 
     private static final String MINIMIZE_KEY = "minimize";
 
+    private static final String VOLUME_KEY = "volume";
+
     private static final String LOCATION_X_KEY = "locationX";
     private static final String LOCATION_Y_KEY = "locationY";
     private static final String SIZE_WIDTH_KEY = "sizeWidth";
@@ -541,7 +543,9 @@ public class MainFrame extends JFrame implements Runnable {
 
         positionProgressBar.setValue(0);
 
-        volumeSlider.setValue(volumeSlider.getMaximum());
+        var volume = Math.clamp(preferences.getDouble(VOLUME_KEY, 1.0), 0.0, 1.0);
+
+        volumeSlider.setValue((int)Math.round(volume * volumeSlider.getMaximum()));
         volumeSlider.addChangeListener(event -> {
             if (volumeSlider.getValueIsAdjusting()) {
                 return;
@@ -634,6 +638,10 @@ public class MainFrame extends JFrame implements Runnable {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent windowEvent) {
+                var volume = (double)volumeSlider.getValue() / volumeSlider.getMaximum();
+
+                preferences.putDouble(VOLUME_KEY, volume);
+
                 var location = getLocation();
 
                 preferences.putInt(LOCATION_X_KEY, location.x);
