@@ -71,6 +71,8 @@ public class SongDetailPanel extends StackPanel {
 
         titleLabel.setText(song.getTitle());
 
+        titleLabel.setEnabled(!song.isCompilation());
+
         playSongButton.addActionListener(event -> playSong());
         playSongButton.setVisible(false);
 
