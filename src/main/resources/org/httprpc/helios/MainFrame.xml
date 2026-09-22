@@ -4,7 +4,7 @@
 
 <column-panel spacing="1" opaque="true" background="Component.borderColor">
     <row-panel spacing="16" padding="4" opaque="true" background="Panel.background">
-        <row-panel spacing="8" weight="1.25">
+        <row-panel spacing="8" weight="1">
             <row-panel spacing="2">
                 <column-panel>
                     <spacer weight="1"/>
@@ -67,7 +67,7 @@
             </column-panel>
         </row-panel>
 
-        <column-panel name="currentSongPanel" spacing="4" weight="2.5">
+        <column-panel name="currentSongPanel" spacing="4" weight="1.5">
             <row-panel spacing="8">
                 <column-panel>
                     <spacer weight="1"/>
@@ -97,8 +97,18 @@
             <progress-bar name="positionProgressBar"/>
         </column-panel>
 
-        <row-panel spacing="8" weight="1.25">
+        <row-panel spacing="8" weight="1">
             <spacer weight="1"/>
+
+            <column-panel>
+                <spacer weight="1"/>
+                <row-panel>
+                    <label icon="icons/volume_down_24dp.svg; 16" enabled="false"/>
+                    <slider name="volumeSlider" width="120" focusable="false"/>
+                    <label icon="icons/volume_up_24dp.svg; 16" enabled="false"/>
+                </row-panel>
+                <spacer weight="1"/>
+            </column-panel>
 
             <column-panel>
                 <spacer weight="1"/>
