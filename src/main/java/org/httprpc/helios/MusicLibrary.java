@@ -913,39 +913,35 @@ public class MusicLibrary {
             throw new RuntimeException(exception);
         }
 
-        try (var contentPaths = Files.list(getContentPath(artist, album))) {
-            for (var contentPath : iterableOf(contentPaths)) {
+        for (var contentPath : getContentPaths(artist, album, compilation)) {
+            try {
+                AudioFile audioFile;
                 try {
-                    AudioFile audioFile;
-                    try {
-                        audioFile = AudioFileIO.read(contentPath.toFile());
-                    } catch (CannotReadException | TagException | InvalidAudioFrameException | ReadOnlyFileException exception) {
-                        throw new IOException(exception);
-                    }
+                    audioFile = AudioFileIO.read(contentPath.toFile());
+                } catch (CannotReadException | TagException | InvalidAudioFrameException | ReadOnlyFileException exception) {
+                    throw new IOException(exception);
+                }
 
-                    var tag = audioFile.getTag();
+                var tag = audioFile.getTag();
 
-                    var artworkField = new StandardArtwork();
+                var artworkField = new StandardArtwork();
 
-                    artworkField.setBinaryData(binaryData);
+                artworkField.setBinaryData(binaryData);
 
-                    try {
-                        tag.setField(artworkField);
-                    } catch (FieldDataInvalidException exception) {
-                        throw new IOException(exception);
-                    }
+                try {
+                    tag.setField(artworkField);
+                } catch (FieldDataInvalidException exception) {
+                    throw new IOException(exception);
+                }
 
-                    try {
-                        AudioFileIO.write(audioFile);
-                    } catch (CannotWriteException exception) {
-                        throw new RuntimeException(exception);
-                    }
-                } catch (IOException exception) {
+                try {
+                    AudioFileIO.write(audioFile);
+                } catch (CannotWriteException exception) {
                     throw new RuntimeException(exception);
                 }
+            } catch (IOException exception) {
+                throw new RuntimeException(exception);
             }
-        } catch (IOException exception) {
-            throw new RuntimeException(exception);
         }
     }
 
@@ -956,31 +952,52 @@ public class MusicLibrary {
             throw new RuntimeException(exception);
         }
 
-        try (var contentPaths = Files.list(getContentPath(artist, album))) {
-            for (var contentPath : iterableOf(contentPaths)) {
+        for (var contentPath : getContentPaths(artist, album, compilation)) {
+            try {
+                AudioFile audioFile;
                 try {
-                    AudioFile audioFile;
-                    try {
-                        audioFile = AudioFileIO.read(contentPath.toFile());
-                    } catch (CannotReadException | TagException | InvalidAudioFrameException | ReadOnlyFileException exception) {
-                        throw new IOException(exception);
-                    }
+                    audioFile = AudioFileIO.read(contentPath.toFile());
+                } catch (CannotReadException | TagException | InvalidAudioFrameException | ReadOnlyFileException exception) {
+                    throw new IOException(exception);
+                }
 
-                    var tag = audioFile.getTag();
+                var tag = audioFile.getTag();
 
-                    tag.deleteArtworkField();
+                tag.deleteArtworkField();
 
-                    try {
-                        AudioFileIO.write(audioFile);
-                    } catch (CannotWriteException exception) {
-                        throw new RuntimeException(exception);
-                    }
-                } catch (IOException exception) {
+                try {
+                    AudioFileIO.write(audioFile);
+                } catch (CannotWriteException exception) {
                     throw new RuntimeException(exception);
                 }
+            } catch (IOException exception) {
+                throw new RuntimeException(exception);
             }
-        } catch (IOException exception) {
-            throw new RuntimeException(exception);
+        }
+    }
+
+    private static List<Path> getContentPaths(String artist, String album, boolean compilation) {
+        if (compilation) {
+            var queryBuilder = new QueryBuilder();
+
+            queryBuilder.append("select artist, album, title, type from Song ");
+            queryBuilder.append("where album = :album and compilation = true");
+
+            try (var connection = openConnection();
+                var statement = queryBuilder.prepare(connection);
+                var results = queryBuilder.executeQuery(statement, mapOf(
+                    entry("album", album)
+                ))) {
+                return listOf(mapAll(mapAll(results, BeanAdapter.toType(Song.class)), MusicLibrary::getContentPath));
+            } catch (SQLException exception) {
+                throw new RuntimeException(exception);
+            }
+        } else {
+            try (var stream = Files.list(getContentPath(artist, album))) {
+                return listOf(iterableOf(stream));
+            } catch (IOException exception) {
+                throw new RuntimeException(exception);
+            }
         }
     }
 
