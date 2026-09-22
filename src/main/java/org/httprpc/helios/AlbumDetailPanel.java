@@ -325,4 +325,14 @@ public class AlbumDetailPanel extends StackPanel {
             }
         }
     }
+
+    public void deactivate() {
+        var n = songListPanel.getComponentCount();
+
+        for (var i = 0; i < n; i++) {
+            if (songListPanel.getComponent(i) instanceof SongDetailPanel songDetailPanel) {
+                songDetailPanel.deactivate();
+            }
+        }
+    }
 }

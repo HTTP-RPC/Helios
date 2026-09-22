@@ -658,6 +658,14 @@ public class MainFrame extends JFrame implements Runnable {
                     // No-op
                 }
             }
+
+            @Override
+            public void windowDeactivated(WindowEvent event) {
+                if (collectionTabbedPane.getSelectedIndex() == ARTIST_TAB_INDEX
+                    && getCollectionDetailView() instanceof ArtistDetailPanel artistDetailPanel) {
+                    artistDetailPanel.deactivate();
+                }
+            }
         });
 
         setTransferHandler(new TransferHandler() {

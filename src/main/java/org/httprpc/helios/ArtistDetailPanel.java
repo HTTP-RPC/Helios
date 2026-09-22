@@ -66,6 +66,16 @@ public class ArtistDetailPanel extends StackPanel implements LibraryDetail {
         }
     }
 
+    public void deactivate() {
+        var n = albumListPanel.getComponentCount();
+
+        for (var i = 0; i < n; i++) {
+            if (albumListPanel.getComponent(i) instanceof AlbumDetailPanel albumDetailPanel) {
+                albumDetailPanel.deactivate();
+            }
+        }
+    }
+
     public void scrollToSong(Song song) {
         var album = song.getAlbum();
 

@@ -286,4 +286,8 @@ public class SongDetailPanel extends StackPanel {
         trackNumberLabel.setVisible(!current);
         nowPlayingLabel.setVisible(current);
     }
+
+    public void deactivate() {
+        hideButtons();
+    }
 }
