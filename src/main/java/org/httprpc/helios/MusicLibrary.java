@@ -569,6 +569,8 @@ public class MusicLibrary {
                 Files.copy(previousContentPath, contentPath, StandardCopyOption.REPLACE_EXISTING);
 
                 deleteSong(previousContentPath);
+
+                deleteCompilationArtwork(previousSong);
             } catch (IOException exception) {
                 throw new RuntimeException(exception);
             }
