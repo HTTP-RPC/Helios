@@ -291,8 +291,8 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(GenreDetailPanel.class.getName());
 
     private static Comparator<ArtistAlbum> artistComparator = (albumArtist1, albumArtist2) -> {
-        var artist1 = albumArtist1.getArtist();
-        var artist2 = albumArtist2.getArtist();
+        var artist1 = albumArtist1.getSortableArtist();
+        var artist2 = albumArtist2.getSortableArtist();
 
         if (artist1.isEmpty() && artist2.isEmpty()) {
             return 0;
@@ -305,7 +305,7 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
         }
     };
 
-    private static Comparator<ArtistAlbum> artistAlbumComparator = artistComparator.thenComparing(ArtistAlbum::getAlbum);
+    private static Comparator<ArtistAlbum> artistAlbumComparator = artistComparator.thenComparing(ArtistAlbum::getSortableAlbum);
 
     public GenreDetailPanel(Genre genre, SequencedMap<String, List<Song>> albums) {
         this.albums = albums;
