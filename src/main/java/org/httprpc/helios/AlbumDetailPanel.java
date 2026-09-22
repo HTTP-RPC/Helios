@@ -31,6 +31,7 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 import javax.swing.filechooser.FileFilter;
+import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -125,6 +126,14 @@ public class AlbumDetailPanel extends StackPanel {
                 hideArtworkButtons();
             }
         });
+
+        genreLabel.setText("A");
+        genreLabel.setPreferredSize(new Dimension(artworkImagePane.getPreferredSize().width,
+            genreLabel.getPreferredSize().height));
+
+        yearLabel.setText("A");
+        yearLabel.setPreferredSize(new Dimension(artworkImagePane.getPreferredSize().width,
+            yearLabel.getPreferredSize().height));
 
         songListPanel.setBorder(new CompoundBorder(
             new MatteBorder(1, 0, 0, 0, UIManager.getColor("Component.borderColor")),
