@@ -557,11 +557,15 @@ public class MusicLibrary {
                 Files.copy(previousContentPath, contentPath, StandardCopyOption.REPLACE_EXISTING);
 
                 deleteSong(previousContentPath);
-
-                extractAlbumArtwork(song, tag);
             } catch (IOException exception) {
                 throw new RuntimeException(exception);
             }
+        }
+
+        try {
+            extractAlbumArtwork(song, tag);
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
         }
 
         return true;
