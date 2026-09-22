@@ -39,6 +39,7 @@ import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
+import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
 import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
@@ -206,6 +207,8 @@ public class MainFrame extends JFrame implements Runnable {
     private @Outlet JButton goToSongButton = null;
 
     private @Outlet JProgressBar positionProgressBar = null;
+
+    private @Outlet JSlider volumeSlider = null;
 
     private @Outlet ActivityIndicator albumArtworkActivityIndicator = null;
     private @Outlet JButton getAlbumArtworkButton = null;
@@ -537,6 +540,9 @@ public class MainFrame extends JFrame implements Runnable {
         goToSongButton.addActionListener(event -> showSong(queue.get(queueIndex)));
 
         positionProgressBar.setValue(0);
+
+        volumeSlider.setValue(volumeSlider.getMaximum());
+        volumeSlider.addChangeListener(event -> updateVolume());
 
         getAlbumArtworkButton.addActionListener(event -> getAlbumArtwork());
 
@@ -1095,6 +1101,10 @@ public class MainFrame extends JFrame implements Runnable {
                 }
             }
         }
+    }
+
+    private void updateVolume() {
+        // TODO
     }
 
     private void getAlbumArtwork() {

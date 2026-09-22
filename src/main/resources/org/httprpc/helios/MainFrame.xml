@@ -104,7 +104,7 @@
                 <spacer weight="1"/>
                 <row-panel>
                     <label icon="icons/volume_down_24dp.svg; 16" enabled="false"/>
-                    <slider name="volumeSlider" width="120" focusable="false"/>
+                    <slider name="volumeSlider" width="100" focusable="false" toolTipText="adjustVolume"/>
                     <label icon="icons/volume_up_24dp.svg; 16" enabled="false"/>
                 </row-panel>
                 <spacer weight="1"/>
