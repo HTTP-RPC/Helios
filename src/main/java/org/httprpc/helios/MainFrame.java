@@ -838,7 +838,7 @@ public class MainFrame extends JFrame implements Runnable {
 
         unloadSong();
 
-        if (elapsedTime < 2500 && queueIndex > 0) {
+        if (elapsedTime < 5 && queueIndex > 0) {
             queueIndex--;
         }
 
