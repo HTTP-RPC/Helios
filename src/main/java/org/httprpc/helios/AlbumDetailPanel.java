@@ -133,7 +133,11 @@ public class AlbumDetailPanel extends StackPanel {
 
         Integer lastDiscNumber = null;
 
-        for (var song : songs) {
+        var n = songs.size();
+
+        for (var i = 0; i < n; i++) {
+            var song = songs.get(i);
+
             genre = coalesce(genre, song::getGenre);
             year = coalesce(year, song::getYear);
 
@@ -149,7 +153,7 @@ public class AlbumDetailPanel extends StackPanel {
 
             compilation |= song.isCompilation();
 
-            songListPanel.add(new SongDetailPanel(song));
+            songListPanel.add(new SongDetailPanel(songs, i));
         }
 
         genreLabel.setText(genre);

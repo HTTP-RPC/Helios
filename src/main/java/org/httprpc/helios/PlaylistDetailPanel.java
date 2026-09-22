@@ -132,6 +132,8 @@ public class PlaylistDetailPanel extends StackPanel {
 
             if (selectedRows.length == 0) {
                 MainFrame.getInstance().playAll(songs);
+            } else if (selectedRows.length == 1) {
+                MainFrame.getInstance().playAll(songs.subList(selectedRows[0], songs.size()));
             } else {
                 MainFrame.getInstance().playAll(listOf(mapAll(iterableOf(selectedRows), songs::get)));
             }

@@ -11,9 +11,9 @@
     <label name="titleLabel" weight="1"/>
 
     <row-panel>
-        <button name="playSongButton" icon="icons/play_arrow_24dp.svg; 18"
+        <button name="playFromButton" icon="icons/play_arrow_24dp.svg; 18"
             focusable="false"
-            toolTipText="playSong"
+            toolTipText="playFrom"
             style="buttonType: borderless"/>
 
         <spacer width="2"/>

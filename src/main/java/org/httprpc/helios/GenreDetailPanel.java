@@ -344,16 +344,16 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
             var artistAlbum = artistAlbumList.getSelectedValue();
 
             List<Song> songs;
-            if (artistAlbum != null) {
-                var song = songList.getSelectedValue();
-
-                if (song != null) {
-                    songs = listOf(song);
-                } else {
-                    songs = albums.get(artistAlbum.getAlbum());
-                }
-            } else {
+            if (artistAlbum == null) {
                 songs = listOf(flatten(mapAll(artistAlbums, ArtistAlbum::getAlbum), albums::get));
+            } else {
+                songs = albums.get(artistAlbum.getAlbum());
+
+                var songIndex = songList.getSelectedIndex();
+
+                if (songIndex != -1) {
+                    songs = songs.subList(songIndex, songs.size());
+                }
             }
 
             MainFrame.getInstance().playAll(songs);

@@ -43,14 +43,15 @@ import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Optionals.*;
 
 public class SongDetailPanel extends StackPanel {
-    private Song song;
+    private List<Song> songs;
+    private int songIndex;
 
     private @Outlet JLabel trackNumberLabel = null;
     private @Outlet JLabel nowPlayingLabel = null;
 
     private @Outlet JLabel titleLabel = null;
 
-    private @Outlet JButton playSongButton = null;
+    private @Outlet JButton playFromButton = null;
 
     private @Outlet MenuButton addToPlaylistButton = null;
     private @Outlet JButton editSongButton = null;
@@ -69,8 +70,9 @@ public class SongDetailPanel extends StackPanel {
 
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(SongDetailPanel.class.getName());
 
-    public SongDetailPanel(Song song) {
-        this.song = song;
+    public SongDetailPanel(List<Song> songs, int songIndex) {
+        this.songs = songs;
+        this.songIndex = songIndex;
 
         var content = UILoader.load(this, "SongDetailPanel.xml", resourceBundle);
 
@@ -79,14 +81,16 @@ public class SongDetailPanel extends StackPanel {
         trackNumberLabel.setText("000");
         trackNumberLabel.setPreferredSize(trackNumberLabel.getPreferredSize());
 
+        var song = songs.get(songIndex);
+
         trackNumberLabel.setText(map(song.getTrackNumber(), String::valueOf));
 
         titleLabel.setText(song.getTitle());
 
         titleLabel.setEnabled(!song.isCompilation());
 
-        playSongButton.addActionListener(event -> playSong());
-        playSongButton.setVisible(false);
+        playFromButton.addActionListener(event -> playFrom());
+        playFromButton.setVisible(false);
 
         addToPlaylistButton.setVisible(false);
 
@@ -121,7 +125,7 @@ public class SongDetailPanel extends StackPanel {
             }
         });
 
-        playSongButton.addMouseListener(new MouseAdapter() {
+        playFromButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseExited(MouseEvent event) {
                 hideButtons();
@@ -173,12 +177,12 @@ public class SongDetailPanel extends StackPanel {
         SwingUtilities.invokeLater(() -> playlists = MainFrame.getInstance().getPlaylists());
     }
 
-    private void playSong() {
-        MainFrame.getInstance().playAll(listOf(song));
+    private void playFrom() {
+        MainFrame.getInstance().playAll(listOf(songs.subList(songIndex, songs.size())));
     }
 
     private void addToPlaylist(Playlist playlist) {
-        MusicLibrary.addToPlaylist(playlist, song);
+        MusicLibrary.addToPlaylist(playlist, songs.get(songIndex));
 
         MainFrame.getInstance().loadPlaylists();
     }
@@ -186,7 +190,7 @@ public class SongDetailPanel extends StackPanel {
     private void editSong() {
         var mainFrame = MainFrame.getInstance();
 
-        var editSongDialog = new EditSongDialog(mainFrame, song);
+        var editSongDialog = new EditSongDialog(mainFrame, songs.get(songIndex));
 
         editSongDialog.pack();
         editSongDialog.setLocationRelativeTo(mainFrame);
@@ -195,6 +199,8 @@ public class SongDetailPanel extends StackPanel {
     }
 
     private void deleteSong() {
+        var song = songs.get(songIndex);
+
         var option = JOptionPane.showConfirmDialog(getTopLevelAncestor(),
             String.format(resourceBundle.getString("confirmDeleteMessageFormat"), song.getTitle()),
             resourceBundle.getString("deleteSong"),
@@ -239,7 +245,7 @@ public class SongDetailPanel extends StackPanel {
     private void showButtons() {
         setOpaque(true);
 
-        playSongButton.setVisible(true);
+        playFromButton.setVisible(true);
 
         if (!playlists.isEmpty()) {
             for (var playlist : playlists) {
@@ -264,7 +270,7 @@ public class SongDetailPanel extends StackPanel {
     private void hideButtons() {
         setOpaque(false);
 
-        playSongButton.setVisible(false);
+        playFromButton.setVisible(false);
 
         addToPlaylistButton.removeAll();
 
@@ -275,7 +281,7 @@ public class SongDetailPanel extends StackPanel {
     }
 
     public void showCurrentSong(Song song) {
-        var current = song != null && song.getID().equals(this.song.getID());
+        var current = song != null && song.getID().equals(songs.get(songIndex).getID());
 
         trackNumberLabel.setVisible(!current);
         nowPlayingLabel.setVisible(current);
