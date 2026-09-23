@@ -81,7 +81,7 @@
                     <row-panel alignToBaseline="true">
                         <label name="songTitleLabel" styleClass="h4" weight="1"/>
 
-                        <button name="goToSongButton" icon="icons/shortcut_24dp.svg; 12"
+                        <button name="goToSongButton" icon="icons/arrow_right_alt_24dp.svg; 12"
                             focusable="false"
                             style="buttonType: borderless"
                             toolTipText="goToSong"/>
