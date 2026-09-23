@@ -241,7 +241,35 @@ public class MainFrame extends JFrame implements Runnable {
 
     private AudioPlayer audioPlayer = null;
 
-    private Timer timer = new Timer(250, event -> updatePosition());
+    private Timer timer = new Timer(250, event -> {
+        if (audioPlayer.isPlaying()) {
+            updatePosition();
+        } else {
+            pause();
+            unloadSong();
+
+            queueIndex++;
+
+            var n = queue.size();
+
+            if (queueIndex == n && repeatButton.isSelected()) {
+                queueIndex = 0;
+            }
+
+            if (queueIndex < n) {
+                loadSong();
+                play();
+            } else {
+                songs = emptyListOf(Song.class);
+
+                queue.clear();
+
+                queueIndex = 0;
+            }
+
+            updateControls();
+        }
+    });
 
     private QueueDialog queueDialog = null;
 
@@ -427,9 +455,7 @@ public class MainFrame extends JFrame implements Runnable {
                 if (audioPlayer != null) {
                     audioPlayer.setPosition(Math.max(audioPlayer.getPosition() - SKIP, 0));
 
-                    if (!audioPlayer.isPlaying()) {
-                        positionProgressBar.setValue((int)Math.round(audioPlayer.getPosition()));
-                    }
+                    updatePosition();
                 }
             }
         });
@@ -441,9 +467,7 @@ public class MainFrame extends JFrame implements Runnable {
                 if (audioPlayer != null) {
                     audioPlayer.setPosition(Math.min(audioPlayer.getPosition() + SKIP, queue.get(queueIndex).getTime() - 1));
 
-                    if (!audioPlayer.isPlaying()) {
-                        positionProgressBar.setValue((int)Math.round(audioPlayer.getPosition()));
-                    }
+                    updatePosition();
                 }
             }
         });
@@ -933,41 +957,15 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     private void updatePosition() {
-        if (audioPlayer.isPlaying()) {
-            positionProgressBar.setValue((int)Math.round(audioPlayer.getPosition()));
+        positionProgressBar.setValue((int)Math.round(audioPlayer.getPosition()));
 
-            var elapsedDuration = Duration.ofSeconds(positionProgressBar.getValue());
-            var totalDuration = Duration.ofSeconds(positionProgressBar.getMaximum());
+        var elapsedDuration = Duration.ofSeconds(positionProgressBar.getValue());
+        var totalDuration = Duration.ofSeconds(positionProgressBar.getMaximum());
 
-            timeLabel.setText(String.format(resourceBundle.getString("timeFormat"),
-                elapsedDuration.toMinutesPart(), elapsedDuration.toSecondsPart(),
-                totalDuration.toMinutesPart(), totalDuration.toSecondsPart()
-            ));
-        } else {
-            pause();
-            unloadSong();
-
-            queueIndex++;
-
-            var n = queue.size();
-
-            if (queueIndex == n && repeatButton.isSelected()) {
-                queueIndex = 0;
-            }
-
-            if (queueIndex < n) {
-                loadSong();
-                play();
-            } else {
-                songs = emptyListOf(Song.class);
-
-                queue.clear();
-
-                queueIndex = 0;
-            }
-
-            updateControls();
-        }
+        timeLabel.setText(String.format(resourceBundle.getString("timeFormat"),
+            elapsedDuration.toMinutesPart(), elapsedDuration.toSecondsPart(),
+            totalDuration.toMinutesPart(), totalDuration.toSecondsPart()
+        ));
     }
 
     private void updateControls() {
