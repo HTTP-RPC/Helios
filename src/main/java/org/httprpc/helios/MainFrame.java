@@ -439,7 +439,7 @@ public class MainFrame extends JFrame implements Runnable {
             @Override
             public void actionPerformed(ActionEvent event) {
                 if (audioPlayer != null) {
-                    audioPlayer.setPosition(Math.min(audioPlayer.getPosition() + SKIP, queue.get(queueIndex).getTime()));
+                    audioPlayer.setPosition(Math.min(audioPlayer.getPosition() + SKIP, queue.get(queueIndex).getTime() - 1));
 
                     if (!audioPlayer.isPlaying()) {
                         positionProgressBar.setValue((int)Math.round(audioPlayer.getPosition()));
