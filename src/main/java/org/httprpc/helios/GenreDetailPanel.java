@@ -64,6 +64,8 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
     private static class ArtistAlbumCellRenderer extends ColumnPanel implements ListCellRenderer<ArtistAlbum> {
         ImagePane artworkImagePane;
 
+        JLabel missingArtworkLabel;
+
         JLabel albumLabel;
         JLabel artistLabel;
 
@@ -90,12 +92,12 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
                     stackPanel.add(new JLabel(), label -> {
                         var icon = new FlatSVGIcon(GenreDetailPanel.class.getResource("icons/photo_24dp.svg"));
 
-                        icon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> UIManager.getColor("Label.foreground")));
-
                         label.setIcon(icon);
 
                         label.setHorizontalAlignment(SwingConstants.CENTER);
                         label.setVerticalAlignment(SwingConstants.CENTER);
+
+                        missingArtworkLabel = label;
                     });
                 });
 
@@ -157,6 +159,10 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
             }
 
             setBackground(background);
+
+            var missingArtworkIcon = (FlatSVGIcon)missingArtworkLabel.getIcon();
+
+            missingArtworkIcon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> foreground));
 
             albumLabel.setForeground(foreground);
             artistLabel.setForeground(foreground);
