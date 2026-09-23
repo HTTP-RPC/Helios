@@ -1182,27 +1182,31 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     public static void main(String[] args) throws Exception {
+        var darkMode = map(preferences.get(MainFrame.DARK_MODE_KEY, null), Boolean::parseBoolean);
+
         if (Platform.isMac()) {
-            var standardUserDefaults = new Pointer(ObjectiveCRuntime.instance.objc_msgSend(Foundation.NSUserDefaults.type,
-                Foundation.NSUserDefaults.standardUserDefaults));
+            if (darkMode == null) {
+                var standardUserDefaults = new Pointer(ObjectiveCRuntime.instance.objc_msgSend(Foundation.NSUserDefaults.type,
+                    Foundation.NSUserDefaults.standardUserDefaults));
 
-            var key = new Pointer(ObjectiveCRuntime.instance.objc_msgSend(Foundation.NSString.type,
-                Foundation.NSString.stringWithUTF8String_,
-                "AppleInterfaceStyle"));
+                var key = new Pointer(ObjectiveCRuntime.instance.objc_msgSend(Foundation.NSString.type,
+                    Foundation.NSString.stringWithUTF8String_,
+                    "AppleInterfaceStyle"));
 
-            var interfaceStyle = new Pointer(ObjectiveCRuntime.instance.objc_msgSend(standardUserDefaults,
-                Foundation.NSUserDefaults.stringForKey_, key));
+                var interfaceStyle = new Pointer(ObjectiveCRuntime.instance.objc_msgSend(standardUserDefaults,
+                    Foundation.NSUserDefaults.stringForKey_, key));
 
-            var dark = coalesce(map(ObjectiveCRuntime.instance.objc_msgSend_String(interfaceStyle, Foundation.NSString.UTF8String),
-                value -> value.equalsIgnoreCase("dark")), () -> false);
+                darkMode = coalesce(map(ObjectiveCRuntime.instance.objc_msgSend_String(interfaceStyle, Foundation.NSString.UTF8String),
+                    value -> value.equalsIgnoreCase("dark")), () -> false);
+            }
 
-            if (preferences.getBoolean(DARK_MODE_KEY, dark)) {
+            if (darkMode) {
                 FlatMacDarkLaf.setup();
             } else {
                 FlatMacLightLaf.setup();
             }
         } else {
-            if (preferences.getBoolean(DARK_MODE_KEY, true)) {
+            if (coalesce(darkMode, () -> false)) {
                 FlatDarkLaf.setup();
             } else {
                 FlatLightLaf.setup();

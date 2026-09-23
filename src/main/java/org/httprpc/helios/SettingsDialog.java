@@ -14,7 +14,6 @@
 
 package org.httprpc.helios;
 
-import com.formdev.flatlaf.FlatLaf;
 import org.httprpc.sierra.Outlet;
 import org.httprpc.sierra.UILoader;
 
@@ -24,7 +23,10 @@ import java.util.ResourceBundle;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
+import static org.httprpc.kilo.util.Optionals.*;
+
 public class SettingsDialog extends AbstractDialog {
+    private @Outlet JRadioButton systemDefaultRadioButton = null;
     private @Outlet JRadioButton lightRadioButton = null;
     private @Outlet JRadioButton darkRadioButton = null;
 
@@ -60,9 +62,11 @@ public class SettingsDialog extends AbstractDialog {
     private void load() {
         var preferences = Preferences.userRoot().node(MainFrame.class.getName());
 
-        var darkMode = preferences.getBoolean(MainFrame.DARK_MODE_KEY, FlatLaf.isLafDark());
+        var darkMode = map(preferences.get(MainFrame.DARK_MODE_KEY, null), Boolean::parseBoolean);
 
-        if (darkMode) {
+        if (darkMode == null) {
+            systemDefaultRadioButton.setSelected(true);
+        } else if (darkMode) {
             darkRadioButton.setSelected(true);
         } else {
             lightRadioButton.setSelected(true);
@@ -72,7 +76,11 @@ public class SettingsDialog extends AbstractDialog {
     private void save() {
         var preferences = Preferences.userRoot().node(MainFrame.class.getName());
 
-        preferences.putBoolean(MainFrame.DARK_MODE_KEY, darkRadioButton.isSelected());
+        if (systemDefaultRadioButton.isSelected()) {
+            preferences.remove(MainFrame.DARK_MODE_KEY);
+        } else {
+            preferences.putBoolean(MainFrame.DARK_MODE_KEY, darkRadioButton.isSelected());
+        }
 
         try {
             preferences.flush();

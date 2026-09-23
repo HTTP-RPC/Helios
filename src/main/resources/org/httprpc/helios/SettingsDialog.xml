@@ -6,6 +6,7 @@
     <form-panel>
         <column-panel label="appearance" spacing="4">
             <column-panel>
+                <radio-button name="systemDefaultRadioButton" text="systemDefault" group="appearance"/>
                 <radio-button name="lightRadioButton" text="light" group="appearance"/>
                 <radio-button name="darkRadioButton" text="dark" group="appearance"/>
             </column-panel>
