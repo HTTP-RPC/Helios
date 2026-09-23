@@ -1179,15 +1179,15 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     public static void main(String[] args) throws Exception {
-        if (preferences.getBoolean(DARK_MODE_KEY, true)) {
-            if (Platform.isMac()) {
+        if (Platform.isMac()) {
+            if (preferences.getBoolean(DARK_MODE_KEY, true)) {
                 FlatMacDarkLaf.setup();
             } else {
-                FlatDarkLaf.setup();
+                FlatMacLightLaf.setup();
             }
         } else {
-            if (Platform.isMac()) {
-                FlatMacLightLaf.setup();
+            if (preferences.getBoolean(DARK_MODE_KEY, true)) {
+                FlatDarkLaf.setup();
             } else {
                 FlatLightLaf.setup();
             }
