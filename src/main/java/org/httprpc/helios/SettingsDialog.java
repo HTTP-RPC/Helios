@@ -36,7 +36,7 @@ public class SettingsDialog extends AbstractDialog {
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(SettingsDialog.class.getName());
 
     public SettingsDialog(MainFrame owner) {
-        super(owner);
+        super(owner, true);
 
         setTitle(resourceBundle.getString("windowTitle"));
 
