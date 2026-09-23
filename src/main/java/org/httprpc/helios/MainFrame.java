@@ -192,7 +192,7 @@ public class MainFrame extends JFrame implements Runnable {
     private @Outlet JToggleButton shuffleButton = null;
     private @Outlet JToggleButton repeatButton = null;
 
-    private @Outlet JToggleButton queueButton = null;
+    private @Outlet JButton showQueueButton = null;
 
     private @Outlet MenuButton addButton = null;
     private @Outlet JMenuItem addSongsMenuItem = null;
@@ -346,7 +346,7 @@ public class MainFrame extends JFrame implements Runnable {
         actionMap.put(QUEUE_KEY, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent event) {
-                queueButton.doClick();
+                showQueueButton.doClick();
             }
         });
 
@@ -532,9 +532,11 @@ public class MainFrame extends JFrame implements Runnable {
             }
         }));
 
-        queueButton.addActionListener(event -> {
-            if (queueButton.isSelected() || queueDialog != null) {
-                toggleQueueDialog();
+        showQueueButton.addActionListener(event -> {
+            if (queueDialog == null) {
+                showQueue();
+            } else {
+                queueDialog.toFront();
             }
         });
 
@@ -640,10 +642,6 @@ public class MainFrame extends JFrame implements Runnable {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent windowEvent) {
-                var volume = (double)volumeSlider.getValue() / volumeSlider.getMaximum();
-
-                preferences.putDouble(VOLUME_KEY, volume);
-
                 var location = getLocation();
 
                 preferences.putInt(LOCATION_X_KEY, location.x);
@@ -976,46 +974,38 @@ public class MainFrame extends JFrame implements Runnable {
         nextButton.setEnabled(queueIndex < n - 1);
     }
 
-    private void toggleQueueDialog() {
-        if (queueButton.isSelected()) {
-            queueDialog = new QueueDialog(this, queue, queueIndex);
+    private void showQueue() {
+        queueDialog = new QueueDialog(this, queue, queueIndex);
 
-            queueDialog.pack();
-            queueDialog.setLocationRelativeTo(this);
+        queueDialog.pack();
+        queueDialog.setLocationRelativeTo(this);
 
-            var preferences = Preferences.userRoot().node(QueueDialog.class.getName());
+        var preferences = Preferences.userRoot().node(QueueDialog.class.getName());
 
-            queueDialog.setLocation(preferences.getInt(LOCATION_X_KEY, queueDialog.getX()), preferences.getInt(LOCATION_Y_KEY, queueDialog.getY()));
+        queueDialog.setLocation(preferences.getInt(LOCATION_X_KEY, queueDialog.getX()), preferences.getInt(LOCATION_Y_KEY, queueDialog.getY()));
 
-            queueDialog.addWindowListener(new WindowAdapter() {
-                @Override
-                public void windowClosing(WindowEvent event) {
-                    var location = queueDialog.getLocation();
+        queueDialog.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent event) {
+                var location = queueDialog.getLocation();
 
-                    preferences.putInt(LOCATION_X_KEY, location.x);
-                    preferences.putInt(LOCATION_Y_KEY, location.y);
+                preferences.putInt(LOCATION_X_KEY, location.x);
+                preferences.putInt(LOCATION_Y_KEY, location.y);
 
-                    try {
-                        preferences.flush();
-                    } catch (BackingStoreException exception) {
-                        // No-op
-                    }
+                try {
+                    preferences.flush();
+                } catch (BackingStoreException exception) {
+                    // No-op
                 }
+            }
 
-                @Override
-                public void windowClosed(WindowEvent event) {
-                    queueButton.setSelected(false);
+            @Override
+            public void windowClosed(WindowEvent event) {
+                queueDialog = null;
+            }
+        });
 
-                    queueDialog = null;
-                }
-            });
-
-            queueDialog.setVisible(true);
-        } else {
-            queueDialog.dispose();
-
-            queueDialog = null;
-        }
+        queueDialog.setVisible(true);
     }
 
     private void addSongs() {
@@ -1116,8 +1106,18 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     private void updateVolume() {
+        var volume = (double)volumeSlider.getValue() / volumeSlider.getMaximum();
+
         if (audioPlayer != null) {
-            audioPlayer.setVolume((float)volumeSlider.getValue() / volumeSlider.getMaximum());
+            audioPlayer.setVolume((float)volume);
+        }
+
+        preferences.putDouble(VOLUME_KEY, volume);
+
+        try {
+            preferences.flush();
+        } catch (BackingStoreException exception) {
+            // No-op
         }
     }
 
