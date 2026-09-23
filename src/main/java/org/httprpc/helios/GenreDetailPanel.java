@@ -257,33 +257,22 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
 
     private @Outlet MenuButton addToPlaylistButton = null;
 
-    private @Outlet MenuButton editButton = null;
-    private @Outlet MenuButton deleteButton = null;
+    private @Outlet MenuButton editSelectionButton = null;
+    private @Outlet JMenuItem editAlbumMenuItem = null;
+    private @Outlet JMenuItem editArtworkMenuItem = null;
+
+    private @Outlet MenuButton deleteSelectionButton = null;
+    private @Outlet JMenuItem deleteAlbumMenuItem = null;
+    private @Outlet JMenuItem deleteArtworkMenuItem = null;
 
     private @Outlet JList<ArtistAlbum> artistAlbumList = null;
     private @Outlet JList<Song> songList = null;
-
-    private JMenuItem editAlbumMenuItem = new JMenuItem(resourceBundle.getString("album"), albumIcon);
-    private JMenuItem editArtworkMenuItem = new JMenuItem(resourceBundle.getString("artwork"), artworkIcon);
-
-    private JMenuItem deleteAlbumMenuItem = new JMenuItem(resourceBundle.getString("album"), albumIcon);
-    private JMenuItem deleteArtworkMenuItem = new JMenuItem(resourceBundle.getString("artwork"), artworkIcon);
 
     private static final FlatSVGIcon playlistIcon;
     static {
         playlistIcon = new FlatSVGIcon(GenreDetailPanel.class.getResource("icons/queue_music_24dp.svg")).derive(18, 18);
 
         playlistIcon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> UIManager.getColor("Button.foreground")));
-    }
-
-    private static final FlatSVGIcon albumIcon;
-    private static final FlatSVGIcon artworkIcon;
-    static {
-        albumIcon = new FlatSVGIcon(GenreDetailPanel.class.getResource("icons/album_24dp.svg")).derive(18, 18);
-        artworkIcon = new FlatSVGIcon(GenreDetailPanel.class.getResource("icons/photo_24dp.svg")).derive(18, 18);
-
-        albumIcon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> UIManager.getColor("Button.foreground")));
-        artworkIcon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> UIManager.getColor("Button.foreground")));
     }
 
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(GenreDetailPanel.class.getName());
@@ -359,7 +348,7 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
 
         addToPlaylistButton.setEnabled(false);
 
-        editButton.addActionListener(event -> {
+        editSelectionButton.addActionListener(event -> {
             if (songList.getSelectedValue() != null) {
                 editSong();
             }
@@ -368,7 +357,7 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
         editAlbumMenuItem.addActionListener(event -> editAlbum());
         editArtworkMenuItem.addActionListener(event -> editArtwork());
 
-        deleteButton.addActionListener(event -> {
+        deleteSelectionButton.addActionListener(event -> {
             if (songList.getSelectedValue() != null) {
                 deleteSong();
             }
@@ -653,25 +642,22 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
             if (songList.getSelectedValue() != null) {
                 addToPlaylistButton.setEnabled(addToPlaylistButton.getComponentPopupMenu().getComponentCount() > 0);
 
-                editButton.removeAll();
-                deleteButton.removeAll();
+                editSelectionButton.getComponentPopupMenu().setEnabled(false);
+                deleteSelectionButton.getComponentPopupMenu().setEnabled(false);
             } else {
                 addToPlaylistButton.setEnabled(false);
 
-                editButton.add(editAlbumMenuItem);
-                editButton.add(editArtworkMenuItem);
-
-                deleteButton.add(deleteAlbumMenuItem);
-                deleteButton.add(deleteArtworkMenuItem);
+                editSelectionButton.getComponentPopupMenu().setEnabled(true);
+                deleteSelectionButton.getComponentPopupMenu().setEnabled(true);
             }
 
-            editButton.setEnabled(true);
-            deleteButton.setEnabled(true);
+            editSelectionButton.setEnabled(true);
+            deleteSelectionButton.setEnabled(true);
         } else {
             addToPlaylistButton.setEnabled(false);
 
-            editButton.setEnabled(false);
-            deleteButton.setEnabled(false);
+            editSelectionButton.setEnabled(false);
+            deleteSelectionButton.setEnabled(false);
         }
     }
 
