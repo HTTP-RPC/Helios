@@ -14,85 +14,15 @@
 
 package org.httprpc.helios;
 
-import com.sun.jna.FunctionMapper;
-import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
+import org.httprpc.helios.macos.AVFoundation;
+import org.httprpc.helios.macos.Foundation;
+import org.httprpc.helios.macos.ObjectiveCRuntime;
 
 import java.nio.file.Path;
 
-import static org.httprpc.kilo.util.Collections.*;
-
 public class MacOSAudioPlayer implements AudioPlayer {
-    private interface ObjectiveCRuntime extends Library {
-        ObjectiveCRuntime instance = Native.load("objc", ObjectiveCRuntime.class, mapOf(
-            entry(Library.OPTION_FUNCTION_MAPPER, (FunctionMapper)(library, method) -> {
-                var name = method.getName();
-
-                if (name.equals("objc_msgSend_float") || name.equals("objc_msgSend_double")) {
-                    return "objc_msgSend";
-                } else {
-                    return method.getName();
-                }
-            })
-        ));
-
-        Pointer objc_getClass(String name);
-
-        Pointer sel_registerName(String name);
-
-        long objc_msgSend(Pointer self, Pointer selector);
-        long objc_msgSend(Pointer self, Pointer selector, Object arg);
-        long objc_msgSend(Pointer self, Pointer selector, Object arg1, Object arg2);
-
-        float objc_msgSend_float(Pointer self, Pointer selector);
-
-        double objc_msgSend_double(Pointer self, Pointer selector);
-
-        Pointer alloc = instance.sel_registerName("alloc");
-        Pointer release = instance.sel_registerName("release");
-
-        static Pointer alloc(Pointer type) {
-            return new Pointer(instance.objc_msgSend(type, alloc));
-        }
-
-        static void release(Pointer self) {
-            instance.objc_msgSend(self, release);
-        }
-    }
-
-    private interface Foundation extends Library {
-        interface NSString {
-            Pointer type = ObjectiveCRuntime.instance.objc_getClass("NSString");
-
-            Pointer stringWithUTF8String_ = ObjectiveCRuntime.instance.sel_registerName("stringWithUTF8String:");
-        }
-
-        interface NSURL {
-            Pointer type = ObjectiveCRuntime.instance.objc_getClass("NSURL");
-
-            Pointer fileURLWithPath_ = ObjectiveCRuntime.instance.sel_registerName("fileURLWithPath:");
-        }
-    }
-
-    private interface AVFoundation extends Library {
-        interface AVAudioPlayer {
-            Pointer type = ObjectiveCRuntime.instance.objc_getClass("AVAudioPlayer");
-
-            Pointer initWithContentsOfURL_Error_ = ObjectiveCRuntime.instance.sel_registerName("initWithContentsOfURL:error:");
-
-            Pointer play = ObjectiveCRuntime.instance.sel_registerName("play");
-            Pointer pause = ObjectiveCRuntime.instance.sel_registerName("pause");
-            Pointer isPlaying = ObjectiveCRuntime.instance.sel_registerName("isPlaying");
-
-            Pointer currentTime = ObjectiveCRuntime.instance.sel_registerName("currentTime");
-            Pointer setCurrentTime = ObjectiveCRuntime.instance.sel_registerName("setCurrentTime:");
-
-            Pointer volume = ObjectiveCRuntime.instance.sel_registerName("volume");
-            Pointer setVolume = ObjectiveCRuntime.instance.sel_registerName("setVolume:");
-        }
-    }
-
     static {
         Native.load(Foundation.class.getSimpleName(), Foundation.class);
         Native.load(AVFoundation.class.getSimpleName(), AVFoundation.class);
@@ -136,7 +66,7 @@ public class MacOSAudioPlayer implements AudioPlayer {
 
     @Override
     public void setPosition(double position) {
-        ObjectiveCRuntime.instance.objc_msgSend(audioPlayer, AVFoundation.AVAudioPlayer.setCurrentTime, position);
+        ObjectiveCRuntime.instance.objc_msgSend(audioPlayer, AVFoundation.AVAudioPlayer.setCurrentTime_, position);
     }
 
     @Override
@@ -146,7 +76,7 @@ public class MacOSAudioPlayer implements AudioPlayer {
 
     @Override
     public void setVolume(double volume) {
-        ObjectiveCRuntime.instance.objc_msgSend(audioPlayer, AVFoundation.AVAudioPlayer.setVolume, (float)volume);
+        ObjectiveCRuntime.instance.objc_msgSend(audioPlayer, AVFoundation.AVAudioPlayer.setVolume_, (float)volume);
     }
 
     @Override
