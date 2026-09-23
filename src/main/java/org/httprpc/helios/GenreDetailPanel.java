@@ -253,15 +253,15 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
     private SequencedMap<String, List<Song>> albums;
 
     private @Outlet JLabel nameLabel = null;
-    private @Outlet JButton playSelectionButton = null;
+    private @Outlet JButton playSelectedButton = null;
 
     private @Outlet MenuButton addToPlaylistButton = null;
 
-    private @Outlet MenuButton editSelectionButton = null;
+    private @Outlet MenuButton editSelectedButton = null;
     private @Outlet JMenuItem editAlbumMenuItem = null;
     private @Outlet JMenuItem editArtworkMenuItem = null;
 
-    private @Outlet MenuButton deleteSelectionButton = null;
+    private @Outlet MenuButton deleteSelectedButton = null;
     private @Outlet JMenuItem deleteAlbumMenuItem = null;
     private @Outlet JMenuItem deleteArtworkMenuItem = null;
 
@@ -327,7 +327,7 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
 
         nameLabel.setText(genre.getName());
 
-        playSelectionButton.addActionListener(event -> {
+        playSelectedButton.addActionListener(event -> {
             var artistAlbum = artistAlbumList.getSelectedValue();
 
             List<Song> songs;
@@ -348,7 +348,7 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
 
         addToPlaylistButton.setEnabled(false);
 
-        editSelectionButton.addActionListener(event -> {
+        editSelectedButton.addActionListener(event -> {
             if (songList.getSelectedValue() != null) {
                 editSong();
             }
@@ -357,7 +357,7 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
         editAlbumMenuItem.addActionListener(event -> editAlbum());
         editArtworkMenuItem.addActionListener(event -> editArtwork());
 
-        deleteSelectionButton.addActionListener(event -> {
+        deleteSelectedButton.addActionListener(event -> {
             if (songList.getSelectedValue() != null) {
                 deleteSong();
             }
@@ -642,22 +642,22 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
             if (songList.getSelectedValue() != null) {
                 addToPlaylistButton.setEnabled(addToPlaylistButton.getComponentPopupMenu().getComponentCount() > 0);
 
-                editSelectionButton.getComponentPopupMenu().setEnabled(false);
-                deleteSelectionButton.getComponentPopupMenu().setEnabled(false);
+                editSelectedButton.getComponentPopupMenu().setEnabled(false);
+                deleteSelectedButton.getComponentPopupMenu().setEnabled(false);
             } else {
                 addToPlaylistButton.setEnabled(false);
 
-                editSelectionButton.getComponentPopupMenu().setEnabled(true);
-                deleteSelectionButton.getComponentPopupMenu().setEnabled(true);
+                editSelectedButton.getComponentPopupMenu().setEnabled(true);
+                deleteSelectedButton.getComponentPopupMenu().setEnabled(true);
             }
 
-            editSelectionButton.setEnabled(true);
-            deleteSelectionButton.setEnabled(true);
+            editSelectedButton.setEnabled(true);
+            deleteSelectedButton.setEnabled(true);
         } else {
             addToPlaylistButton.setEnabled(false);
 
-            editSelectionButton.setEnabled(false);
-            deleteSelectionButton.setEnabled(false);
+            editSelectedButton.setEnabled(false);
+            deleteSelectedButton.setEnabled(false);
         }
     }
 
