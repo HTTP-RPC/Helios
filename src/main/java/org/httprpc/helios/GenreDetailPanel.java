@@ -36,6 +36,7 @@ import javax.swing.ListCellRenderer;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -81,10 +82,13 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
                     stackPanel.add(new ImagePane(), imagePane -> {
                         imagePane.setPreferredSize(new Dimension(IMAGE_SIZE, IMAGE_SIZE));
                         imagePane.setScaleMode(ImagePane.ScaleMode.FILL_WIDTH);
-                        imagePane.setBorder(UILoader.createRoundedLineBorder(UIManager.getColor("Component.borderColor"),
+
+                        var roundedLineBorder = UILoader.createRoundedLineBorder(UIManager.getColor("Component.borderColor"),
                             new BasicStroke(1,
                                 BasicStroke.CAP_ROUND,
-                                BasicStroke.JOIN_ROUND), 4));
+                                BasicStroke.JOIN_ROUND), 8);
+
+                        imagePane.setBorder(new CompoundBorder(roundedLineBorder, null));
 
                         artworkImagePane = imagePane;
                     });
