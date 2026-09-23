@@ -458,7 +458,7 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     public Song getCurrentSong() {
-        if (queueIndex < queue.size()) {
+        if (queueIndex < queue.size() && coalesce(map(audioPlayer, AudioPlayer::isPlaying), () -> false)) {
             return queue.get(queueIndex);
         } else {
             return null;
