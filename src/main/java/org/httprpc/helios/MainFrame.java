@@ -57,6 +57,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
+import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
@@ -501,7 +502,10 @@ public class MainFrame extends JFrame implements Runnable {
             }
         });
 
+        previousButton.setMargin(new Insets(0, 0, 0, 0));
         previousButton.addActionListener(event -> movePrevious());
+
+        nextButton.setMargin(new Insets(0, 0, 0, 0));
         nextButton.addActionListener(event -> moveNext());
 
         var shuffleIcon = (FlatSVGIcon)shuffleButton.getIcon();
