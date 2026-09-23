@@ -14,6 +14,7 @@
 
 package org.httprpc.helios;
 
+import com.formdev.flatlaf.FlatLaf;
 import org.httprpc.sierra.Outlet;
 import org.httprpc.sierra.UILoader;
 
@@ -59,7 +60,7 @@ public class SettingsDialog extends AbstractDialog {
     private void load() {
         var preferences = Preferences.userRoot().node(MainFrame.class.getName());
 
-        var darkMode = preferences.getBoolean(MainFrame.DARK_MODE_KEY, true);
+        var darkMode = preferences.getBoolean(MainFrame.DARK_MODE_KEY, FlatLaf.isLafDark());
 
         if (darkMode) {
             darkRadioButton.setSelected(true);
