@@ -485,7 +485,7 @@ public class MainFrame extends JFrame implements Runnable {
 
         pauseIcon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> {
             if (playPauseButton.isSelected()) {
-                return UIManager.getColor("Slider.thumbColor");
+                return UIManager.getColor("ProgressBar.foreground");
             } else {
                 return UILoader.getColor("Button.foreground");
             }
@@ -508,7 +508,7 @@ public class MainFrame extends JFrame implements Runnable {
 
         shuffleIcon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> {
             if (shuffleButton.isSelected() || shuffleButton.getModel().isPressed()) {
-                return UIManager.getColor("Slider.thumbColor");
+                return UIManager.getColor("ProgressBar.foreground");
             } else {
                 return UILoader.getColor("Button.foreground");
             }
@@ -526,7 +526,7 @@ public class MainFrame extends JFrame implements Runnable {
 
         repeatIcon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> {
             if (repeatButton.isSelected() || repeatButton.getModel().isPressed()) {
-                return UIManager.getColor("Slider.thumbColor");
+                return UIManager.getColor("ProgressBar.foreground");
             } else {
                 return UILoader.getColor("Button.foreground");
             }
