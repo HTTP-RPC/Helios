@@ -44,7 +44,6 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FocusTraversalPolicy;
-import java.awt.RenderingHints;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.image.BufferedImage;
@@ -718,15 +717,4 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
             artistAlbumList.requestFocus();
         });
     }
-
-    private static BufferedImage resizeImage(BufferedImage image, int width, int height) {
-        BufferedImage resizedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-
-        var graphics2D = resizedImage.createGraphics();
-
-        graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        graphics2D.drawImage(image, 0, 0, width, height, null);
-        graphics2D.dispose();
-
-        return resizedImage;
-    }}
+}
