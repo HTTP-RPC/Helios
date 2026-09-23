@@ -244,6 +244,7 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
             timeLabel.setForeground(foreground);
             artistLabel.setForeground(foreground);
 
+            nowPlayingLabel.setEnabled(selected);
             timeLabel.setEnabled(selected);
             artistLabel.setEnabled(selected);
 
