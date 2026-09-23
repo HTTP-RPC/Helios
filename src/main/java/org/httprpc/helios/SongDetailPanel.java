@@ -52,7 +52,6 @@ public class SongDetailPanel extends StackPanel {
     private @Outlet JLabel titleLabel = null;
 
     private @Outlet JButton playFromButton = null;
-
     private @Outlet MenuButton addToPlaylistButton = null;
     private @Outlet JButton editSongButton = null;
     private @Outlet JButton deleteSongButton = null;
@@ -246,6 +245,9 @@ public class SongDetailPanel extends StackPanel {
         setOpaque(true);
 
         playFromButton.setVisible(true);
+        addToPlaylistButton.setVisible(true);
+        editSongButton.setVisible(true);
+        deleteSongButton.setVisible(true);
 
         if (!playlists.isEmpty()) {
             for (var playlist : playlists) {
@@ -260,24 +262,17 @@ public class SongDetailPanel extends StackPanel {
         } else {
             addToPlaylistButton.setEnabled(false);
         }
-
-        addToPlaylistButton.setVisible(true);
-
-        editSongButton.setVisible(true);
-        deleteSongButton.setVisible(true);
     }
 
     private void hideButtons() {
         setOpaque(false);
 
         playFromButton.setVisible(false);
-
-        addToPlaylistButton.removeAll();
-
         addToPlaylistButton.setVisible(false);
-
         editSongButton.setVisible(false);
         deleteSongButton.setVisible(false);
+
+        addToPlaylistButton.removeAll();
     }
 
     public void showCurrentSong(Song song) {

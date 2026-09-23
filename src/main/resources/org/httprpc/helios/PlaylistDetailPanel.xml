@@ -18,8 +18,6 @@
                 toolTipText="removeFromPlaylist"
                 style="buttonType: borderless"/>
 
-            <spacer width="2"/>
-
             <button name="editNameButton" icon="icons/edit_24dp.svg; 16"
                 focusable="false"
                 toolTipText="editName"
