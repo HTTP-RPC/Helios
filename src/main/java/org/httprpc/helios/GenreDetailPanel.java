@@ -15,6 +15,7 @@
 package org.httprpc.helios;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import com.formdev.flatlaf.util.SystemFileChooser;
 import org.httprpc.sierra.BasicListModel;
 import org.httprpc.sierra.ColumnPanel;
 import org.httprpc.sierra.ImagePane;
@@ -27,7 +28,6 @@ import org.httprpc.sierra.UILoader;
 
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
@@ -37,7 +37,6 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
-import javax.swing.filechooser.FileFilter;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
@@ -47,7 +46,6 @@ import java.awt.FocusTraversalPolicy;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -542,32 +540,19 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
     }
 
     private void editArtwork() {
-        var fileChooser = new JFileChooser();
+        var fileChooser = new SystemFileChooser();
 
-        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.setFileSelectionMode(SystemFileChooser.FILES_ONLY);
 
-        fileChooser.setFileFilter(new FileFilter() {
-            @Override
-            public boolean accept(File file) {
-                if (file.isDirectory()) {
-                    return true;
-                } else {
-                    var path = file.getPath();
+        var filter = new SystemFileChooser.FileNameExtensionFilter(resourceBundle.getString("imageFileFilterDescription"),
+            MusicLibrary.JPG_EXTENSION.substring(1),
+            MusicLibrary.JPEG_EXTENSION.substring(1));
 
-                    return path.endsWith(MusicLibrary.JPG_EXTENSION)
-                        || path.endsWith(MusicLibrary.JPEG_EXTENSION);
-                }
-            }
+        fileChooser.addChoosableFileFilter(filter);
 
-            @Override
-            public String getDescription() {
-                return resourceBundle.getString("imageFileFilterDescription");
-            }
-        });
+        var option = fileChooser.showOpenDialog(getTopLevelAncestor());
 
-        var result = fileChooser.showOpenDialog(getTopLevelAncestor());
-
-        if (result == JFileChooser.APPROVE_OPTION) {
+        if (option == SystemFileChooser.APPROVE_OPTION) {
             updateArtwork(fileChooser.getSelectedFile().toPath());
         }
     }

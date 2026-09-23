@@ -17,6 +17,10 @@ package org.httprpc.helios;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import com.formdev.flatlaf.themes.FlatMacDarkLaf;
+import com.formdev.flatlaf.themes.FlatMacLightLaf;
+import com.formdev.flatlaf.util.SystemFileChooser;
+import com.sun.jna.Platform;
 import org.httprpc.sierra.ActivityIndicator;
 import org.httprpc.sierra.BasicListModel;
 import org.httprpc.sierra.ColumnPanel;
@@ -32,7 +36,6 @@ import javax.swing.AbstractAction;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -49,7 +52,6 @@ import javax.swing.Timer;
 import javax.swing.TransferHandler;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
-import javax.swing.filechooser.FileFilter;
 import javax.swing.text.JTextComponent;
 import java.awt.Color;
 import java.awt.Component;
@@ -1017,33 +1019,20 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     private void addSongs() {
-        var fileChooser = new JFileChooser();
+        var fileChooser = new SystemFileChooser();
 
-        fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+        fileChooser.setFileSelectionMode(SystemFileChooser.DIRECTORIES_ONLY);
         fileChooser.setMultiSelectionEnabled(true);
 
-        fileChooser.setFileFilter(new FileFilter() {
-            @Override
-            public boolean accept(File file) {
-                if (file.isDirectory()) {
-                    return true;
-                } else {
-                    var path = file.getPath();
+        var filter = new SystemFileChooser.FileNameExtensionFilter(resourceBundle.getString("audioFileFilterDescription"),
+            MusicLibrary.MP3_EXTENSION.substring(1),
+            MusicLibrary.M4A_EXTENSION.substring(1));
 
-                    return path.endsWith(MusicLibrary.MP3_EXTENSION)
-                        || path.endsWith(MusicLibrary.M4A_EXTENSION);
-                }
-            }
+        fileChooser.addChoosableFileFilter(filter);
 
-            @Override
-            public String getDescription() {
-                return resourceBundle.getString("audioFileFilterDescription");
-            }
-        });
+        var option = fileChooser.showOpenDialog(this);
 
-        var result = fileChooser.showOpenDialog(this);
-
-        if (result == JFileChooser.APPROVE_OPTION) {
+        if (option == SystemFileChooser.APPROVE_OPTION) {
             var paths = listOf(flatten(mapAll(iterableOf(fileChooser.getSelectedFiles()), File::toPath), root -> {
                 try (var stream = Files.walk(root)) {
                     return listOf(filter(iterableOf(stream), path -> {
@@ -1187,9 +1176,17 @@ public class MainFrame extends JFrame implements Runnable {
 
     public static void main(String[] args) throws Exception {
         if (preferences.getBoolean(DARK_MODE_KEY, true)) {
-            FlatDarkLaf.setup();
+            if (Platform.isMac()) {
+                FlatMacDarkLaf.setup();
+            } else {
+                FlatDarkLaf.setup();
+            }
         } else {
-            FlatLightLaf.setup();
+            if (Platform.isMac()) {
+                FlatMacLightLaf.setup();
+            } else {
+                FlatLightLaf.setup();
+            }
         }
 
         UIManager.put("TextComponent.arc", 8);
