@@ -426,6 +426,10 @@ public class MainFrame extends JFrame implements Runnable {
             public void actionPerformed(ActionEvent event) {
                 if (audioPlayer != null) {
                     audioPlayer.setPosition(Math.max(audioPlayer.getPosition() - SKIP, 0));
+
+                    if (!audioPlayer.isPlaying()) {
+                        positionProgressBar.setValue((int)Math.round(audioPlayer.getPosition()));
+                    }
                 }
             }
         });
@@ -435,10 +439,10 @@ public class MainFrame extends JFrame implements Runnable {
             @Override
             public void actionPerformed(ActionEvent event) {
                 if (audioPlayer != null) {
-                    var currentSong = getCurrentSong();
+                    audioPlayer.setPosition(Math.min(audioPlayer.getPosition() + SKIP, queue.get(queueIndex).getTime()));
 
-                    if (currentSong != null) {
-                        audioPlayer.setPosition(Math.min(audioPlayer.getPosition() + SKIP, currentSong.getTime()));
+                    if (!audioPlayer.isPlaying()) {
+                        positionProgressBar.setValue((int)Math.round(audioPlayer.getPosition()));
                     }
                 }
             }
@@ -557,13 +561,7 @@ public class MainFrame extends JFrame implements Runnable {
         var volume = Math.clamp(preferences.getDouble(VOLUME_KEY, 1.0), 0.0, 1.0);
 
         volumeSlider.setValue((int)Math.round(volume * volumeSlider.getMaximum()));
-        volumeSlider.addChangeListener(event -> {
-            if (volumeSlider.getValueIsAdjusting()) {
-                return;
-            }
-
-            updateVolume();
-        });
+        volumeSlider.addChangeListener(event -> updateVolume());
 
         getAlbumArtworkButton.addActionListener(event -> getAlbumArtwork());
 
