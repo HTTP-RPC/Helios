@@ -255,7 +255,7 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
     private SequencedMap<String, List<Song>> albums;
 
     private @Outlet JLabel nameLabel = null;
-    private @Outlet JButton playButton = null;
+    private @Outlet JButton playSelectionButton = null;
 
     private @Outlet MenuButton addToPlaylistButton = null;
 
@@ -340,7 +340,7 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
 
         nameLabel.setText(genre.getName());
 
-        playButton.addActionListener(event -> {
+        playSelectionButton.addActionListener(event -> {
             var artistAlbum = artistAlbumList.getSelectedValue();
 
             List<Song> songs;
