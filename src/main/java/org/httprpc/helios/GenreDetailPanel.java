@@ -43,8 +43,12 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FocusTraversalPolicy;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -70,6 +74,8 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
         JLabel artistLabel;
 
         static final int IMAGE_SIZE = 90;
+
+        static final int INSET = 2;
 
         static final BufferedImage emptyImage = new BufferedImage(IMAGE_SIZE, IMAGE_SIZE, BufferedImage.TYPE_INT_ARGB);
 
@@ -113,7 +119,21 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
                 artistLabel = label;
             });
 
-            setBorder(new EmptyBorder(4, 8, 4, 8));
+            setBorder(new EmptyBorder(8, 8, 8, 8));
+        }
+
+        @Override
+        public void paintComponent(Graphics graphics) {
+            paintComponent((Graphics2D)graphics);
+        }
+
+        private void paintComponent(Graphics2D graphics) {
+            graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            graphics.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+
+            graphics.setColor(getBackground());
+
+            graphics.fill(new RoundRectangle2D.Double(INSET, INSET, getWidth() - INSET * 2, getHeight() - INSET * 2, 8, 8));
         }
 
         @Override
@@ -179,6 +199,8 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
         JLabel timeLabel;
         JLabel artistLabel;
 
+        static final int INSET = 2;
+
         SongCellRenderer() {
             setOpaque(true);
 
@@ -211,7 +233,21 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
                 artistLabel = label;
             });
 
-            setBorder(new EmptyBorder(4, 8, 4, 8));
+            setBorder(new EmptyBorder(4, 8, 6, 8));
+        }
+
+        @Override
+        public void paintComponent(Graphics graphics) {
+            paintComponent((Graphics2D)graphics);
+        }
+
+        private void paintComponent(Graphics2D graphics) {
+            graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            graphics.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+
+            graphics.setColor(getBackground());
+
+            graphics.fill(new RoundRectangle2D.Double(INSET, INSET, getWidth() - INSET * 2, getHeight() - INSET * 2, 8, 8));
         }
 
         @Override
