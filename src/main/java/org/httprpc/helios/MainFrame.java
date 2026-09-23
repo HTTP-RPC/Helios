@@ -21,6 +21,9 @@ import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import com.formdev.flatlaf.util.SystemFileChooser;
 import com.sun.jna.Platform;
+import com.sun.jna.Pointer;
+import org.httprpc.helios.macos.Foundation;
+import org.httprpc.helios.macos.ObjectiveCRuntime;
 import org.httprpc.sierra.ActivityIndicator;
 import org.httprpc.sierra.BasicListModel;
 import org.httprpc.sierra.ColumnPanel;
@@ -1180,7 +1183,20 @@ public class MainFrame extends JFrame implements Runnable {
 
     public static void main(String[] args) throws Exception {
         if (Platform.isMac()) {
-            if (preferences.getBoolean(DARK_MODE_KEY, true)) {
+            var standardUserDefaults = new Pointer(ObjectiveCRuntime.instance.objc_msgSend(Foundation.NSUserDefaults.type,
+                Foundation.NSUserDefaults.standardUserDefaults));
+
+            var key = new Pointer(ObjectiveCRuntime.instance.objc_msgSend(Foundation.NSString.type,
+                Foundation.NSString.stringWithUTF8String_,
+                "AppleInterfaceStyle"));
+
+            var interfaceStyle = new Pointer(ObjectiveCRuntime.instance.objc_msgSend(standardUserDefaults,
+                Foundation.NSUserDefaults.stringForKey_, key));
+
+            var dark = coalesce(map(ObjectiveCRuntime.instance.objc_msgSend_String(interfaceStyle, Foundation.NSString.UTF8String),
+                value -> value.equalsIgnoreCase("dark")), () -> false);
+
+            if (preferences.getBoolean(DARK_MODE_KEY, dark)) {
                 FlatMacDarkLaf.setup();
             } else {
                 FlatMacLightLaf.setup();

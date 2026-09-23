@@ -14,7 +14,6 @@
 
 package org.httprpc.helios;
 
-import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import org.httprpc.helios.macos.AVFoundation;
 import org.httprpc.helios.macos.Foundation;
@@ -23,11 +22,6 @@ import org.httprpc.helios.macos.ObjectiveCRuntime;
 import java.nio.file.Path;
 
 public class MacOSAudioPlayer implements AudioPlayer {
-    static {
-        Native.load(Foundation.class.getSimpleName(), Foundation.class);
-        Native.load(AVFoundation.class.getSimpleName(), AVFoundation.class);
-    }
-
     private Pointer audioPlayer;
 
     public MacOSAudioPlayer(Path contentPath) {

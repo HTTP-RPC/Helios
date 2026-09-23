@@ -25,11 +25,21 @@ public interface Foundation extends Library {
         Pointer type = ObjectiveCRuntime.instance.objc_getClass("NSString");
 
         Pointer stringWithUTF8String_ = ObjectiveCRuntime.instance.sel_registerName("stringWithUTF8String:");
+
+        Pointer UTF8String = ObjectiveCRuntime.instance.sel_registerName("UTF8String");
     }
 
     interface NSURL {
         Pointer type = ObjectiveCRuntime.instance.objc_getClass("NSURL");
 
         Pointer fileURLWithPath_ = ObjectiveCRuntime.instance.sel_registerName("fileURLWithPath:");
+    }
+
+    interface NSUserDefaults {
+        Pointer type = ObjectiveCRuntime.instance.objc_getClass("NSUserDefaults");
+
+        Pointer standardUserDefaults = ObjectiveCRuntime.instance.sel_registerName("standardUserDefaults");
+
+        Pointer stringForKey_ = ObjectiveCRuntime.instance.sel_registerName("stringForKey:");
     }
 }

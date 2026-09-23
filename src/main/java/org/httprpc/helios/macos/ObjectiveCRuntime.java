@@ -26,7 +26,9 @@ public interface ObjectiveCRuntime extends Library {
         entry(Library.OPTION_FUNCTION_MAPPER, (FunctionMapper)(library, method) -> {
             var name = method.getName();
 
-            if (name.equals("objc_msgSend_float") || name.equals("objc_msgSend_double")) {
+            if (name.equals("objc_msgSend_float")
+                || name.equals("objc_msgSend_double")
+                || name.equals("objc_msgSend_String")) {
                 return "objc_msgSend";
             } else {
                 return method.getName();
@@ -45,6 +47,8 @@ public interface ObjectiveCRuntime extends Library {
     float objc_msgSend_float(Pointer self, Pointer selector);
 
     double objc_msgSend_double(Pointer self, Pointer selector);
+
+    String objc_msgSend_String(Pointer self, Pointer selector);
 
     Pointer alloc = instance.sel_registerName("alloc");
     Pointer release = instance.sel_registerName("release");
