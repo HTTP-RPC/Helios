@@ -90,7 +90,7 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
                         imagePane.setBorder(UILoader.createRoundedLineBorder(UIManager.getColor("List.selectionInactiveBackground"),
                             new BasicStroke(1,
                                 BasicStroke.CAP_ROUND,
-                                BasicStroke.JOIN_ROUND), 8));
+                                BasicStroke.JOIN_ROUND), 4));
 
                         artworkImagePane = imagePane;
                     });
