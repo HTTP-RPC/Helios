@@ -31,7 +31,6 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -106,7 +105,7 @@ public class SongDetailPanel extends StackPanel {
             duration.toMinutesPart(),
             duration.toSecondsPart()));
 
-        addMouseListener(new MouseAdapter() {
+        var mouseListener = new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent event) {
                 showButtons();
@@ -114,20 +113,19 @@ public class SongDetailPanel extends StackPanel {
 
             @Override
             public void mouseExited(MouseEvent event) {
-                var rectangle = new Rectangle(0, 0, getWidth(), getHeight());
-
-                if (!rectangle.contains(event.getPoint())) {
+                if (!addToPlaylistButton.getComponentPopupMenu().isVisible()) {
                     hideButtons();
                 }
             }
-        });
+        };
 
-        buttonPanel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseExited(MouseEvent event) {
-                hideButtons();
-            }
-        });
+        addMouseListener(mouseListener);
+
+        buttonPanel.addMouseListener(mouseListener);
+
+        playFromButton.addMouseListener(mouseListener);
+
+        addToPlaylistButton.addMouseListener(mouseListener);
 
         addToPlaylistButton.getComponentPopupMenu().addPopupMenuListener(new PopupMenuListener() {
             @Override
@@ -145,6 +143,9 @@ public class SongDetailPanel extends StackPanel {
                 // No-op
             }
         });
+
+        editSongButton.addMouseListener(mouseListener);
+        deleteSongButton.addMouseListener(mouseListener);
 
         showCurrentSong(MainFrame.getInstance().getCurrentSong());
 
