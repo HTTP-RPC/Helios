@@ -27,7 +27,7 @@
 
     <row-panel spacing="16">
         <column-panel spacing="2">
-            <stack-panel name="artworkPanel" border="Component.borderColor, 1, solid, 4">
+            <stack-panel name="artworkPanel" border="List.selectionInactiveBackground, 1, solid, 4">
                 <column-panel name="artworkButtonPanel" background="TextArea.background; 0.6" padding="4">
                     <spacer weight="1"/>
 

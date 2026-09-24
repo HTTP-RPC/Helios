@@ -3,7 +3,7 @@
 <!DOCTYPE column-panel SYSTEM "sierra.dtd">
 
 <column-panel spacing="1" opaque="true" background="Component.borderColor">
-    <row-panel spacing="16" padding="4" opaque="true" background="Panel.background">
+    <row-panel spacing="16" padding="4" opaque="true">
         <row-panel spacing="8" weight="1">
             <row-panel spacing="2">
                 <column-panel>
@@ -73,7 +73,7 @@
                     <spacer weight="1"/>
                     <image-pane name="artworkImagePane" size="30"
                         scaleMode="fill-width"
-                        border="Component.borderColor, 1, solid, 4"/>
+                        border="List.selectionInactiveBackground, 1, solid, 4"/>
                     <spacer weight="1"/>
                 </column-panel>
 

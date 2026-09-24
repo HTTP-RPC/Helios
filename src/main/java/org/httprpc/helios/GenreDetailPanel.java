@@ -87,7 +87,7 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
                     stackPanel.add(new ImagePane(), imagePane -> {
                         imagePane.setPreferredSize(new Dimension(IMAGE_SIZE, IMAGE_SIZE));
                         imagePane.setScaleMode(ImagePane.ScaleMode.FILL_WIDTH);
-                        imagePane.setBorder(UILoader.createRoundedLineBorder(UIManager.getColor("Component.borderColor"),
+                        imagePane.setBorder(UILoader.createRoundedLineBorder(UIManager.getColor("List.selectionInactiveBackground"),
                             new BasicStroke(1,
                                 BasicStroke.CAP_ROUND,
                                 BasicStroke.JOIN_ROUND), 8));
