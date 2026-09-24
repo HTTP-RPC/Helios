@@ -17,6 +17,7 @@ package org.httprpc.helios;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import org.httprpc.sierra.MenuButton;
 import org.httprpc.sierra.Outlet;
+import org.httprpc.sierra.RowPanel;
 import org.httprpc.sierra.StackPanel;
 import org.httprpc.sierra.UILoader;
 
@@ -51,14 +52,13 @@ public class SongDetailPanel extends StackPanel {
 
     private @Outlet JLabel titleLabel = null;
 
+    private @Outlet RowPanel buttonPanel = null;
     private @Outlet JButton playFromButton = null;
     private @Outlet MenuButton addToPlaylistButton = null;
     private @Outlet JButton editSongButton = null;
     private @Outlet JButton deleteSongButton = null;
 
     private @Outlet JLabel timeLabel  = null;
-
-    private List<ExpandedPlaylist> playlists = listOf();
 
     private static final FlatSVGIcon playlistIcon;
     static {
@@ -88,16 +88,14 @@ public class SongDetailPanel extends StackPanel {
 
         titleLabel.setEnabled(!song.isCompilation());
 
-        playFromButton.addActionListener(event -> playFrom());
-        playFromButton.setVisible(false);
+        buttonPanel.setVisible(false);
 
-        addToPlaylistButton.setVisible(false);
+        playFromButton.addActionListener(event -> playFrom());
+
+        addToPlaylistButton.setEnabled(false);
 
         editSongButton.addActionListener(event -> editSong());
-        editSongButton.setVisible(false);
-
         deleteSongButton.addActionListener(event -> deleteSong());
-        deleteSongButton.setVisible(false);
 
         timeLabel.setText(String.format(resourceBundle.getString("timeFormat"), 60, 0));
         timeLabel.setPreferredSize(timeLabel.getPreferredSize());
@@ -124,19 +122,10 @@ public class SongDetailPanel extends StackPanel {
             }
         });
 
-        playFromButton.addMouseListener(new MouseAdapter() {
+        buttonPanel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseExited(MouseEvent event) {
                 hideButtons();
-            }
-        });
-
-        addToPlaylistButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseExited(MouseEvent event) {
-                if (!addToPlaylistButton.getComponentPopupMenu().isVisible()) {
-                    hideButtons();
-                }
             }
         });
 
@@ -157,23 +146,23 @@ public class SongDetailPanel extends StackPanel {
             }
         });
 
-        editSongButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseExited(MouseEvent event) {
-                hideButtons();
-            }
-        });
-
-        deleteSongButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseExited(MouseEvent event) {
-                hideButtons();
-            }
-        });
-
         showCurrentSong(MainFrame.getInstance().getCurrentSong());
 
-        SwingUtilities.invokeLater(() -> playlists = MainFrame.getInstance().getPlaylists());
+        SwingUtilities.invokeLater(() -> {
+            var playlists = MainFrame.getInstance().getPlaylists();
+
+            if (!playlists.isEmpty()) {
+                for (var playlist : playlists) {
+                    var menuItem = new JMenuItem(playlist.getName(), playlistIcon);
+
+                    menuItem.addActionListener(event -> addToPlaylist(playlist));
+
+                    addToPlaylistButton.add(menuItem);
+                }
+
+                addToPlaylistButton.setEnabled(true);
+            }
+        });
     }
 
     private void playFrom() {
@@ -244,35 +233,13 @@ public class SongDetailPanel extends StackPanel {
     private void showButtons() {
         setOpaque(true);
 
-        playFromButton.setVisible(true);
-        addToPlaylistButton.setVisible(true);
-        editSongButton.setVisible(true);
-        deleteSongButton.setVisible(true);
-
-        if (!playlists.isEmpty()) {
-            for (var playlist : playlists) {
-                var menuItem = new JMenuItem(playlist.getName(), playlistIcon);
-
-                menuItem.addActionListener(event -> addToPlaylist(playlist));
-
-                addToPlaylistButton.add(menuItem);
-            }
-
-            addToPlaylistButton.setEnabled(true);
-        } else {
-            addToPlaylistButton.setEnabled(false);
-        }
+        buttonPanel.setVisible(true);
     }
 
     private void hideButtons() {
         setOpaque(false);
 
-        playFromButton.setVisible(false);
-        addToPlaylistButton.setVisible(false);
-        editSongButton.setVisible(false);
-        deleteSongButton.setVisible(false);
-
-        addToPlaylistButton.removeAll();
+        buttonPanel.setVisible(false);
     }
 
     public void showCurrentSong(Song song) {

@@ -10,7 +10,7 @@
 
     <label name="titleLabel" weight="1"/>
 
-    <row-panel>
+    <row-panel name="buttonPanel">
         <button name="playFromButton" icon="icons/play_arrow_24dp.svg; 18"
             focusable="false"
             toolTipText="playFrom"
