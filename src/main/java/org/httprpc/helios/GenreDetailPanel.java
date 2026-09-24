@@ -211,10 +211,7 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
                 rowPanel.add(new JLabel(), label -> {
                     var icon = new FlatSVGIcon(GenreDetailPanel.class.getResource("icons/sensors_24dp.svg")).derive(18, 18);
 
-                    icon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> UIManager.getColor("Label.foreground")));
-
                     label.setIcon(icon);
-                    label.setEnabled(false);
 
                     nowPlayingLabel = label;
                 });
@@ -283,6 +280,10 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
             titleLabel.setForeground(foreground);
             timeLabel.setForeground(foreground);
             artistLabel.setForeground(foreground);
+
+            var nowPlayingIcon = (FlatSVGIcon)nowPlayingLabel.getIcon();
+
+            nowPlayingIcon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> foreground));
 
             nowPlayingLabel.setEnabled(selected);
             timeLabel.setEnabled(selected);
