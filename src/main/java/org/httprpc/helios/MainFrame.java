@@ -69,6 +69,7 @@ import java.awt.dnd.DnDConstants;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.WindowAdapter;
@@ -285,6 +286,8 @@ public class MainFrame extends JFrame implements Runnable {
     private static final String QUEUE_KEY = "queue";
     private static final String ADD_KEY = "add";
     private static final String GO_TO_SONG_KEY = "goToSong";
+    private static final String VOLUME_DOWN_KEY = "volumeDown";
+    private static final String VOLUME_UP_KEY = "volumeUp";
     private static final String GET_ALBUM_ARTWORK_KEY = "getAlbumArtwork";
     private static final String SEARCH_KEY = "search";
     private static final String SETTINGS_KEY = "settings";
@@ -308,7 +311,8 @@ public class MainFrame extends JFrame implements Runnable {
     private static final int GENRE_TAB_INDEX = 1;
     private static final int PLAYLIST_TAB_INDEX = 2;
 
-    private static final double SKIP = 5; // seconds
+    private static final double SKIP_INCREMENT = 5.0;
+    private static final double VOLUME_INCREMENT = 0.1;
 
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(MainFrame.class.getName());
 
@@ -342,7 +346,7 @@ public class MainFrame extends JFrame implements Runnable {
             }
         });
 
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_COMMA, shortcutModifier, false), PREVIOUS_KEY);
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, shortcutModifier | InputEvent.SHIFT_DOWN_MASK, false), PREVIOUS_KEY);
         actionMap.put(PREVIOUS_KEY, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent event) {
@@ -350,7 +354,7 @@ public class MainFrame extends JFrame implements Runnable {
             }
         });
 
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_PERIOD, shortcutModifier, false), NEXT_KEY);
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, shortcutModifier  | InputEvent.SHIFT_DOWN_MASK, false), NEXT_KEY);
         actionMap.put(NEXT_KEY, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent event) {
@@ -382,7 +386,7 @@ public class MainFrame extends JFrame implements Runnable {
             }
         });
 
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, shortcutModifier, false), ADD_KEY);
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_A, shortcutModifier, false), ADD_KEY);
         actionMap.put(ADD_KEY, new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent event) {
@@ -397,6 +401,28 @@ public class MainFrame extends JFrame implements Runnable {
                 if (currentSongPanel.isVisible()) {
                     goToSongButton.doClick();
                 }
+            }
+        });
+
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, shortcutModifier, false), VOLUME_DOWN_KEY);
+        actionMap.put(VOLUME_DOWN_KEY, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                var volume = volumeSlider.getValue();
+                var maximum = volumeSlider.getMaximum();
+
+                volumeSlider.setValue((int)Math.max(volume - maximum * VOLUME_INCREMENT, 0.0));
+            }
+        });
+
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, shortcutModifier, false), VOLUME_UP_KEY);
+        actionMap.put(VOLUME_UP_KEY, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                var volume = volumeSlider.getValue();
+                var maximum = volumeSlider.getMaximum();
+
+                volumeSlider.setValue((int)Math.min(volume + maximum * VOLUME_INCREMENT, maximum));
             }
         });
 
@@ -453,7 +479,7 @@ public class MainFrame extends JFrame implements Runnable {
             @Override
             public void actionPerformed(ActionEvent event) {
                 if (audioPlayer != null) {
-                    audioPlayer.setPosition(Math.max(audioPlayer.getPosition() - SKIP, 0));
+                    audioPlayer.setPosition(Math.max(audioPlayer.getPosition() - SKIP_INCREMENT, 0));
 
                     updatePosition();
                 }
@@ -465,7 +491,7 @@ public class MainFrame extends JFrame implements Runnable {
             @Override
             public void actionPerformed(ActionEvent event) {
                 if (audioPlayer != null) {
-                    audioPlayer.setPosition(Math.min(audioPlayer.getPosition() + SKIP, queue.get(queueIndex).getTime() - 1));
+                    audioPlayer.setPosition(Math.min(audioPlayer.getPosition() + SKIP_INCREMENT, queue.get(queueIndex).getTime() - 1));
 
                     updatePosition();
                 }
