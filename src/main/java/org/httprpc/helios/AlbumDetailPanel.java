@@ -31,7 +31,6 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
 import java.awt.Dimension;
-import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -95,7 +94,7 @@ public class AlbumDetailPanel extends StackPanel {
         deleteArtworkButton.addActionListener(event -> deleteArtwork());
         deleteArtworkButton.setVisible(false);
 
-        artworkPanel.addMouseListener(new MouseAdapter() {
+        var artworkButtonPanelMouseListener = new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent event) {
                 showArtworkButtons();
@@ -103,27 +102,14 @@ public class AlbumDetailPanel extends StackPanel {
 
             @Override
             public void mouseExited(MouseEvent event) {
-                var rectangle = new Rectangle(0, 0, artworkPanel.getWidth(), artworkPanel.getHeight());
-
-                if (!rectangle.contains(event.getPoint())) {
-                    hideArtworkButtons();
-                }
-            }
-        });
-
-        editArtworkButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseExited(MouseEvent event) {
                 hideArtworkButtons();
             }
-        });
+        };
 
-        deleteArtworkButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseExited(MouseEvent event) {
-                hideArtworkButtons();
-            }
-        });
+        artworkButtonPanel.addMouseListener(artworkButtonPanelMouseListener);
+
+        editArtworkButton.addMouseListener(artworkButtonPanelMouseListener);
+        deleteArtworkButton.addMouseListener(artworkButtonPanelMouseListener);
 
         genreLabel.setText("A");
         genreLabel.setPreferredSize(new Dimension(artworkImagePane.getPreferredSize().width,
@@ -288,24 +274,6 @@ public class AlbumDetailPanel extends StackPanel {
         }, (result, exception) -> glassPane.setVisible(false));
     }
 
-    private void showArtworkButtons() {
-        if (compilation) {
-            return;
-        }
-
-        artworkButtonPanel.setOpaque(true);
-
-        editArtworkButton.setVisible(true);
-        deleteArtworkButton.setVisible(true);
-    }
-
-    private void hideArtworkButtons() {
-        artworkButtonPanel.setOpaque(false);
-
-        editArtworkButton.setVisible(false);
-        deleteArtworkButton.setVisible(false);
-    }
-
     public boolean matches(String name) {
         return this.name.equals(name);
     }
@@ -330,5 +298,23 @@ public class AlbumDetailPanel extends StackPanel {
                 songDetailPanel.deactivate();
             }
         }
+    }
+
+    private void showArtworkButtons() {
+        if (compilation) {
+            return;
+        }
+
+        artworkButtonPanel.setOpaque(true);
+
+        editArtworkButton.setVisible(true);
+        deleteArtworkButton.setVisible(true);
+    }
+
+    private void hideArtworkButtons() {
+        artworkButtonPanel.setOpaque(false);
+
+        editArtworkButton.setVisible(false);
+        deleteArtworkButton.setVisible(false);
     }
 }
