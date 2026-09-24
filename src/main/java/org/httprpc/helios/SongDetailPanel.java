@@ -230,6 +230,17 @@ public class SongDetailPanel extends StackPanel {
         }
     }
 
+    public void showCurrentSong(Song song) {
+        var current = song != null && song.getID().equals(songs.get(songIndex).getID());
+
+        trackNumberLabel.setVisible(!current);
+        nowPlayingLabel.setVisible(current);
+    }
+
+    public void deactivate() {
+        hideButtons();
+    }
+
     private void showButtons() {
         setOpaque(true);
 
@@ -240,16 +251,5 @@ public class SongDetailPanel extends StackPanel {
         setOpaque(false);
 
         buttonPanel.setVisible(false);
-    }
-
-    public void showCurrentSong(Song song) {
-        var current = song != null && song.getID().equals(songs.get(songIndex).getID());
-
-        trackNumberLabel.setVisible(!current);
-        nowPlayingLabel.setVisible(current);
-    }
-
-    public void deactivate() {
-        hideButtons();
     }
 }
