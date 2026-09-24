@@ -235,7 +235,7 @@ public class SongDetailPanel extends StackPanel {
             graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             graphics.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 
-            graphics.setColor(UIManager.getColor("List.selectionInactiveBackground"));
+            graphics.setColor(UIManager.getColor("Button.toolbar.hoverBackground"));
 
             graphics.fill(new RoundRectangle2D.Double(0, 0, getWidth(), getHeight(), 8, 8));
         }
