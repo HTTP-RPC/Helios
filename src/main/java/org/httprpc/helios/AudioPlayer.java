@@ -38,7 +38,7 @@ public interface AudioPlayer {
             if (Platform.isMac()) {
                 return new MacOSAudioPlayer(contentPath);
             } else {
-                return new JavaFXAudioPlayer(contentPath);
+                return new WindowsAudioPlayer(contentPath);
             }
         } else {
             return new AudioPlayer() {

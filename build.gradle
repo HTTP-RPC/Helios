@@ -7,28 +7,6 @@ repositories {
     mavenLocal()
 }
 
-def osName = System.getProperty("os.name").toLowerCase()
-def osArch = System.getProperty("os.arch").toLowerCase()
-
-def javaFXClassifier
-if (osName.startsWith("mac")) {
-    if (osArch == "aarch64") {
-        javaFXClassifier = "mac-aarch64"
-    } else {
-        javaFXClassifier = "mac"
-    }
-} else if (osName.startsWith("lin")) {
-    if (osArch == "aarch64") {
-        javaFXClassifer = "linux-aarch64"
-    } else {
-        javaFXClassifer = "linux"
-    }
-} else if (osName.startsWith("win")) {
-    javaFXClassifier = "win"
-} else {
-    javaFXClassifier = ""
-}
-
 dependencies {
     implementation "org.httprpc:kilo-client:${kiloVersion}"
     implementation "org.httprpc:sierra:${sierraVersion}"
@@ -37,16 +15,6 @@ dependencies {
     implementation "org.xerial:sqlite-jdbc:${sqliteJDBCVersion}"
     implementation "net.jthink:jaudiotagger:${jAudioTaggerVersion}"
     implementation "net.java.dev.jna:jna-platform:${jnaVersion}"
-
-    if (osName.startsWith("mac")) {
-        compileOnly "org.openjfx:javafx-base:${javaFXVersion}:${javaFXClassifier}"
-        compileOnly "org.openjfx:javafx-graphics:${javaFXVersion}:${javaFXClassifier}"
-        compileOnly "org.openjfx:javafx-media:${javaFXVersion}:${javaFXClassifier}"
-    } else {
-        implementation "org.openjfx:javafx-base:${javaFXVersion}:${javaFXClassifier}"
-        implementation "org.openjfx:javafx-graphics:${javaFXVersion}:${javaFXClassifier}"
-        implementation "org.openjfx:javafx-media:${javaFXVersion}:${javaFXClassifier}"
-    }
 }
 
 tasks.withType(JavaCompile).configureEach {

@@ -1178,14 +1178,6 @@ public class MainFrame extends JFrame implements Runnable {
             return list;
         });
 
-        if (!Platform.isMac()) {
-            System.setProperty("glass.platform", "headless");
-
-            javafx.application.Platform.startup(() -> {
-                // No-op
-            });
-        }
-
         instance = new MainFrame();
 
         SwingUtilities.invokeLater(instance);
