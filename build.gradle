@@ -19,7 +19,8 @@ dependencies {
 
 tasks.withType(JavaCompile).configureEach {
     options.compilerArgs = [
-        '-parameters'
+        '-parameters',
+        '-h', "${projectDir}/src/main/cpp"
     ]
 }
 
