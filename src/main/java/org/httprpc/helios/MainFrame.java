@@ -67,6 +67,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DnDConstants;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.InputEvent;
@@ -283,7 +284,7 @@ public class MainFrame extends JFrame implements Runnable {
     private static final String NEXT_KEY = "next";
     private static final String SHUFFLE_KEY = "shuffle";
     private static final String REPEAT_KEY = "repeat";
-    private static final String QUEUE_KEY = "queue";
+    private static final String SHOW_QUEUE_KEY = "showQueue";
     private static final String ADD_KEY = "add";
     private static final String GO_TO_SONG_KEY = "goToSong";
     private static final String VOLUME_DOWN_KEY = "volumeDown";
@@ -331,182 +332,82 @@ public class MainFrame extends JFrame implements Runnable {
 
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        var inputMap = rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-        var actionMap = rootPane.getActionMap();
-
         var shortcutModifier = Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx();
 
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0, false), PLAY_PAUSE_KEY);
-        actionMap.put(PLAY_PAUSE_KEY, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                if (!(getFocusOwner() instanceof JTextComponent)) {
-                    playPauseButton.doClick();
-                }
+        bind(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), PLAY_PAUSE_KEY, event -> {
+            if (!(getFocusOwner() instanceof JTextComponent)) {
+                playPauseButton.doClick();
             }
         });
 
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, shortcutModifier | InputEvent.SHIFT_DOWN_MASK, false), PREVIOUS_KEY);
-        actionMap.put(PREVIOUS_KEY, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                previousButton.doClick();
+        bind(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, shortcutModifier | InputEvent.SHIFT_DOWN_MASK), PREVIOUS_KEY,
+            event -> previousButton.doClick());
+        bind(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, shortcutModifier | InputEvent.SHIFT_DOWN_MASK), NEXT_KEY,
+            event -> nextButton.doClick());
+
+        bind(KeyStroke.getKeyStroke(KeyEvent.VK_S, shortcutModifier), SHUFFLE_KEY, event -> shuffleButton.doClick());
+        bind(KeyStroke.getKeyStroke(KeyEvent.VK_R, shortcutModifier), REPEAT_KEY, event -> repeatButton.doClick());
+        bind(KeyStroke.getKeyStroke(KeyEvent.VK_U, shortcutModifier), SHOW_QUEUE_KEY, event -> showQueueButton.doClick());
+        bind(KeyStroke.getKeyStroke(KeyEvent.VK_N, shortcutModifier), ADD_KEY, event -> addButton.doClick());
+
+        bind(KeyStroke.getKeyStroke(KeyEvent.VK_G, shortcutModifier), GO_TO_SONG_KEY, event -> {
+            if (currentSongPanel.isVisible()) {
+                goToSongButton.doClick();
             }
         });
 
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, shortcutModifier  | InputEvent.SHIFT_DOWN_MASK, false), NEXT_KEY);
-        actionMap.put(NEXT_KEY, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                nextButton.doClick();
+        bind(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, shortcutModifier), VOLUME_DOWN_KEY, event -> {
+            var volume = volumeSlider.getValue();
+            var maximum = volumeSlider.getMaximum();
+
+            volumeSlider.setValue((int)Math.max(volume - maximum * VOLUME_INCREMENT, 0.0));
+        });
+
+        bind(KeyStroke.getKeyStroke(KeyEvent.VK_UP, shortcutModifier), VOLUME_UP_KEY, event -> {
+            var volume = volumeSlider.getValue();
+            var maximum = volumeSlider.getMaximum();
+
+            volumeSlider.setValue((int)Math.min(volume + maximum * VOLUME_INCREMENT, maximum));
+        });
+
+        bind(KeyStroke.getKeyStroke(KeyEvent.VK_D, shortcutModifier), GET_ALBUM_ARTWORK_KEY, event -> getAlbumArtworkButton.doClick());
+        bind(KeyStroke.getKeyStroke(KeyEvent.VK_F, shortcutModifier), SEARCH_KEY, event -> searchButton.doClick());
+        bind(KeyStroke.getKeyStroke(KeyEvent.VK_P, shortcutModifier), SETTINGS_KEY, event -> settingsButton.doClick());
+
+        bind(KeyStroke.getKeyStroke(KeyEvent.VK_1, shortcutModifier), ARTISTS_KEY, event -> collectionTabbedPane.setSelectedIndex(ARTIST_TAB_INDEX));
+        bind(KeyStroke.getKeyStroke(KeyEvent.VK_2, shortcutModifier), GENRES_KEY, event -> collectionTabbedPane.setSelectedIndex(GENRE_TAB_INDEX));
+        bind(KeyStroke.getKeyStroke(KeyEvent.VK_3, shortcutModifier), PLAYLISTS_KEY, event -> collectionTabbedPane.setSelectedIndex(PLAYLIST_TAB_INDEX));
+
+        bind(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, shortcutModifier), SKIP_BACKWARD_KEY, event -> {
+            if (audioPlayer != null) {
+                audioPlayer.setPosition(Math.max(audioPlayer.getPosition() - SKIP_INCREMENT, 0));
+
+                updatePosition();
             }
         });
 
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_S, shortcutModifier, false), SHUFFLE_KEY);
-        actionMap.put(SHUFFLE_KEY, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                shuffleButton.doClick();
+        bind(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, shortcutModifier), SKIP_FORWARD_KEY, event -> {
+            if (audioPlayer != null) {
+                audioPlayer.setPosition(Math.min(audioPlayer.getPosition() + SKIP_INCREMENT, queue.get(queueIndex).getTime() - 1));
+
+                updatePosition();
             }
         });
 
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_R, shortcutModifier, false), REPEAT_KEY);
-        actionMap.put(REPEAT_KEY, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                repeatButton.doClick();
-            }
-        });
-
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_U, shortcutModifier, false), QUEUE_KEY);
-        actionMap.put(QUEUE_KEY, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                showQueueButton.doClick();
-            }
-        });
-
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_A, shortcutModifier, false), ADD_KEY);
-        actionMap.put(ADD_KEY, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                addButton.doClick();
-            }
-        });
-
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_G, shortcutModifier, false), GO_TO_SONG_KEY);
-        actionMap.put(GO_TO_SONG_KEY, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                if (currentSongPanel.isVisible()) {
-                    goToSongButton.doClick();
-                }
-            }
-        });
-
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, shortcutModifier, false), VOLUME_DOWN_KEY);
-        actionMap.put(VOLUME_DOWN_KEY, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                var volume = volumeSlider.getValue();
-                var maximum = volumeSlider.getMaximum();
-
-                volumeSlider.setValue((int)Math.max(volume - maximum * VOLUME_INCREMENT, 0.0));
-            }
-        });
-
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, shortcutModifier, false), VOLUME_UP_KEY);
-        actionMap.put(VOLUME_UP_KEY, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                var volume = volumeSlider.getValue();
-                var maximum = volumeSlider.getMaximum();
-
-                volumeSlider.setValue((int)Math.min(volume + maximum * VOLUME_INCREMENT, maximum));
-            }
-        });
-
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_D, shortcutModifier, false), GET_ALBUM_ARTWORK_KEY);
-        actionMap.put(GET_ALBUM_ARTWORK_KEY, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                getAlbumArtworkButton.doClick();
-            }
-        });
-
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F, shortcutModifier, false), SEARCH_KEY);
-        actionMap.put(SEARCH_KEY, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                searchButton.doClick();
-            }
-        });
-
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_P, shortcutModifier, false), SETTINGS_KEY);
-        actionMap.put(SETTINGS_KEY, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                settingsButton.doClick();
-            }
-        });
-
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_1, shortcutModifier, false), ARTISTS_KEY);
-        actionMap.put(ARTISTS_KEY, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                collectionTabbedPane.setSelectedIndex(ARTIST_TAB_INDEX);
-            }
-        });
-
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_2, shortcutModifier, false), GENRES_KEY);
-        actionMap.put(GENRES_KEY, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                collectionTabbedPane.setSelectedIndex(GENRE_TAB_INDEX);
-            }
-        });
-
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_3, shortcutModifier, false), PLAYLISTS_KEY);
-        actionMap.put(PLAYLISTS_KEY, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                collectionTabbedPane.setSelectedIndex(PLAYLIST_TAB_INDEX);
-            }
-        });
-
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, shortcutModifier, false), SKIP_BACKWARD_KEY);
-        actionMap.put(SKIP_BACKWARD_KEY, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                if (audioPlayer != null) {
-                    audioPlayer.setPosition(Math.max(audioPlayer.getPosition() - SKIP_INCREMENT, 0));
-
-                    updatePosition();
-                }
-            }
-        });
-
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, shortcutModifier, false), SKIP_FORWARD_KEY);
-        actionMap.put(SKIP_FORWARD_KEY, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                if (audioPlayer != null) {
-                    audioPlayer.setPosition(Math.min(audioPlayer.getPosition() + SKIP_INCREMENT, queue.get(queueIndex).getTime() - 1));
-
-                    updatePosition();
-                }
-            }
-        });
-
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_M, shortcutModifier, false), MINIMIZE_KEY);
-        actionMap.put(MINIMIZE_KEY, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                setState(Frame.ICONIFIED);
-            }
-        });
+        bind(KeyStroke.getKeyStroke(KeyEvent.VK_M, shortcutModifier), MINIMIZE_KEY, event -> setState(Frame.ICONIFIED));
 
         rootPane.putClientProperty("apple.awt.transparentTitleBar", true);
+    }
+
+    private void bind(KeyStroke keyStroke, String key, ActionListener listener) {
+        rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyStroke, key);
+
+        rootPane.getActionMap().put(key, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                listener.actionPerformed(event);
+            }
+        });
     }
 
     public static MainFrame getInstance() {
