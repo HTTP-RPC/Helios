@@ -332,53 +332,49 @@ public class MainFrame extends JFrame implements Runnable {
 
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        var shortcutModifier = Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx();
-
-        bind(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), PLAY_PAUSE_KEY, event -> {
+        bind(KeyEvent.VK_SPACE, false, false, PLAY_PAUSE_KEY, event -> {
             if (!(getFocusOwner() instanceof JTextComponent)) {
                 playPauseButton.doClick();
             }
         });
 
-        bind(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, shortcutModifier | InputEvent.SHIFT_DOWN_MASK), PREVIOUS_KEY,
-            event -> previousButton.doClick());
-        bind(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, shortcutModifier | InputEvent.SHIFT_DOWN_MASK), NEXT_KEY,
-            event -> nextButton.doClick());
+        bind(KeyEvent.VK_LEFT, true, true, PREVIOUS_KEY, event -> previousButton.doClick());
+        bind(KeyEvent.VK_RIGHT, true, true, NEXT_KEY, event -> nextButton.doClick());
 
-        bind(KeyStroke.getKeyStroke(KeyEvent.VK_S, shortcutModifier), SHUFFLE_KEY, event -> shuffleButton.doClick());
-        bind(KeyStroke.getKeyStroke(KeyEvent.VK_R, shortcutModifier), REPEAT_KEY, event -> repeatButton.doClick());
-        bind(KeyStroke.getKeyStroke(KeyEvent.VK_U, shortcutModifier), SHOW_QUEUE_KEY, event -> showQueueButton.doClick());
-        bind(KeyStroke.getKeyStroke(KeyEvent.VK_N, shortcutModifier), ADD_KEY, event -> addButton.doClick());
+        bind(KeyEvent.VK_S, true, false, SHUFFLE_KEY, event -> shuffleButton.doClick());
+        bind(KeyEvent.VK_R, true, false, REPEAT_KEY, event -> repeatButton.doClick());
+        bind(KeyEvent.VK_U, true, false, SHOW_QUEUE_KEY, event -> showQueueButton.doClick());
+        bind(KeyEvent.VK_N, true, false, ADD_KEY, event -> addButton.doClick());
 
-        bind(KeyStroke.getKeyStroke(KeyEvent.VK_G, shortcutModifier), GO_TO_SONG_KEY, event -> {
+        bind(KeyEvent.VK_G, true, false, GO_TO_SONG_KEY, event -> {
             if (currentSongPanel.isVisible()) {
                 goToSongButton.doClick();
             }
         });
 
-        bind(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, shortcutModifier), VOLUME_DOWN_KEY, event -> {
+        bind(KeyEvent.VK_DOWN, true, false, VOLUME_DOWN_KEY, event -> {
             var volume = volumeSlider.getValue();
             var maximum = volumeSlider.getMaximum();
 
             volumeSlider.setValue((int)Math.max(volume - maximum * VOLUME_INCREMENT, 0.0));
         });
 
-        bind(KeyStroke.getKeyStroke(KeyEvent.VK_UP, shortcutModifier), VOLUME_UP_KEY, event -> {
+        bind(KeyEvent.VK_UP, true, false, VOLUME_UP_KEY, event -> {
             var volume = volumeSlider.getValue();
             var maximum = volumeSlider.getMaximum();
 
             volumeSlider.setValue((int)Math.min(volume + maximum * VOLUME_INCREMENT, maximum));
         });
 
-        bind(KeyStroke.getKeyStroke(KeyEvent.VK_D, shortcutModifier), GET_ALBUM_ARTWORK_KEY, event -> getAlbumArtworkButton.doClick());
-        bind(KeyStroke.getKeyStroke(KeyEvent.VK_F, shortcutModifier), SEARCH_KEY, event -> searchButton.doClick());
-        bind(KeyStroke.getKeyStroke(KeyEvent.VK_P, shortcutModifier), SETTINGS_KEY, event -> settingsButton.doClick());
+        bind(KeyEvent.VK_D, true, false, GET_ALBUM_ARTWORK_KEY, event -> getAlbumArtworkButton.doClick());
+        bind(KeyEvent.VK_F, true, false, SEARCH_KEY, event -> searchButton.doClick());
+        bind(KeyEvent.VK_P, true, false, SETTINGS_KEY, event -> settingsButton.doClick());
 
-        bind(KeyStroke.getKeyStroke(KeyEvent.VK_1, shortcutModifier), ARTISTS_KEY, event -> collectionTabbedPane.setSelectedIndex(ARTIST_TAB_INDEX));
-        bind(KeyStroke.getKeyStroke(KeyEvent.VK_2, shortcutModifier), GENRES_KEY, event -> collectionTabbedPane.setSelectedIndex(GENRE_TAB_INDEX));
-        bind(KeyStroke.getKeyStroke(KeyEvent.VK_3, shortcutModifier), PLAYLISTS_KEY, event -> collectionTabbedPane.setSelectedIndex(PLAYLIST_TAB_INDEX));
+        bind(KeyEvent.VK_1, true, false, ARTISTS_KEY, event -> collectionTabbedPane.setSelectedIndex(ARTIST_TAB_INDEX));
+        bind(KeyEvent.VK_2, true, false, GENRES_KEY, event -> collectionTabbedPane.setSelectedIndex(GENRE_TAB_INDEX));
+        bind(KeyEvent.VK_3, true, false, PLAYLISTS_KEY, event -> collectionTabbedPane.setSelectedIndex(PLAYLIST_TAB_INDEX));
 
-        bind(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, shortcutModifier), SKIP_BACKWARD_KEY, event -> {
+        bind(KeyEvent.VK_LEFT, true, false, SKIP_BACKWARD_KEY, event -> {
             if (audioPlayer != null) {
                 audioPlayer.setPosition(Math.max(audioPlayer.getPosition() - SKIP_INCREMENT, 0));
 
@@ -386,7 +382,7 @@ public class MainFrame extends JFrame implements Runnable {
             }
         });
 
-        bind(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, shortcutModifier), SKIP_FORWARD_KEY, event -> {
+        bind(KeyEvent.VK_RIGHT, true, false, SKIP_FORWARD_KEY, event -> {
             if (audioPlayer != null) {
                 audioPlayer.setPosition(Math.min(audioPlayer.getPosition() + SKIP_INCREMENT, queue.get(queueIndex).getTime() - 1));
 
@@ -394,12 +390,24 @@ public class MainFrame extends JFrame implements Runnable {
             }
         });
 
-        bind(KeyStroke.getKeyStroke(KeyEvent.VK_M, shortcutModifier), MINIMIZE_KEY, event -> setState(Frame.ICONIFIED));
+        bind(KeyEvent.VK_M, true, false, MINIMIZE_KEY, event -> setState(Frame.ICONIFIED));
 
         rootPane.putClientProperty("apple.awt.transparentTitleBar", true);
     }
 
-    private void bind(KeyStroke keyStroke, String key, ActionListener listener) {
+    private void bind(int keyCode, boolean shortcut, boolean shift, String key, ActionListener listener) {
+        var modifiers = 0;
+
+        if (shortcut) {
+            modifiers |= Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx();
+        }
+
+        if (shift) {
+            modifiers |= InputEvent.SHIFT_DOWN_MASK;
+        }
+
+        var keyStroke = KeyStroke.getKeyStroke(keyCode, modifiers, !Platform.isMac());
+
         rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyStroke, key);
 
         rootPane.getActionMap().put(key, new AbstractAction() {
