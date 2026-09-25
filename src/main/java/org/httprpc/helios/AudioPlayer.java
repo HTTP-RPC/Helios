@@ -37,10 +37,8 @@ public interface AudioPlayer {
         if (Files.exists(contentPath)) {
             if (Platform.isMac()) {
                 return new MacOSAudioPlayer(contentPath);
-            } else if (Platform.isWindows()) {
-                return new WindowsAudioPlayer(contentPath);
             } else {
-                throw new UnsupportedOperationException();
+                return new JavaFXAudioPlayer(contentPath);
             }
         } else {
             return new AudioPlayer() {

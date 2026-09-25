@@ -1204,6 +1204,8 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     public static void main(String[] args) throws Exception {
+        MusicLibrary.initialize();
+
         var darkMode = map(preferences.get(MainFrame.DARK_MODE_KEY, null), Boolean::parseBoolean);
 
         if (Platform.isMac()) {
@@ -1267,7 +1269,13 @@ public class MainFrame extends JFrame implements Runnable {
             return list;
         });
 
-        MusicLibrary.initialize();
+        if (!Platform.isMac()) {
+            System.setProperty("glass.platform", "headless");
+
+            javafx.application.Platform.startup(() -> {
+                // No-op
+            });
+        }
 
         instance = new MainFrame();
 

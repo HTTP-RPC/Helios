@@ -14,57 +14,62 @@
 
 package org.httprpc.helios;
 
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.util.Duration;
+
 import java.nio.file.Path;
 
-public class WindowsAudioPlayer implements AudioPlayer {
+public class JavaFXAudioPlayer implements AudioPlayer {
+    private MediaPlayer mediaPlayer;
+
     private boolean playing = false;
 
-    public WindowsAudioPlayer(Path contentPath) {
-        // TODO
+    public JavaFXAudioPlayer(Path contentPath) {
+        mediaPlayer = new MediaPlayer(new Media(contentPath.toUri().toString()));
     }
 
     @Override
     public void play() {
-        // TODO
+        mediaPlayer.play();
+
         playing = true;
     }
 
     @Override
     public void pause() {
-        // TODO
+        mediaPlayer.pause();
+
         playing = false;
     }
 
     @Override
     public boolean isPlaying() {
-        // TODO
         return playing;
     }
 
     @Override
     public double getPosition() {
-        // TODO
-        return 0.0;
+        return mediaPlayer.getCurrentTime().toSeconds();
     }
 
     @Override
     public void setPosition(double position) {
-        // TODO
+        mediaPlayer.seek(Duration.seconds(position));
     }
 
     @Override
     public double getVolume() {
-        // TODO
-        return 0.0;
+        return mediaPlayer.getVolume();
     }
 
     @Override
     public void setVolume(double volume) {
-        // TODO
+        mediaPlayer.setVolume(volume);
     }
 
     @Override
     public void dispose() {
-        // TODO
+        mediaPlayer.dispose();
     }
 }
