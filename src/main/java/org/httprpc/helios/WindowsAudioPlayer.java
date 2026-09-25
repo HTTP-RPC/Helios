@@ -17,53 +17,71 @@ package org.httprpc.helios;
 import java.nio.file.Path;
 
 public class WindowsAudioPlayer implements AudioPlayer {
-    private boolean playing = false;
+    private long instance;
+
+    static {
+        System.loadLibrary("helios-windows");
+    }
 
     public WindowsAudioPlayer(Path contentPath) {
-        // TODO
+        instance = construct(contentPath.toString());
     }
+
+    private native long construct(String contentPath);
 
     @Override
     public void play() {
-        // TODO
-        playing = true;
+        play(instance);
     }
+
+    private native void play(long instance);
 
     @Override
     public void pause() {
-        // TODO
-        playing = false;
+        pause(instance);
     }
+
+    private native void pause(long instance);
 
     @Override
     public boolean isPlaying() {
-        return playing;
+        return isPlaying(instance);
     }
+
+    private native boolean isPlaying(long instance);
 
     @Override
     public double getPosition() {
-        // TODO
-        return 0.0;
+        return getPosition(instance);
     }
+
+    private native double getPosition(long instance);
 
     @Override
     public void setPosition(double position) {
-        // TODO
+        setPosition(instance, position);
     }
+
+    private native void setPosition(double instance, double position);
 
     @Override
     public double getVolume() {
-        // TODO
-        return 0.0;
+        return getVolume(instance);
     }
+
+    private native double getVolume(long instance);
 
     @Override
     public void setVolume(double volume) {
-        // TODO
+        setVolume(instance, volume);
     }
+
+    private native void setVolume(long instance, double volume);
 
     @Override
     public void dispose() {
-        // TODO
+        dispose(instance);
     }
+
+    private native void dispose(long instance);
 }
