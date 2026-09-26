@@ -14,6 +14,7 @@
 
 package org.httprpc.helios;
 
+import com.sun.jna.Platform;
 import org.httprpc.kilo.Name;
 import org.httprpc.kilo.WebServiceProxy;
 import org.httprpc.kilo.beans.BeanAdapter;
@@ -158,9 +159,9 @@ public class MusicLibrary {
     private static final Comparator<ArtistAlbum> albumArtworkComparator = Comparator.comparing(ArtistAlbum::getSortableArtist)
         .thenComparing(ArtistAlbum::getSortableAlbum);
 
-    private static List<String> articles;
+    private static final List<String> articles;
     static {
-        articles = listOf(mapAll(iterableOf(resourceBundle.getString("articles").split(",")), article -> article.strip().toLowerCase()));
+        articles = immutableListOf(mapAll(iterableOf(resourceBundle.getString("articles").split(",")), article -> article.strip().toLowerCase()));
     }
 
     private MusicLibrary() {
@@ -744,7 +745,7 @@ public class MusicLibrary {
         for (var i = 0; i < n; i++) {
             var c = component.charAt(i);
 
-            if (c == '\\' || c == '/' || c == ':') {
+            if (c == '/' || c == '\\' || c == ':' || (Platform.isWindows() && isReservedWindowsCharacter(c))) {
                 c = '_';
             }
 
@@ -752,6 +753,10 @@ public class MusicLibrary {
         }
 
         return componentBuilder.toString();
+    }
+
+    private static boolean isReservedWindowsCharacter(char c) {
+        return (c == '<' || c == '>' || c == '"' || c == '|' || c == '?' || c == '*');
     }
 
     private static void deleteSong(Path contentPath) {
