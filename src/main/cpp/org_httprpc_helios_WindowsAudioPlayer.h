@@ -58,10 +58,10 @@ JNIEXPORT jdouble JNICALL Java_org_httprpc_helios_WindowsAudioPlayer_getPosition
 /*
  * Class:     org_httprpc_helios_WindowsAudioPlayer
  * Method:    setPosition
- * Signature: (DD)V
+ * Signature: (JD)V
  */
 JNIEXPORT void JNICALL Java_org_httprpc_helios_WindowsAudioPlayer_setPosition
-  (JNIEnv *, jobject, jdouble, jdouble);
+  (JNIEnv *, jobject, jlong, jdouble);
 
 /*
  * Class:     org_httprpc_helios_WindowsAudioPlayer

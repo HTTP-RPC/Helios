@@ -59,54 +59,54 @@ public class WindowsAudioPlayer implements AudioPlayer {
         play(handle);
     }
 
-    private native void play(long instance);
+    private native void play(long handle);
 
     @Override
     public void pause() {
         pause(handle);
     }
 
-    private native void pause(long instance);
+    private native void pause(long handle);
 
     @Override
     public boolean isPlaying() {
         return isPlaying(handle);
     }
 
-    private native boolean isPlaying(long instance);
+    private native boolean isPlaying(long handle);
 
     @Override
     public double getPosition() {
         return getPosition(handle);
     }
 
-    private native double getPosition(long instance);
+    private native double getPosition(long handle);
 
     @Override
     public void setPosition(double position) {
         setPosition(handle, position);
     }
 
-    private native void setPosition(double instance, double position);
+    private native void setPosition(long handle, double position);
 
     @Override
     public double getVolume() {
         return getVolume(handle);
     }
 
-    private native double getVolume(long instance);
+    private native double getVolume(long handle);
 
     @Override
     public void setVolume(double volume) {
         setVolume(handle, volume);
     }
 
-    private native void setVolume(long instance, double volume);
+    private native void setVolume(long handle, double volume);
 
     @Override
     public void dispose() {
         destroy(handle);
     }
 
-    private native void destroy(long instance);
+    private native void destroy(long handle);
 }
