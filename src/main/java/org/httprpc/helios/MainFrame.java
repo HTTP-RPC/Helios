@@ -352,14 +352,14 @@ public class MainFrame extends JFrame implements Runnable {
             }
         });
 
-        bind(KeyEvent.VK_DOWN, true, true, VOLUME_DOWN_KEY, event -> {
+        bind(KeyEvent.VK_DOWN, true, false, VOLUME_DOWN_KEY, event -> {
             var volume = volumeSlider.getValue();
             var maximum = volumeSlider.getMaximum();
 
             volumeSlider.setValue((int)Math.max(volume - maximum * VOLUME_INCREMENT, 0.0));
         });
 
-        bind(KeyEvent.VK_UP, true, true, VOLUME_UP_KEY, event -> {
+        bind(KeyEvent.VK_UP, true, false, VOLUME_UP_KEY, event -> {
             var volume = volumeSlider.getValue();
             var maximum = volumeSlider.getMaximum();
 
@@ -1174,6 +1174,11 @@ public class MainFrame extends JFrame implements Runnable {
                     }
                 }
             });
+
+            var inputMap = list.getInputMap(JComponent.WHEN_FOCUSED);
+
+            inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, KeyEvent.CTRL_DOWN_MASK), "none");
+            inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, KeyEvent.CTRL_DOWN_MASK), "none");
 
             return list;
         });
