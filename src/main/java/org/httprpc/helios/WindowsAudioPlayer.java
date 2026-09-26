@@ -22,7 +22,7 @@ import java.nio.file.StandardCopyOption;
 public class WindowsAudioPlayer implements AudioPlayer {
     private long handle;
 
-    private static final String LIBRARY_NAME = "helios-windows.dll";
+    private static final String LIBRARY_NAME = "helios.dll";
 
     static {
         var jniPath = MusicLibrary.getRootDirectory().resolve("jni");
@@ -35,7 +35,7 @@ public class WindowsAudioPlayer implements AudioPlayer {
 
         var libraryPath = jniPath.resolve(LIBRARY_NAME);
 
-        try (var inputStream = WindowsAudioPlayer.class.getResourceAsStream(LIBRARY_NAME)) {
+        try (var inputStream = WindowsAudioPlayer.class.getResourceAsStream(String.format("/%s", LIBRARY_NAME))) {
             Files.copy(inputStream, libraryPath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException exception) {
             throw new RuntimeException(exception);

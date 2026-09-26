@@ -1,97 +1,128 @@
 #include <jni.h>
-#include <iostream>
 #include <winrt/Windows.Foundation.h>
-#include <winrt/Windows.Media.Playback.h>
+#include <winrt/Windows.Storage.h>
+#include <winrt/Windows.Storage.Streams.h>
 #include <winrt/Windows.Media.Core.h>
+#include <winrt/Windows.Media.Playback.h>
 #include "org_httprpc_helios_WindowsAudioPlayer.h"
+
+using namespace winrt::Windows::Storage;
+using namespace winrt::Windows::Storage::Streams;
+using namespace winrt::Windows::Media::Core;
+using namespace winrt::Windows::Media::Playback;
 
 JNIEXPORT void JNICALL Java_org_httprpc_helios_WindowsAudioPlayer_initialize
   (JNIEnv *env, jclass type) {
-    init_apartment();
+    winrt::init_apartment();
 }
 
-JNIEXPORT jlong JNICALL Java_org_httprpc_helios_WindowsAudioPlayer_construct
+JNIEXPORT jlong JNICALL Java_org_httprpc_helios_WindowsAudioPlayer_allocate
   (JNIEnv *env, jobject instance, jstring contentPath) {
     const jchar* contentPathChars = env->GetStringChars(contentPath, nullptr);
-    jsize contentPathLength = env->GetStringLength(javaString);
+    jsize contentPathLength = env->GetStringLength(contentPath);
 
     winrt::hstring path { reinterpret_cast<const wchar_t*>(contentPathChars), static_cast<uint32_t>(contentPathLength) };
 
     env->ReleaseStringChars(contentPath, contentPathChars);
+   
+    StorageFile storageFile = StorageFile::GetFileFromPathAsync(path).get();
+    MediaSource mediaSource = MediaSource::CreateFromStorageFile(storageFile);
 
-    MediaPlayer* mediaPlayer = new MediaPlayer();
+    MediaPlayer mediaPlayer;
 
-    auto asyncOperation = StorageFile::GetFileFromPathAsync(path);
+    mediaPlayer.Source(mediaSource);
 
-    auto mediaSource = MediaSource::CreateFromStorageFile(asyncOperation.get());
-
-    mediaPlayer->Source(mediaSource);
-
-    return reinterpret_cast<jlong>(mediaPlayer);
+    return reinterpret_cast<jlong>(winrt::detach_abi(mediaPlayer));
 }
 
 JNIEXPORT void JNICALL Java_org_httprpc_helios_WindowsAudioPlayer_play
   (JNIEnv *env, jobject instance, jlong handle) {
-    MediaPlayer* mediaPlayer = reinterpret_cast<MediaPlayer*>(handle);
+    MediaPlayer mediaPlayer { nullptr };
 
-    mediaPlayer->Play();
+    winrt::attach_abi(mediaPlayer, reinterpret_cast<void*>(handle));
+
+    mediaPlayer.Play();
+
+    winrt::detach_abi(mediaPlayer);
 }
 
 JNIEXPORT void JNICALL Java_org_httprpc_helios_WindowsAudioPlayer_pause
   (JNIEnv *env, jobject instance, jlong handle) {
-    MediaPlayer* mediaPlayer = reinterpret_cast<MediaPlayer*>(handle);
+    MediaPlayer mediaPlayer{ nullptr };
 
-    mediaPlayer->Pause();
+    winrt::attach_abi(mediaPlayer, reinterpret_cast<void*>(handle));
+
+    mediaPlayer.Pause();
+
+    winrt::detach_abi(mediaPlayer);
 }
 
 JNIEXPORT jboolean JNICALL Java_org_httprpc_helios_WindowsAudioPlayer_isPlaying
   (JNIEnv *env, jobject instance, jlong handle) {
-    MediaPlayer* mediaPlayer = reinterpret_cast<MediaPlayer*>(handle);
+    MediaPlayer mediaPlayer{ nullptr };
 
-    auto session = media_player.PlaybackSession();
+    winrt::attach_abi(mediaPlayer, reinterpret_cast<void*>(handle));
 
-    return session.PlaybackState() > 0;
+    bool playing = mediaPlayer.PlaybackSession().PlaybackState() != MediaPlaybackState::None;
+
+    winrt::detach_abi(mediaPlayer);
+
+    return static_cast<jboolean>(playing);
 }
 
 JNIEXPORT jdouble JNICALL Java_org_httprpc_helios_WindowsAudioPlayer_getPosition
   (JNIEnv *env, jobject instance, jlong handle) {
-    MediaPlayer* mediaPlayer = reinterpret_cast<MediaPlayer*>(handle);
+    MediaPlayer mediaPlayer{ nullptr };
 
-    auto session = media_player.PlaybackSession();
+    winrt::attach_abi(mediaPlayer, reinterpret_cast<void*>(handle));
 
-    int64_t ticks = session.Position.count();
+    int64_t ticks = mediaPlayer.PlaybackSession().Position().count();
 
-    return static_cast<double>(ticks) / 10'000'000.0;
+    winrt::detach_abi(mediaPlayer);
+
+    return static_cast<jdouble>(ticks) / 10'000'000.0;
 }
 
 JNIEXPORT void JNICALL Java_org_httprpc_helios_WindowsAudioPlayer_setPosition
-  (JNIEnv *env, jobject instance, jdouble, jdouble position) {
-    MediaPlayer* mediaPlayer = reinterpret_cast<MediaPlayer*>(handle);
+  (JNIEnv *env, jobject instance, jlong handle, jdouble position) {
+    MediaPlayer mediaPlayer{ nullptr };
 
-    auto session = media_player.PlaybackSession();
+    winrt::attach_abi(mediaPlayer, reinterpret_cast<void*>(handle));
 
-    session.Position(std::chrono::seconds(position));
+    mediaPlayer.PlaybackSession().Position(std::chrono::milliseconds(static_cast<long>(position * 1000)));
+
+    winrt::detach_abi(mediaPlayer);
 }
 
 JNIEXPORT jdouble JNICALL Java_org_httprpc_helios_WindowsAudioPlayer_getVolume
   (JNIEnv *env, jobject instance, jlong handle) {
-    MediaPlayer* mediaPlayer = reinterpret_cast<MediaPlayer*>(handle);
+    MediaPlayer mediaPlayer{ nullptr };
 
-    return mediaPlayer->Volume();
+    winrt::attach_abi(mediaPlayer, reinterpret_cast<void*>(handle));
+
+    jdouble volume = mediaPlayer.Volume();
+
+    winrt::detach_abi(mediaPlayer);
+
+    return volume;
 }
 
 JNIEXPORT void JNICALL Java_org_httprpc_helios_WindowsAudioPlayer_setVolume
   (JNIEnv *env, jobject instance, jlong handle, jdouble volume) {
-    MediaPlayer* mediaPlayer = reinterpret_cast<MediaPlayer*>(handle);
+    MediaPlayer mediaPlayer{ nullptr };
 
-    mediaPlayer->Volume(volume);
+    winrt::attach_abi(mediaPlayer, reinterpret_cast<void*>(handle));
+
+    mediaPlayer.Volume(volume);
+
+    winrt::detach_abi(mediaPlayer);
 }
 
-JNIEXPORT void JNICALL Java_org_httprpc_helios_WindowsAudioPlayer_dispose
+JNIEXPORT void JNICALL Java_org_httprpc_helios_WindowsAudioPlayer_destroy
   (JNIEnv *env, jobject instance, jlong handle) {
-    MediaPlayer* mediaPlayer = reinterpret_cast<MediaPlayer*>(handle);
+    MediaPlayer mediaPlayer{ nullptr };
 
-    mediaPlayer->Close();
+    winrt::attach_abi(mediaPlayer, reinterpret_cast<void*>(handle));
 
-    delete mediaPlayer;
+    mediaPlayer.Close();
 }
