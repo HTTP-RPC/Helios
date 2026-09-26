@@ -16,8 +16,8 @@ Helios supports the following keyboard shortcuts to help simplify library naviga
 * __Command-Q__: Show the music queue.
 * __Command-N__: Add songs or create a playlist.
 * __Command-G__: Go to the currently playing song.
-* __Command-Down Arrow__: Decrease playback volume.
-* __Command-Up Arrow__: Increase playback volume.
+* __Command-Shift-Down Arrow__: Decrease playback volume.
+* __Command-Shift-Up Arrow__: Increase playback volume.
 * __Command-D__: Download missing album artwork.
 * __Command-F__: Search for songs.
 * __Command-P__: View application settings.
