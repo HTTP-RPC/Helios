@@ -1,4 +1,5 @@
 #include <jni.h>
+#include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.Storage.Streams.h>
 #include <winrt/Windows.Media.Core.h>
@@ -23,8 +24,9 @@ JNIEXPORT jlong JNICALL Java_org_httprpc_helios_WindowsAudioPlayer_construct
     winrt::hstring path { reinterpret_cast<const wchar_t*>(contentPathChars), static_cast<uint32_t>(contentPathLength) };
 
     env->ReleaseStringChars(contentPath, contentPathChars);
-
-    MediaSource mediaSource = MediaSource::CreateFromStorageFile(StorageFile::GetFileFromPathAsync(path).get());
+   
+    StorageFile storageFile = StorageFile::GetFileFromPathAsync(path).get();
+    MediaSource mediaSource = MediaSource::CreateFromStorageFile(storageFile);
 
     MediaPlayer mediaPlayer;
 
