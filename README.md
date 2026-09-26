@@ -2,6 +2,8 @@ Helios is a cross-platform desktop application that makes it easy for you to enj
 
 <img src="README/helios.png" width="800px"/>
 
+To get started, simply open the app and drag your existing music collection into it.
+
 Helios supports the following keyboard shortcuts to help simplify library navigation:
 
 * __Space bar__: Play or pause the current song.
