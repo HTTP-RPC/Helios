@@ -16,7 +16,7 @@ JNIEXPORT void JNICALL Java_org_httprpc_helios_WindowsAudioPlayer_initialize
     winrt::init_apartment();
 }
 
-JNIEXPORT jlong JNICALL Java_org_httprpc_helios_WindowsAudioPlayer_construct
+JNIEXPORT jlong JNICALL Java_org_httprpc_helios_WindowsAudioPlayer_allocate
   (JNIEnv *env, jobject instance, jstring contentPath) {
     const jchar* contentPathChars = env->GetStringChars(contentPath, nullptr);
     jsize contentPathLength = env->GetStringLength(contentPath);
@@ -118,7 +118,7 @@ JNIEXPORT void JNICALL Java_org_httprpc_helios_WindowsAudioPlayer_setVolume
     winrt::detach_abi(mediaPlayer);
 }
 
-JNIEXPORT void JNICALL Java_org_httprpc_helios_WindowsAudioPlayer_dispose
+JNIEXPORT void JNICALL Java_org_httprpc_helios_WindowsAudioPlayer_destroy
   (JNIEnv *env, jobject instance, jlong handle) {
     MediaPlayer mediaPlayer{ nullptr };
 
