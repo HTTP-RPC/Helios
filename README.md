@@ -4,7 +4,7 @@ Helios is a cross-platform desktop application that makes it easy for you to enj
 
 To get started, simply open the app and drag your existing collection of MP3 or M4A (AAC) files into it.
 
-Helios supports the following keyboard shortcuts to help simplify library navigation:
+Helios supports the following keyboard shortcuts to help simplify navigation:
 
 * __Space bar__: Play or pause the current song.
 * __Command-Left Arrow__: Rewind the current song.
