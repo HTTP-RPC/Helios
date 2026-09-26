@@ -5,6 +5,11 @@
 #include <winrt/Windows.Media.Core.h>
 #include "org_httprpc_helios_WindowsAudioPlayer.h"
 
+JNIEXPORT void JNICALL Java_org_httprpc_helios_WindowsAudioPlayer_initialize
+  (JNIEnv *env, jclass type) {
+    init_apartment();
+}
+
 JNIEXPORT jlong JNICALL Java_org_httprpc_helios_WindowsAudioPlayer_construct
   (JNIEnv *env, jobject instance, jstring contentPath) {
     const jchar* contentPathChars = env->GetStringChars(contentPath, nullptr);

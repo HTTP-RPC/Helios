@@ -19,6 +19,14 @@ import java.nio.file.Path;
 public class WindowsAudioPlayer implements AudioPlayer {
     private long handle;
 
+    static {
+        // TODO
+
+        initialize();
+    }
+
+    private static native void initialize();
+
     public WindowsAudioPlayer(Path contentPath) {
         handle = allocate(contentPath.toString());
     }

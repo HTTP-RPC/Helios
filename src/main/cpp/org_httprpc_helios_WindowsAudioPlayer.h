@@ -9,6 +9,14 @@ extern "C" {
 #endif
 /*
  * Class:     org_httprpc_helios_WindowsAudioPlayer
+ * Method:    initialize
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_org_httprpc_helios_WindowsAudioPlayer_initialize
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     org_httprpc_helios_WindowsAudioPlayer
  * Method:    allocate
  * Signature: (Ljava/lang/String;)J
  */
