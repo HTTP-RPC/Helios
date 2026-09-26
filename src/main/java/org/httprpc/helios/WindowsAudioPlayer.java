@@ -14,13 +14,34 @@
 
 package org.httprpc.helios;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 
 public class WindowsAudioPlayer implements AudioPlayer {
     private long handle;
 
+    private static final String LIBRARY_NAME = "helios-windows.dll";
+
     static {
-        // TODO
+        var jniPath = MusicLibrary.getRootDirectory().resolve("jni");
+
+        try {
+            Files.createDirectories(jniPath);
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
+        }
+
+        var libraryPath = jniPath.resolve(LIBRARY_NAME);
+
+        try (var inputStream = WindowsAudioPlayer.class.getResourceAsStream(LIBRARY_NAME)) {
+            Files.copy(inputStream, libraryPath, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
+        }
+
+        System.load(libraryPath.toString());
 
         initialize();
     }

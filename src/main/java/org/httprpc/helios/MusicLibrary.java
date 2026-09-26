@@ -710,6 +710,10 @@ public class MusicLibrary {
         }
     }
 
+    public static Path getRootDirectory() {
+        return rootDirectory;
+    }
+
     public static Path getContentPath(Song song) {
         var fileName = String.format("%s.%s", song.getTitle(), song.getType());
 
