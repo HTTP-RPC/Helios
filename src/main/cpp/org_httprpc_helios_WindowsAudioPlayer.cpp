@@ -24,9 +24,7 @@ JNIEXPORT jlong JNICALL Java_org_httprpc_helios_WindowsAudioPlayer_construct
 
     env->ReleaseStringChars(contentPath, contentPathChars);
 
-    auto asyncOperation = StorageFile::GetFileFromPathAsync(path);
-
-    auto mediaSource = MediaSource::CreateFromStorageFile(asyncOperation.get());
+    MediaSource mediaSource = MediaSource::CreateFromStorageFile(StorageFile::GetFileFromPathAsync(path).get());
 
     MediaPlayer mediaPlayer;
 
