@@ -4,7 +4,7 @@
     <bytecodeTargetLevel target="25" />
   </component>
   <component name="JavacSettings">
-    <option name="ADDITIONAL_OPTIONS_STRING" value="-parameters" />
+    <option name="ADDITIONAL_OPTIONS_STRING" value="-parameters -h $PROJECT_DIR$/src/main/cpp" />
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="Helios.desktop" options="-parameters" />
       <module name="Helios.desktop.main" options="-parameters" />

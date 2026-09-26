@@ -14,56 +14,99 @@
 
 package org.httprpc.helios;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 
 public class WindowsAudioPlayer implements AudioPlayer {
-    private boolean playing = false;
+    private long handle;
+
+    private static final String LIBRARY_NAME = "helios.dll";
+
+    static {
+        var jniPath = MusicLibrary.getRootDirectory().resolve("jni");
+
+        try {
+            Files.createDirectories(jniPath);
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
+        }
+
+        var libraryPath = jniPath.resolve(LIBRARY_NAME);
+
+        try (var inputStream = WindowsAudioPlayer.class.getResourceAsStream(String.format("/%s", LIBRARY_NAME))) {
+            Files.copy(inputStream, libraryPath, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
+        }
+
+        System.load(libraryPath.toString());
+
+        initialize();
+    }
+
+    private static native void initialize();
 
     public WindowsAudioPlayer(Path contentPath) {
-        // TODO
+        handle = allocate(contentPath.toString());
     }
+
+    private native long allocate(String contentPath);
 
     @Override
     public void play() {
-        // TODO
-        playing = true;
+        play(handle);
     }
+
+    private native void play(long handle);
 
     @Override
     public void pause() {
-        // TODO
-        playing = false;
+        pause(handle);
     }
+
+    private native void pause(long handle);
 
     @Override
     public boolean isPlaying() {
-        return playing;
+        return isPlaying(handle);
     }
+
+    private native boolean isPlaying(long handle);
 
     @Override
     public double getPosition() {
-        // TODO
-        return 0.0;
+        return getPosition(handle);
     }
+
+    private native double getPosition(long handle);
 
     @Override
     public void setPosition(double position) {
-        // TODO
+        setPosition(handle, position);
     }
+
+    private native void setPosition(long handle, double position);
 
     @Override
     public double getVolume() {
-        // TODO
-        return 0.0;
+        return getVolume(handle);
     }
+
+    private native double getVolume(long handle);
 
     @Override
     public void setVolume(double volume) {
-        // TODO
+        setVolume(handle, volume);
     }
+
+    private native void setVolume(long handle, double volume);
 
     @Override
     public void dispose() {
-        // TODO
+        destroy(handle);
     }
+
+    private native void destroy(long handle);
 }
