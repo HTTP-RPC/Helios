@@ -63,7 +63,21 @@ JNIEXPORT jboolean JNICALL Java_org_httprpc_helios_WindowsAudioPlayer_isPlaying
 
     winrt::attach_abi(mediaPlayer, reinterpret_cast<void*>(handle));
 
-    bool playing = mediaPlayer.PlaybackSession().PlaybackState() != MediaPlaybackState::None;
+    MediaPlaybackState playbackState = mediaPlayer.PlaybackSession().PlaybackState();
+
+    bool playing;
+    if (playbackState == MediaPlaybackState::Opening || playbackState == MediaPlaybackState::Buffering) {
+        playing = true;
+    }
+    else if (playbackState == MediaPlaybackState::Playing) {
+        int64_t positionCount = mediaPlayer.PlaybackSession().Position().count();
+        int64_t naturalDurationCount = mediaPlayer.PlaybackSession().NaturalDuration().count();
+
+        playing = positionCount < naturalDurationCount;
+    }
+    else {
+        playing = false;
+    }
 
     winrt::detach_abi(mediaPlayer);
 
@@ -76,11 +90,11 @@ JNIEXPORT jdouble JNICALL Java_org_httprpc_helios_WindowsAudioPlayer_getPosition
 
     winrt::attach_abi(mediaPlayer, reinterpret_cast<void*>(handle));
 
-    int64_t ticks = mediaPlayer.PlaybackSession().Position().count();
+    int64_t positionCount = mediaPlayer.PlaybackSession().Position().count();
 
     winrt::detach_abi(mediaPlayer);
 
-    return static_cast<jdouble>(ticks) / 10'000'000.0;
+    return static_cast<jdouble>(positionCount) / 10'000'000.0;
 }
 
 JNIEXPORT void JNICALL Java_org_httprpc_helios_WindowsAudioPlayer_setPosition
