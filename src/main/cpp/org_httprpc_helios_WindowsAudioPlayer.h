@@ -9,10 +9,10 @@ extern "C" {
 #endif
 /*
  * Class:     org_httprpc_helios_WindowsAudioPlayer
- * Method:    construct
+ * Method:    allocate
  * Signature: (Ljava/lang/String;)J
  */
-JNIEXPORT jlong JNICALL Java_org_httprpc_helios_WindowsAudioPlayer_construct
+JNIEXPORT jlong JNICALL Java_org_httprpc_helios_WindowsAudioPlayer_allocate
   (JNIEnv *, jobject, jstring);
 
 /*
@@ -73,10 +73,10 @@ JNIEXPORT void JNICALL Java_org_httprpc_helios_WindowsAudioPlayer_setVolume
 
 /*
  * Class:     org_httprpc_helios_WindowsAudioPlayer
- * Method:    dispose
+ * Method:    destroy
  * Signature: (J)V
  */
-JNIEXPORT void JNICALL Java_org_httprpc_helios_WindowsAudioPlayer_dispose
+JNIEXPORT void JNICALL Java_org_httprpc_helios_WindowsAudioPlayer_destroy
   (JNIEnv *, jobject, jlong);
 
 #ifdef __cplusplus
