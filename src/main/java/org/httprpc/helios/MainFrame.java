@@ -1112,9 +1112,7 @@ public class MainFrame extends JFrame implements Runnable {
         return collectionScrollPane.getViewport().getView();
     }
 
-    public static void main(String[] args) throws Exception {
-        MusicLibrary.initialize();
-
+    public static void launch() {
         var darkMode = map(preferences.get(MainFrame.DARK_MODE_KEY, null), Boolean::parseBoolean);
 
         if (Platform.isMac()) {

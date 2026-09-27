@@ -29,7 +29,7 @@ version = '1.0.1'
 application {
     applicationName = 'Helios'
 
-    mainClass = 'org.httprpc.helios.MainFrame'
+    mainClass = 'org.httprpc.helios.Helios'
 }
 
 jar {
