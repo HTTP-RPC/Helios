@@ -65,19 +65,9 @@ JNIEXPORT jboolean JNICALL Java_org_httprpc_helios_WindowsAudioPlayer_isPlaying
 
     MediaPlaybackState playbackState = mediaPlayer.PlaybackSession().PlaybackState();
 
-    bool playing;
-    if (playbackState == MediaPlaybackState::Opening || playbackState == MediaPlaybackState::Buffering) {
-        playing = true;
-    }
-    else if (playbackState == MediaPlaybackState::Playing) {
-        int64_t positionCount = mediaPlayer.PlaybackSession().Position().count();
-        int64_t naturalDurationCount = mediaPlayer.PlaybackSession().NaturalDuration().count();
-
-        playing = positionCount < naturalDurationCount;
-    }
-    else {
-        playing = false;
-    }
+    bool playing = (playbackState == MediaPlaybackState::Opening
+        || playbackState == MediaPlaybackState::Buffering
+        || playbackState == MediaPlaybackState::Playing);
 
     winrt::detach_abi(mediaPlayer);
 
