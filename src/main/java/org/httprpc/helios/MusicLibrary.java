@@ -360,11 +360,16 @@ public class MusicLibrary {
             var audioHeader = audioFile.getAudioHeader();
 
             var artist = coalesce(tag.getFirst(FieldKey.ARTIST), () -> "").strip();
-            var album = coalesce(tag.getFirst(FieldKey.ALBUM), () -> "").strip();
             var title = coalesce(tag.getFirst(FieldKey.TITLE), () -> "").strip();
 
-            if (artist.isEmpty() || album.isEmpty() || title.isEmpty()) {
+            if (artist.isEmpty() || title.isEmpty()) {
                 throw new IOException("Missing required fields.");
+            }
+
+            var album = coalesce(tag.getFirst(FieldKey.ALBUM), () -> "").strip();
+
+            if (album.isEmpty()) {
+                album = String.format(resourceBundle.getString("singleFormat"), title);
             }
 
             var time = audioHeader.getTrackLength();
