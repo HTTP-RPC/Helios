@@ -14,8 +14,10 @@
 
 package org.httprpc.helios;
 
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 import org.httprpc.sierra.BasicTableModel;
 import org.httprpc.sierra.Outlet;
+import org.httprpc.sierra.RowPanel;
 import org.httprpc.sierra.UILoader;
 
 import javax.swing.JButton;
@@ -44,10 +46,25 @@ import static org.httprpc.kilo.util.Iterables.*;
 import static org.httprpc.kilo.util.Optionals.*;
 
 public class PlaylistDetailPanel extends CollectionDetailPanel {
-    private static class PlaylistCellRenderer extends JLabel implements TableCellRenderer {
+    private class PlaylistCellRenderer extends RowPanel implements TableCellRenderer {
+        JLabel textLabel;
+        JLabel iconLabel;
+
+        static final FlatSVGIcon nowPlayingIcon;
+        static {
+            nowPlayingIcon = new FlatSVGIcon(GenreDetailPanel.class.getResource("icons/sensors_24dp.svg")).derive(18, 18);
+        }
+
         PlaylistCellRenderer() {
-            setText("A");
             setOpaque(true);
+
+            add(new JLabel(), label -> {
+                label.setText("A");
+
+                textLabel = label;
+            }, 1.0);
+
+            add(new JLabel(), label -> iconLabel = label);
 
             setBorder(new EmptyBorder(4, 8, 4, 8));
         }
@@ -57,7 +74,18 @@ public class PlaylistDetailPanel extends CollectionDetailPanel {
             Object value,
             boolean selected, boolean hasFocus,
             int row, int column) {
-            setText(map(value, Object::toString));
+            textLabel.setText(map(value, Object::toString));
+
+            if (columnNames.get(column).equals("title")) {
+                iconLabel.setIcon(nowPlayingIcon);
+
+                var song = songs.get(row);
+                var currentSong = MainFrame.getInstance().getCurrentSong();
+
+                iconLabel.setVisible(currentSong != null && song.getID().equals(currentSong.getID()));
+            } else {
+                iconLabel.setIcon(null);
+            }
 
             Color background;
             Color foreground;
@@ -70,7 +98,16 @@ public class PlaylistDetailPanel extends CollectionDetailPanel {
             }
 
             setBackground(background);
-            setForeground(foreground);
+
+            textLabel.setForeground(foreground);
+
+            var icon = (FlatSVGIcon)iconLabel.getIcon();
+
+            if (icon != null) {
+                icon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> foreground));
+            }
+
+            iconLabel.setEnabled(selected);
 
             return this;
         }
@@ -87,6 +124,8 @@ public class PlaylistDetailPanel extends CollectionDetailPanel {
     private @Outlet JButton deletePlaylistButton = null;
 
     private @Outlet JTable songTable = null;
+
+    private List<String> columnNames = listOf("artist", "title", "album");
 
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(PlaylistDetailPanel.class.getName());
 
@@ -157,9 +196,7 @@ public class PlaylistDetailPanel extends CollectionDetailPanel {
         songTable.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, null);
         songTable.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, null);
 
-        songTable.setModel(new BasicTableModel<>(Song.class, songs,
-            listOf("artist", "title", "album"),
-            resourceBundle));
+        songTable.setModel(new BasicTableModel<>(Song.class, songs, columnNames, resourceBundle));
 
         var playlistCellRenderer = new PlaylistCellRenderer();
 
