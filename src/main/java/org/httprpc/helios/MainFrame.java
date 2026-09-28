@@ -560,7 +560,7 @@ public class MainFrame extends JFrame implements Runnable {
         genreList.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent event) {
-                perform(cast(getCollectionDetailView(), GenreDetailPanel.class), GenreDetailPanel::clearSelection);
+                perform((GenreDetailPanel)getCollectionDetailPanel(), GenreDetailPanel::clearSelection);
             }
         });
 
@@ -573,6 +573,13 @@ public class MainFrame extends JFrame implements Runnable {
 
             if (collectionTabbedPane.getSelectedIndex() == PLAYLIST_TAB_INDEX) {
                 showSelectedCollection();
+            }
+        });
+
+        playlistList.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent event) {
+                perform((PlaylistDetailPanel)getCollectionDetailPanel(), PlaylistDetailPanel::clearSelection);
             }
         });
 
@@ -625,9 +632,8 @@ public class MainFrame extends JFrame implements Runnable {
 
             @Override
             public void windowDeactivated(WindowEvent event) {
-                if (collectionTabbedPane.getSelectedIndex() == ARTIST_TAB_INDEX
-                    && getCollectionDetailView() instanceof ArtistDetailPanel artistDetailPanel) {
-                    artistDetailPanel.deactivate();
+                if (collectionTabbedPane.getSelectedIndex() == ARTIST_TAB_INDEX) {
+                    perform((ArtistDetailPanel)getCollectionDetailPanel(), ArtistDetailPanel::deactivate);
                 }
             }
         });
@@ -785,9 +791,7 @@ public class MainFrame extends JFrame implements Runnable {
 
         timer.start();
 
-        if (getCollectionDetailView() instanceof LibraryDetail libraryDetail) {
-            libraryDetail.showCurrentSong(queue.get(queueIndex));
-        }
+        perform(getCollectionDetailPanel(), collectionDetail -> collectionDetail.showCurrentSong(queue.get(queueIndex)));
     }
 
     private void pause() {
@@ -798,9 +802,7 @@ public class MainFrame extends JFrame implements Runnable {
 
         timer.stop();
 
-        if (getCollectionDetailView() instanceof LibraryDetail libraryDetail) {
-            libraryDetail.showCurrentSong(null);
-        }
+        perform(getCollectionDetailPanel(), collectionDetail -> collectionDetail.showCurrentSong(null));
     }
 
     private void movePrevious() {
@@ -1008,11 +1010,9 @@ public class MainFrame extends JFrame implements Runnable {
                     artistList.setSelectedIndex(i);
                     artistList.ensureIndexIsVisible(i);
 
-                    SwingUtilities.invokeLater(() -> {
-                        if (getCollectionDetailView() instanceof ArtistDetailPanel artistDetailPanel) {
-                            artistDetailPanel.scrollToSong(song);
-                        }
-                    });
+                    var artistDetailPanel = (ArtistDetailPanel)getCollectionDetailPanel();
+
+                    SwingUtilities.invokeLater(() -> artistDetailPanel.scrollToSong(song));
 
                     break;
                 }
@@ -1031,11 +1031,9 @@ public class MainFrame extends JFrame implements Runnable {
                     genreList.setSelectedIndex(i);
                     genreList.ensureIndexIsVisible(i);
 
-                    SwingUtilities.invokeLater(() -> {
-                        if (getCollectionDetailView() instanceof GenreDetailPanel genreDetailPanel) {
-                            genreDetailPanel.scrollToSong(song);
-                        }
-                    });
+                    var genreDetailPanel = (GenreDetailPanel)getCollectionDetailPanel();
+
+                    SwingUtilities.invokeLater(() -> genreDetailPanel.scrollToSong(song));
 
                     break;
                 }
@@ -1108,8 +1106,8 @@ public class MainFrame extends JFrame implements Runnable {
         collectionScrollPane.setViewportView(collectionDetailPanel);
     }
 
-    private Component getCollectionDetailView() {
-        return collectionScrollPane.getViewport().getView();
+    private CollectionDetailPanel getCollectionDetailPanel() {
+        return (CollectionDetailPanel)collectionScrollPane.getViewport().getView();
     }
 
     public static void launch() {

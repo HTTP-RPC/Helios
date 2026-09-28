@@ -14,6 +14,8 @@
 
 package org.httprpc.helios;
 
-public interface LibraryDetail {
-    void showCurrentSong(Song song);
+import org.httprpc.sierra.StackPanel;
+
+public abstract class CollectionDetailPanel extends StackPanel {
+    public abstract void showCurrentSong(Song song);
 }

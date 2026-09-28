@@ -16,7 +16,6 @@ package org.httprpc.helios;
 
 import org.httprpc.sierra.ColumnPanel;
 import org.httprpc.sierra.Outlet;
-import org.httprpc.sierra.StackPanel;
 import org.httprpc.sierra.UILoader;
 
 import javax.swing.JButton;
@@ -30,7 +29,7 @@ import java.util.SequencedMap;
 import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
 
-public class ArtistDetailPanel extends StackPanel implements LibraryDetail {
+public class ArtistDetailPanel extends CollectionDetailPanel {
     private @Outlet JLabel nameLabel = null;
     private @Outlet JButton playAllButton = null;
 
@@ -66,16 +65,6 @@ public class ArtistDetailPanel extends StackPanel implements LibraryDetail {
         }
     }
 
-    public void deactivate() {
-        var n = albumListPanel.getComponentCount();
-
-        for (var i = 0; i < n; i++) {
-            if (albumListPanel.getComponent(i) instanceof AlbumDetailPanel albumDetailPanel) {
-                albumDetailPanel.deactivate();
-            }
-        }
-    }
-
     public void scrollToSong(Song song) {
         var album = song.getAlbum();
 
@@ -88,6 +77,16 @@ public class ArtistDetailPanel extends StackPanel implements LibraryDetail {
                 scrollRectToVisible(SwingUtilities.convertRectangle(albumListPanel, albumDetailPanel.getBounds(), this));
 
                 break;
+            }
+        }
+    }
+
+    public void deactivate() {
+        var n = albumListPanel.getComponentCount();
+
+        for (var i = 0; i < n; i++) {
+            if (albumListPanel.getComponent(i) instanceof AlbumDetailPanel albumDetailPanel) {
+                albumDetailPanel.deactivate();
             }
         }
     }

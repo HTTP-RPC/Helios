@@ -16,7 +16,6 @@ package org.httprpc.helios;
 
 import org.httprpc.sierra.BasicTableModel;
 import org.httprpc.sierra.Outlet;
-import org.httprpc.sierra.StackPanel;
 import org.httprpc.sierra.UILoader;
 
 import javax.swing.JButton;
@@ -44,7 +43,7 @@ import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
 import static org.httprpc.kilo.util.Optionals.*;
 
-public class PlaylistDetailPanel extends StackPanel {
+public class PlaylistDetailPanel extends CollectionDetailPanel {
     private static class PlaylistCellRenderer extends JLabel implements TableCellRenderer {
         PlaylistCellRenderer() {
             setText("A");
@@ -285,5 +284,14 @@ public class PlaylistDetailPanel extends StackPanel {
 
             MainFrame.getInstance().loadPlaylists();
         }
+    }
+
+    @Override
+    public void showCurrentSong(Song song) {
+        // No-op
+    }
+
+    public void clearSelection() {
+        songTable.clearSelection();
     }
 }

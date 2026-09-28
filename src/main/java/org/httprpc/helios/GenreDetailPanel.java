@@ -64,7 +64,7 @@ import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
 import static org.httprpc.kilo.util.Optionals.*;
 
-public class GenreDetailPanel extends StackPanel implements LibraryDetail {
+public class GenreDetailPanel extends CollectionDetailPanel {
     private static class ArtistAlbumCellRenderer extends ColumnPanel implements ListCellRenderer<ArtistAlbum> {
         ImagePane artworkImagePane;
 
@@ -498,11 +498,6 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
         });
     }
 
-    @Override
-    public void showCurrentSong(Song song) {
-        songList.repaint();
-    }
-
     private void addToPlaylist(Playlist playlist) {
         MusicLibrary.addToPlaylist(playlist, songList.getSelectedValue());
 
@@ -704,9 +699,9 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
         }
     }
 
-    public void clearSelection() {
-        artistAlbumList.clearSelection();
-        songList.clearSelection();
+    @Override
+    public void showCurrentSong(Song song) {
+        songList.repaint();
     }
 
     public void scrollToSong(Song song) {
@@ -731,5 +726,10 @@ public class GenreDetailPanel extends StackPanel implements LibraryDetail {
             artistAlbumList.ensureIndexIsVisible(index);
             artistAlbumList.requestFocus();
         });
+    }
+
+    public void clearSelection() {
+        artistAlbumList.clearSelection();
+        songList.clearSelection();
     }
 }
