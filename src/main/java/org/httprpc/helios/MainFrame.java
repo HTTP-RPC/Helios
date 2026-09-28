@@ -531,7 +531,18 @@ public class MainFrame extends JFrame implements Runnable {
 
         collectionTabbedPane.setPreferredSize(new Dimension(tabWidth + 20, 0));
 
-        collectionTabbedPane.addChangeListener(event -> showSelectedCollection());
+        collectionTabbedPane.addChangeListener(event -> {
+            showSelectedCollection();
+
+            var collectionList = switch (collectionTabbedPane.getSelectedIndex()) {
+                case ARTIST_TAB_INDEX -> artistList;
+                case GENRE_TAB_INDEX -> genreList;
+                case PLAYLIST_TAB_INDEX -> playlistList;
+                default -> throw new UnsupportedOperationException();
+            };
+
+            collectionList.requestFocus();
+        });
 
         artistList.setCellRenderer(new ArtistCellRenderer());
 
