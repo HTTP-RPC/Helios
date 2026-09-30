@@ -441,7 +441,7 @@ public class MainFrame extends JFrame implements Runnable {
     public void run() {
         setContentPane(UILoader.load(this, "MainFrame.xml", resourceBundle));
 
-        var playIcon = new UILoader.SVGIcon(MainFrame.class.getResource("icons/play_arrow_24dp.svg"));
+        var playIcon = UILoader.createSVGIcon(MainFrame.class.getResource("icons/play_arrow_24dp.svg"));
 
         playIcon.setIconSize(32, 32);
         playIcon.setColorMapper(color -> {
@@ -454,7 +454,7 @@ public class MainFrame extends JFrame implements Runnable {
 
         playPauseButton.setIcon(playIcon);
 
-        var pauseIcon = new UILoader.SVGIcon(MainFrame.class.getResource("icons/pause_24dp.svg"));
+        var pauseIcon = UILoader.createSVGIcon(MainFrame.class.getResource("icons/pause_24dp.svg"));
 
         pauseIcon.setIconSize(32, 32);
         pauseIcon.setColorMapper(color -> UIManager.getColor("ProgressBar.foreground"));

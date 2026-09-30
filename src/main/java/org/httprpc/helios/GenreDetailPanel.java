@@ -95,7 +95,7 @@ public class GenreDetailPanel extends CollectionDetailPanel {
                     });
 
                     stackPanel.add(new JLabel(), label -> {
-                        var icon = new UILoader.SVGIcon(GenreDetailPanel.class.getResource("icons/photo_24dp.svg"));
+                        var icon = UILoader.createSVGIcon(GenreDetailPanel.class.getResource("icons/photo_24dp.svg"));
 
                         label.setIcon(icon);
 
@@ -208,7 +208,7 @@ public class GenreDetailPanel extends CollectionDetailPanel {
 
                 rowPanel.add(new JLabel(), label -> titleLabel = label, 1.0);
                 rowPanel.add(new JLabel(), label -> {
-                    var icon = new UILoader.SVGIcon(GenreDetailPanel.class.getResource("icons/sensors_24dp.svg"));
+                    var icon = UILoader.createSVGIcon(GenreDetailPanel.class.getResource("icons/sensors_24dp.svg"));
 
                     icon.setColorMapper(color -> {
                         if (label.isEnabled()) {
@@ -320,7 +320,7 @@ public class GenreDetailPanel extends CollectionDetailPanel {
 
     private static final UILoader.SVGIcon playlistIcon;
     static {
-        playlistIcon = new UILoader.SVGIcon(GenreDetailPanel.class.getResource("icons/queue_music_24dp.svg"));
+        playlistIcon = UILoader.createSVGIcon(GenreDetailPanel.class.getResource("icons/queue_music_24dp.svg"));
 
         playlistIcon.setIconSize(18, 18);
         playlistIcon.setColorMapper(color -> UIManager.getColor("Button.foreground"));

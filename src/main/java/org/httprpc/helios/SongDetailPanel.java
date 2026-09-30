@@ -60,7 +60,7 @@ public class SongDetailPanel extends StackPanel {
 
     private static final UILoader.SVGIcon playlistIcon;
     static {
-        playlistIcon = new UILoader.SVGIcon(SongDetailPanel.class.getResource("icons/queue_music_24dp.svg"));
+        playlistIcon = UILoader.createSVGIcon(SongDetailPanel.class.getResource("icons/queue_music_24dp.svg"));
 
         playlistIcon.setIconSize(18, 18);
         playlistIcon.setColorMapper(color -> UIManager.getColor("Button.foreground"));

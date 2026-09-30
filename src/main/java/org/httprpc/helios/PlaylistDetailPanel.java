@@ -59,7 +59,7 @@ public class PlaylistDetailPanel extends CollectionDetailPanel {
             }, 1.0);
 
             add(new JLabel(), label -> {
-                var icon = new UILoader.SVGIcon(GenreDetailPanel.class.getResource("icons/sensors_24dp.svg"));
+                var icon = UILoader.createSVGIcon(GenreDetailPanel.class.getResource("icons/sensors_24dp.svg"));
 
                 icon.setColorMapper(color -> {
                     if (label.isEnabled()) {
