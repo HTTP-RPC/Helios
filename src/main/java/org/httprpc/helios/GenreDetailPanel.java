@@ -14,7 +14,6 @@
 
 package org.httprpc.helios;
 
-import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.util.SystemFileChooser;
 import org.httprpc.sierra.BasicListModel;
 import org.httprpc.sierra.ColumnPanel;
@@ -96,7 +95,7 @@ public class GenreDetailPanel extends CollectionDetailPanel {
                     });
 
                     stackPanel.add(new JLabel(), label -> {
-                        var icon = new FlatSVGIcon(GenreDetailPanel.class.getResource("icons/photo_24dp.svg"));
+                        var icon = new UILoader.SVGIcon(GenreDetailPanel.class.getResource("icons/photo_24dp.svg"));
 
                         label.setIcon(icon);
 
@@ -180,9 +179,9 @@ public class GenreDetailPanel extends CollectionDetailPanel {
 
             setBackground(background);
 
-            var missingArtworkIcon = (FlatSVGIcon)missingArtworkLabel.getIcon();
+            var missingArtworkIcon = (UILoader.SVGIcon)missingArtworkLabel.getIcon();
 
-            missingArtworkIcon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> foreground));
+            missingArtworkIcon.setColorMapper(color -> foreground);
 
             albumLabel.setForeground(foreground);
             artistLabel.setForeground(foreground);
@@ -209,9 +208,20 @@ public class GenreDetailPanel extends CollectionDetailPanel {
 
                 rowPanel.add(new JLabel(), label -> titleLabel = label, 1.0);
                 rowPanel.add(new JLabel(), label -> {
-                    var icon = new FlatSVGIcon(GenreDetailPanel.class.getResource("icons/sensors_24dp.svg")).derive(18, 18);
+                    var icon = new UILoader.SVGIcon(GenreDetailPanel.class.getResource("icons/sensors_24dp.svg"));
+
+                    icon.setColorMapper(color -> {
+                        if (label.isEnabled()) {
+                            return label.getForeground();
+                        } else {
+                            return UIManager.getColor("Label.disabledForeground");
+                        }
+                    });
+
+                    icon.setIconSize(18, 18);
 
                     label.setIcon(icon);
+                    label.setDisabledIcon(icon);
 
                     nowPlayingLabel = label;
                 });
@@ -277,13 +287,10 @@ public class GenreDetailPanel extends CollectionDetailPanel {
 
             setBackground(background);
 
+            nowPlayingLabel.setForeground(foreground);
             titleLabel.setForeground(foreground);
             timeLabel.setForeground(foreground);
             artistLabel.setForeground(foreground);
-
-            var nowPlayingIcon = (FlatSVGIcon)nowPlayingLabel.getIcon();
-
-            nowPlayingIcon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> foreground));
 
             nowPlayingLabel.setEnabled(selected);
             timeLabel.setEnabled(selected);
@@ -311,11 +318,12 @@ public class GenreDetailPanel extends CollectionDetailPanel {
     private @Outlet JList<ArtistAlbum> artistAlbumList = null;
     private @Outlet JList<Song> songList = null;
 
-    private static final FlatSVGIcon playlistIcon;
+    private static final UILoader.SVGIcon playlistIcon;
     static {
-        playlistIcon = new FlatSVGIcon(GenreDetailPanel.class.getResource("icons/queue_music_24dp.svg")).derive(18, 18);
+        playlistIcon = new UILoader.SVGIcon(GenreDetailPanel.class.getResource("icons/queue_music_24dp.svg"));
 
-        playlistIcon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> UIManager.getColor("Button.foreground")));
+        playlistIcon.setIconSize(18, 18);
+        playlistIcon.setColorMapper(color -> UIManager.getColor("Button.foreground"));
     }
 
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(GenreDetailPanel.class.getName());

@@ -14,7 +14,6 @@
 
 package org.httprpc.helios;
 
-import com.formdev.flatlaf.extras.FlatSVGIcon;
 import org.httprpc.sierra.MenuButton;
 import org.httprpc.sierra.Outlet;
 import org.httprpc.sierra.RowPanel;
@@ -59,11 +58,12 @@ public class SongDetailPanel extends StackPanel {
 
     private @Outlet JLabel timeLabel  = null;
 
-    private static final FlatSVGIcon playlistIcon;
+    private static final UILoader.SVGIcon playlistIcon;
     static {
-        playlistIcon = new FlatSVGIcon(SongDetailPanel.class.getResource("icons/queue_music_24dp.svg")).derive(18, 18);
+        playlistIcon = new UILoader.SVGIcon(SongDetailPanel.class.getResource("icons/queue_music_24dp.svg"));
 
-        playlistIcon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> UIManager.getColor("Button.foreground")));
+        playlistIcon.setIconSize(18, 18);
+        playlistIcon.setColorMapper(color -> UIManager.getColor("Button.foreground"));
     }
 
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(SongDetailPanel.class.getName());

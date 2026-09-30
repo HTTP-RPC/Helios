@@ -14,7 +14,6 @@
 
 package org.httprpc.helios;
 
-import com.formdev.flatlaf.extras.FlatSVGIcon;
 import org.httprpc.sierra.BasicTableModel;
 import org.httprpc.sierra.Outlet;
 import org.httprpc.sierra.RowPanel;
@@ -50,11 +49,6 @@ public class PlaylistDetailPanel extends CollectionDetailPanel {
         JLabel textLabel;
         JLabel iconLabel;
 
-        static final FlatSVGIcon nowPlayingIcon;
-        static {
-            nowPlayingIcon = new FlatSVGIcon(GenreDetailPanel.class.getResource("icons/sensors_24dp.svg")).derive(18, 18);
-        }
-
         PlaylistCellRenderer() {
             setOpaque(true);
 
@@ -64,7 +58,24 @@ public class PlaylistDetailPanel extends CollectionDetailPanel {
                 textLabel = label;
             }, 1.0);
 
-            add(new JLabel(), label -> iconLabel = label);
+            add(new JLabel(), label -> {
+                var icon = new UILoader.SVGIcon(GenreDetailPanel.class.getResource("icons/sensors_24dp.svg"));
+
+                icon.setColorMapper(color -> {
+                    if (label.isEnabled()) {
+                        return label.getForeground();
+                    } else {
+                        return UIManager.getColor("Label.disabledForeground");
+                    }
+                });
+
+                icon.setIconSize(18, 18);
+
+                label.setIcon(icon);
+                label.setDisabledIcon(icon);
+
+                iconLabel = label;
+            });
 
             setBorder(new EmptyBorder(4, 8, 4, 8));
         }
@@ -77,14 +88,12 @@ public class PlaylistDetailPanel extends CollectionDetailPanel {
             textLabel.setText(map(value, Object::toString));
 
             if (columnNames.get(column).equals("title")) {
-                iconLabel.setIcon(nowPlayingIcon);
-
                 var song = songs.get(row);
                 var currentSong = MainFrame.getInstance().getCurrentSong();
 
                 iconLabel.setVisible(currentSong != null && song.getID().equals(currentSong.getID()));
             } else {
-                iconLabel.setIcon(null);
+                iconLabel.setVisible(false);
             }
 
             Color background;
@@ -100,12 +109,7 @@ public class PlaylistDetailPanel extends CollectionDetailPanel {
             setBackground(background);
 
             textLabel.setForeground(foreground);
-
-            var icon = (FlatSVGIcon)iconLabel.getIcon();
-
-            if (icon != null) {
-                icon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> foreground));
-            }
+            iconLabel.setForeground(foreground);
 
             iconLabel.setEnabled(selected);
 

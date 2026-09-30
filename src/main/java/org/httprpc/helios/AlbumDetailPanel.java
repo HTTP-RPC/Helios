@@ -58,8 +58,6 @@ public class AlbumDetailPanel extends StackPanel {
     private @Outlet JButton editAlbumButton = null;
     private @Outlet JButton deleteAlbumButton = null;
 
-    private @Outlet StackPanel artworkPanel = null;
-
     private @Outlet ColumnPanel artworkButtonPanel = null;
 
     private @Outlet JButton editArtworkButton = null;

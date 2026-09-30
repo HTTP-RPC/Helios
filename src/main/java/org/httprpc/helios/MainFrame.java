@@ -16,7 +16,6 @@ package org.httprpc.helios;
 
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLightLaf;
-import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import com.formdev.flatlaf.util.SystemFileChooser;
@@ -442,21 +441,23 @@ public class MainFrame extends JFrame implements Runnable {
     public void run() {
         setContentPane(UILoader.load(this, "MainFrame.xml", resourceBundle));
 
-        var playIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/play_arrow_24dp.svg")).derive(32, 32);
+        var playIcon = new UILoader.SVGIcon(MainFrame.class.getResource("icons/play_arrow_24dp.svg"));
 
-        playIcon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> UIManager.getColor("Button.foreground")));
+        playIcon.setIconSize(32, 32);
+        playIcon.setColorMapper(color -> {
+            if (playPauseButton.isEnabled()) {
+                return UIManager.getColor("Button.foreground");
+            } else {
+                return UIManager.getColor("Button.disabledText");
+            }
+        });
 
         playPauseButton.setIcon(playIcon);
 
-        var pauseIcon = new FlatSVGIcon(MainFrame.class.getResource("icons/pause_24dp.svg")).derive(32, 32);
+        var pauseIcon = new UILoader.SVGIcon(MainFrame.class.getResource("icons/pause_24dp.svg"));
 
-        pauseIcon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> {
-            if (playPauseButton.isSelected()) {
-                return UIManager.getColor("ProgressBar.foreground");
-            } else {
-                return UILoader.getColor("Button.foreground");
-            }
-        }));
+        pauseIcon.setIconSize(32, 32);
+        pauseIcon.setColorMapper(color -> UIManager.getColor("ProgressBar.foreground"));
 
         playPauseButton.setSelectedIcon(pauseIcon);
 
@@ -474,15 +475,15 @@ public class MainFrame extends JFrame implements Runnable {
         nextButton.setMargin(new Insets(0, 0, 0, 0));
         nextButton.addActionListener(event -> moveNext());
 
-        var shuffleIcon = (FlatSVGIcon)shuffleButton.getIcon();
+        var shuffleIcon = (UILoader.SVGIcon)shuffleButton.getIcon();
 
-        shuffleIcon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> {
+        shuffleIcon.setColorMapper(color -> {
             if (shuffleButton.isSelected() || shuffleButton.getModel().isPressed()) {
                 return UIManager.getColor("ProgressBar.foreground");
             } else {
                 return UILoader.getColor("Button.foreground");
             }
-        }));
+        });
 
         shuffleButton.addActionListener(event -> {
             if (!songs.isEmpty()
@@ -492,15 +493,15 @@ public class MainFrame extends JFrame implements Runnable {
             }
         });
 
-        var repeatIcon = (FlatSVGIcon)repeatButton.getIcon();
+        var repeatIcon = (UILoader.SVGIcon)repeatButton.getIcon();
 
-        repeatIcon.setColorFilter(new FlatSVGIcon.ColorFilter(color -> {
+        repeatIcon.setColorMapper(color -> {
             if (repeatButton.isSelected() || repeatButton.getModel().isPressed()) {
                 return UIManager.getColor("ProgressBar.foreground");
             } else {
                 return UILoader.getColor("Button.foreground");
             }
-        }));
+        });
 
         showQueueButton.addActionListener(event -> {
             if (queueDialog == null) {
