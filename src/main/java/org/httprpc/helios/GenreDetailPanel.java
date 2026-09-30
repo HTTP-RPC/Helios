@@ -287,8 +287,8 @@ public class GenreDetailPanel extends CollectionDetailPanel {
 
             setBackground(background);
 
-            nowPlayingLabel.setForeground(foreground);
             titleLabel.setForeground(foreground);
+            nowPlayingLabel.setForeground(foreground);
             timeLabel.setForeground(foreground);
             artistLabel.setForeground(foreground);
 
