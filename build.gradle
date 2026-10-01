@@ -8,7 +8,6 @@ repositories {
 }
 
 dependencies {
-    implementation "org.httprpc:kilo-client:${kiloVersion}"
     implementation "org.httprpc:sierra:${sierraVersion}"
     implementation "com.formdev:flatlaf:${flatLafVersion}"
     implementation "org.xerial:sqlite-jdbc:${sqliteJDBCVersion}"
