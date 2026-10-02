@@ -1,5 +1,6 @@
 plugins {
     id 'application'
+    id 'org.gradlex.extra-java-module-info' version '1.14.2'
 }
 
 repositories {
@@ -12,7 +13,20 @@ dependencies {
     implementation "com.formdev:flatlaf:${flatLafVersion}"
     implementation "org.xerial:sqlite-jdbc:${sqliteJDBCVersion}"
     implementation "net.jthink:jaudiotagger:${jAudioTaggerVersion}"
-    implementation "net.java.dev.jna:jna-platform:${jnaVersion}"
+    implementation "net.java.dev.jna:jna-platform-jpms:${jnaVersion}"
+}
+
+extraJavaModuleInfo {
+    module('net.jthink:jaudiotagger', 'org.jaudiotagger') {
+        requires 'java.desktop'
+        requires 'java.datatransfer'
+        requires 'java.logging'
+
+        exports 'org.jaudiotagger.audio'
+        exports 'org.jaudiotagger.audio.exceptions'
+        exports 'org.jaudiotagger.tag'
+        exports 'org.jaudiotagger.tag.images'
+    }
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -22,52 +36,61 @@ tasks.withType(JavaCompile).configureEach {
     ]
 }
 
-version = '1.0.1'
-
 application {
     applicationName = 'Helios'
 
+    mainModule = 'org.httprpc.helios'
     mainClass = 'org.httprpc.helios.Helios'
 }
 
-jar {
-    dependsOn configurations.runtimeClasspath
-
-    archiveFileName = "${project.name}.jar"
-
-    manifest {
-        attributes (
-            'Implementation-Title': application.applicationName,
-            'Implementation-Version': project.version,
-            'Main-Class': application.mainClass
-        )
-    }
-
-    from {
-        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
-    }
-
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-}
+version = '1.0.1'
 
 tasks.register("packageMacOS", Exec) {
-    dependsOn 'jar'
+    executable = 'jpackage'
 
-    workingDir = projectDir
+    args = [
+        '--name', "${application.applicationName}",
+        '--vendor', 'httprpc.org',
+        '--module', "${application.mainModule.get()}/${application.mainClass.get()}",
+        '--module-path', "${configurations.runtimeClasspath.asPath}:build/libs",
+        '--java-options', '--enable-native-access=com.formdev.flatlaf,org.xerial.sqlitejdbc,com.sun.jna',
+        '--app-version', "${version}",
+        '--mac-sign',
+        '--mac-signing-key-user-name', System.getenv('MAC_SIGNING_KEY_USER_NAME')
+    ]
+}
 
-    executable = 'bin/package-macos.sh'
-    args = ["${project.name}", "${application.applicationName}", "${version}"]
+tasks.register("notarizeMacOS", Exec) {
+    dependsOn 'packageMacOS'
+
+    executable = 'xcrun'
+
+    args = [
+        'notarytool', 'submit',
+        '--apple-id', System.getenv('NOTARY_TOOL_APPLE_ID'),
+        '--team-id', System.getenv('NOTARY_TOOL_TEAM_ID'),
+        '--password', System.getenv('NOTARY_TOOL_PASSWORD'),
+        '--wait', "${application.applicationName}-${version}.dmg"
+    ]
+}
+
+tasks.register("stapleMacOS", Exec) {
+    dependsOn 'notarizeMacOS'
+
+    executable = 'stapler'
+
+    args = ['staple', "${application.applicationName}-${version}.dmg"]
 }
 
 tasks.register("packageWindows", Exec) {
-    dependsOn 'jar'
-
     executable = 'jpackage'
+
     args = [
         '--name', "${application.applicationName}",
-        '--input', 'build/libs',
-        '--main-jar', "${project.name}.jar",
-        '--java-options', '--enable-native-access=ALL-UNNAMED',
+        '--vendor', 'httprpc.org',
+        '--module', "${application.mainModule.get()}/${application.mainClass.get()}",
+        '--module-path', "${configurations.runtimeClasspath.asPath};build/libs",
+        '--java-options', '--enable-native-access=com.formdev.flatlaf,org.xerial.sqlitejdbc,com.sun.jna',
         '--app-version', "${version}",
         '--win-shortcut'
     ]
