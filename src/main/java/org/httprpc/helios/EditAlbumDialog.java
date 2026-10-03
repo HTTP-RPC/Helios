@@ -25,7 +25,6 @@ import javax.swing.JTextField;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.SortedSet;
 
 import static org.httprpc.kilo.util.Optionals.*;
 
@@ -34,8 +33,8 @@ public class EditAlbumDialog extends AbstractDialog {
     private String album;
     private List<Song> songs;
 
-    private SortedSet<String> genres;
-    private SortedSet<Integer> years;
+    private List<String> genres;
+    private List<Integer> years;
 
     private boolean compilation;
 
@@ -53,7 +52,7 @@ public class EditAlbumDialog extends AbstractDialog {
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(EditAlbumDialog.class.getName());
 
     public EditAlbumDialog(MainFrame owner, String artist, String album, List<Song> songs,
-        SortedSet<String> genres, SortedSet<Integer> years,
+        List<String> genres, List<Integer> years,
         boolean compilation) {
         super(owner);
 
@@ -120,7 +119,7 @@ public class EditAlbumDialog extends AbstractDialog {
 
         if (!genres.isEmpty()) {
             if (genres.size() == 1) {
-                genreSuggestionPicker.setText(genres.first());
+                genreSuggestionPicker.setText(genres.getFirst());
             } else {
                 genreSuggestionPicker.putClientProperty("JTextField.placeholderText", resourceBundle.getString("mixed"));
             }
@@ -130,7 +129,7 @@ public class EditAlbumDialog extends AbstractDialog {
 
         if (!years.isEmpty()) {
             if (years.size() == 1) {
-                yearTextField.setValue(years.first());
+                yearTextField.setValue(years.getFirst());
             } else {
                 yearTextField.putClientProperty("JTextField.placeholderText", resourceBundle.getString("mixed"));
             }

@@ -533,7 +533,9 @@ public class GenreDetailPanel extends CollectionDetailPanel {
 
         var mainFrame = MainFrame.getInstance();
 
-        var editAlbumDialog = new EditAlbumDialog(mainFrame, artist, album, songs, sortedSetOf(genre.getName()), years, compilation);
+        var editAlbumDialog = new EditAlbumDialog(mainFrame, artist, album, songs,
+            listOf(genre.getName()), listOf(years),
+            compilation);
 
         editAlbumDialog.pack();
         editAlbumDialog.setLocationRelativeTo(mainFrame);

@@ -37,15 +37,13 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.text.ListFormat;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.SortedSet;
+import java.util.SequencedSet;
 import java.util.TreeSet;
 
 import static org.httprpc.kilo.util.Collections.*;
-import static org.httprpc.kilo.util.Iterables.*;
 import static org.httprpc.kilo.util.Optionals.*;
 
 public class AlbumDetailPanel extends StackPanel {
@@ -53,8 +51,8 @@ public class AlbumDetailPanel extends StackPanel {
     private String name;
     private List<Song> songs;
 
-    private SortedSet<String> genres = new TreeSet<>();
-    private SortedSet<Integer> years = new TreeSet<>();
+    private SequencedSet<String> genres = new LinkedHashSet<>();
+    private SequencedSet<Integer> years = new TreeSet<>();
 
     private boolean compilation = false;
 
@@ -153,20 +151,14 @@ public class AlbumDetailPanel extends StackPanel {
             songListPanel.add(new SongDetailPanel(songs, i));
         }
 
-        var listFormat = ListFormat.getInstance(Locale.getDefault(), ListFormat.Type.STANDARD, ListFormat.Style.NARROW);
-
-        var genres = listOf(this.genres);
-
         if (!genres.isEmpty()) {
-            genresLabel.setText(listFormat.format(listOf(genres)));
+            genresLabel.setText(genres.getFirst());
         } else {
             genresLabel.setText(null);
         }
 
-        var years = listOf(mapAll(this.years, String::valueOf));
-
         if (!years.isEmpty()) {
-            yearsLabel.setText(listFormat.format(years));
+            yearsLabel.setText(String.valueOf(years.getLast()));
         } else {
             yearsLabel.setText(null);
         }
@@ -198,7 +190,9 @@ public class AlbumDetailPanel extends StackPanel {
     private void editAlbum() {
         var mainFrame = MainFrame.getInstance();
 
-        var editAlbumDialog = new EditAlbumDialog(mainFrame, artist.getName(), name, songs, genres, years, compilation);
+        var editAlbumDialog = new EditAlbumDialog(mainFrame, artist.getName(), name, songs,
+            listOf(genres), listOf(years),
+            compilation);
 
         editAlbumDialog.pack();
         editAlbumDialog.setLocationRelativeTo(mainFrame);
