@@ -232,8 +232,6 @@ public class EditSongDialog extends AbstractDialog {
                 cancelButton.setEnabled(true);
                 okButton.setEnabled(true);
 
-                updateControls();
-
                 callback.run();
             } else {
                 UIManager.getLookAndFeel().provideErrorFeedback(artistTextField);
