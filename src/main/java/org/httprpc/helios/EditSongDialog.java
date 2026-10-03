@@ -24,6 +24,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import java.text.NumberFormat;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 import static org.httprpc.kilo.util.Optionals.*;
@@ -107,12 +108,16 @@ public class EditSongDialog extends AbstractDialog {
     }
 
     private void save() {
+        var update = false;
+
         var artist = artistTextField.getText().strip();
 
         if (artist.isEmpty()) {
             alertRequired("artist", artistTextField);
             return;
         }
+
+        update |= !artist.equals(song.getArtist());
 
         var album = albumTextField.getText().strip();
 
@@ -121,6 +126,8 @@ public class EditSongDialog extends AbstractDialog {
             return;
         }
 
+        update |= !album.equals(song.getAlbum());
+
         var title = titleTextField.getText().strip();
 
         if (title.isEmpty()) {
@@ -128,17 +135,35 @@ public class EditSongDialog extends AbstractDialog {
             return;
         }
 
+        update |= !title.equals(song.getTitle());
+
         var genre = genreSuggestionPicker.getText().strip();
+
+        update |= !genre.equals(song.getGenre());
 
         var year = map(yearTextField.getValue(), Number::intValue);
 
+        update |= !Objects.equals(year, song.getYear());
+
         var trackNumber = map(trackNumberTextField.getValue(), Number::intValue);
+
+        update |= !Objects.equals(trackNumber, song.getTrackNumber());
+
         var discNumber = map(discNumberTextField.getValue(), Number::intValue);
+
+        update |= !Objects.equals(discNumber, song.getDiscNumber());
 
         var compilation = compilationCheckBox.isSelected();
 
         if (compilation && genre.isEmpty()) {
             alertRequired("genre", genreSuggestionPicker);
+            return;
+        }
+
+        update |= compilation != song.isCompilation();
+
+        if (!update) {
+            dispose();
             return;
         }
 

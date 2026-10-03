@@ -24,6 +24,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JTextField;
 import java.text.NumberFormat;
 import java.util.List;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 import static org.httprpc.kilo.util.Optionals.*;
@@ -126,18 +127,28 @@ public class EditAlbumDialog extends AbstractDialog {
     }
 
     private void save() {
+        var update = false;
+
         var artist = artistTextField.getText().strip();
+
+        update |= !artist.equals(this.artist);
 
         var album = albumTextField.getText().strip();
 
         if (album.isEmpty()) {
-            alertRequired("artist", albumTextField);
+            alertRequired("album", albumTextField);
             return;
         }
 
+        update |= !album.equals(this.album);
+
         var genre = genreSuggestionPicker.getText().strip();
 
+        update |= !genre.equals(this.genre);
+
         var year = map(yearTextField.getValue(), Number::intValue);
+
+        update |= !Objects.equals(year, this.year);
 
         var compilation = compilationCheckBox.isSelected();
 
@@ -151,6 +162,13 @@ public class EditAlbumDialog extends AbstractDialog {
                 alertRequired("artist", artistTextField);
                 return;
             }
+        }
+
+        update |= compilation != this.compilation;
+
+        if (!update) {
+            dispose();
+            return;
         }
 
         getGlassPane().setVisible(true);
