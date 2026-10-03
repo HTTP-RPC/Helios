@@ -121,7 +121,8 @@ public class EditSongDialog extends AbstractDialog {
 
         compilationCheckBox.setSelected(song.isCompilation());
 
-        updateControls();
+        previousButton.setEnabled(songIndex > 0);
+        nextButton.setEnabled(songIndex < songs.size() - 1);
     }
 
     private void save(Runnable callback) {
@@ -253,10 +254,5 @@ public class EditSongDialog extends AbstractDialog {
 
             load();
         });
-    }
-
-    private void updateControls() {
-        previousButton.setEnabled(songIndex > 0);
-        nextButton.setEnabled(songIndex < songs.size() - 1);
     }
 }
