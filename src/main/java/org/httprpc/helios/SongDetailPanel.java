@@ -179,7 +179,7 @@ public class SongDetailPanel extends StackPanel {
     private void editSong() {
         var mainFrame = MainFrame.getInstance();
 
-        var editSongDialog = new EditSongDialog(mainFrame, songs.get(songIndex));
+        var editSongDialog = new EditSongDialog(mainFrame, songs, songIndex);
 
         editSongDialog.pack();
         editSongDialog.setLocationRelativeTo(mainFrame);

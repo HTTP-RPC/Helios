@@ -646,11 +646,14 @@ public class GenreDetailPanel extends CollectionDetailPanel {
     }
 
     private void editSong() {
-        var song = songList.getSelectedValue();
+        var artistAlbum = artistAlbumList.getSelectedValue();
+
+        var songs = albums.get(artistAlbum.getAlbum());
+        var songIndex = songList.getSelectedIndex();
 
         var mainFrame = MainFrame.getInstance();
 
-        var editSongDialog = new EditSongDialog(mainFrame, song);
+        var editSongDialog = new EditSongDialog(mainFrame, songs, songIndex);
 
         editSongDialog.pack();
         editSongDialog.setLocationRelativeTo(mainFrame);
