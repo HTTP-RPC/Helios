@@ -23,6 +23,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
+import java.awt.Insets;
 import java.text.NumberFormat;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -43,6 +44,9 @@ public class EditSongDialog extends AbstractDialog {
     private @Outlet NumberField discNumberTextField = null;
 
     private @Outlet JCheckBox compilationCheckBox = null;
+
+    private @Outlet JButton previousButton = null;
+    private @Outlet JButton nextButton = null;
 
     private @Outlet JButton cancelButton = null;
     private @Outlet JButton okButton = null;
@@ -66,6 +70,9 @@ public class EditSongDialog extends AbstractDialog {
 
         trackNumberTextField.setFormat(integerFormat);
         discNumberTextField.setFormat(integerFormat);
+
+        previousButton.setMargin(new Insets(0, 0, 0, 0));
+        nextButton.setMargin(new Insets(0, 0, 0, 0));
 
         cancelButton.addActionListener(event -> cancel());
         okButton.addActionListener(event -> save());
