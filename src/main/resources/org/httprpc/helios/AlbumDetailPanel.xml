@@ -52,8 +52,8 @@
 
             <spacer height="4"/>
 
-            <label name="genresLabel" horizontalAlignment="center" styleClass="medium" enabled="false"/>
-            <label name="yearsLabel" horizontalAlignment="center" styleClass="small" enabled="false"/>
+            <label name="genreLabel" horizontalAlignment="center" styleClass="medium" enabled="false"/>
+            <label name="yearLabel" horizontalAlignment="center" styleClass="small" enabled="false"/>
 
             <spacer weight="1"/>
         </column-panel>

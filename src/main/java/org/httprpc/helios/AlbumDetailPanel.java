@@ -69,8 +69,8 @@ public class AlbumDetailPanel extends StackPanel {
 
     private @Outlet ImagePane artworkImagePane = null;
 
-    private @Outlet JLabel genresLabel = null;
-    private @Outlet JLabel yearsLabel = null;
+    private @Outlet JLabel genreLabel = null;
+    private @Outlet JLabel yearLabel = null;
 
     private @Outlet ColumnPanel songListPanel = null;
 
@@ -113,13 +113,13 @@ public class AlbumDetailPanel extends StackPanel {
         editArtworkButton.addMouseListener(artworkButtonPanelMouseListener);
         deleteArtworkButton.addMouseListener(artworkButtonPanelMouseListener);
 
-        genresLabel.setText("A");
-        genresLabel.setPreferredSize(new Dimension(artworkImagePane.getPreferredSize().width,
-            genresLabel.getPreferredSize().height));
+        genreLabel.setText("A");
+        genreLabel.setPreferredSize(new Dimension(artworkImagePane.getPreferredSize().width,
+            genreLabel.getPreferredSize().height));
 
-        yearsLabel.setText("A");
-        yearsLabel.setPreferredSize(new Dimension(artworkImagePane.getPreferredSize().width,
-            yearsLabel.getPreferredSize().height));
+        yearLabel.setText("A");
+        yearLabel.setPreferredSize(new Dimension(artworkImagePane.getPreferredSize().width,
+            yearLabel.getPreferredSize().height));
 
         songListPanel.setBorder(new CompoundBorder(
             new MatteBorder(1, 0, 0, 0, UIManager.getColor("Component.borderColor")),
@@ -152,15 +152,15 @@ public class AlbumDetailPanel extends StackPanel {
         }
 
         if (!genres.isEmpty()) {
-            genresLabel.setText(genres.getFirst());
+            genreLabel.setText(genres.getFirst());
         } else {
-            genresLabel.setText(null);
+            genreLabel.setText(null);
         }
 
         if (!years.isEmpty()) {
-            yearsLabel.setText(String.valueOf(years.getLast()));
+            yearLabel.setText(String.valueOf(years.getLast()));
         } else {
-            yearsLabel.setText(null);
+            yearLabel.setText(null);
         }
 
         editAlbumButton.setEnabled(!compilation);
