@@ -37,9 +37,15 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.ListFormat;
 import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
+import static org.httprpc.kilo.util.Collections.*;
+import static org.httprpc.kilo.util.Iterables.*;
 import static org.httprpc.kilo.util.Optionals.*;
 
 public class AlbumDetailPanel extends StackPanel {
@@ -47,8 +53,8 @@ public class AlbumDetailPanel extends StackPanel {
     private String name;
     private List<Song> songs;
 
-    private String genre = null;
-    private Integer year = null;
+    private SortedSet<String> genres = new TreeSet<>();
+    private SortedSet<Integer> years = new TreeSet<>();
 
     private boolean compilation = false;
 
@@ -65,8 +71,8 @@ public class AlbumDetailPanel extends StackPanel {
 
     private @Outlet ImagePane artworkImagePane = null;
 
-    private @Outlet JLabel genreLabel = null;
-    private @Outlet JLabel yearLabel = null;
+    private @Outlet JLabel genresLabel = null;
+    private @Outlet JLabel yearsLabel = null;
 
     private @Outlet ColumnPanel songListPanel = null;
 
@@ -109,13 +115,13 @@ public class AlbumDetailPanel extends StackPanel {
         editArtworkButton.addMouseListener(artworkButtonPanelMouseListener);
         deleteArtworkButton.addMouseListener(artworkButtonPanelMouseListener);
 
-        genreLabel.setText("A");
-        genreLabel.setPreferredSize(new Dimension(artworkImagePane.getPreferredSize().width,
-            genreLabel.getPreferredSize().height));
+        genresLabel.setText("A");
+        genresLabel.setPreferredSize(new Dimension(artworkImagePane.getPreferredSize().width,
+            genresLabel.getPreferredSize().height));
 
-        yearLabel.setText("A");
-        yearLabel.setPreferredSize(new Dimension(artworkImagePane.getPreferredSize().width,
-            yearLabel.getPreferredSize().height));
+        yearsLabel.setText("A");
+        yearsLabel.setPreferredSize(new Dimension(artworkImagePane.getPreferredSize().width,
+            yearsLabel.getPreferredSize().height));
 
         songListPanel.setBorder(new CompoundBorder(
             new MatteBorder(1, 0, 0, 0, UIManager.getColor("Component.borderColor")),
@@ -129,8 +135,8 @@ public class AlbumDetailPanel extends StackPanel {
         for (var i = 0; i < n; i++) {
             var song = songs.get(i);
 
-            genre = coalesce(genre, song::getGenre);
-            year = coalesce(year, song::getYear);
+            perform(song.getGenre(), genres::add);
+            perform(song.getYear(), years::add);
 
             var discNumber = song.getDiscNumber();
 
@@ -147,8 +153,23 @@ public class AlbumDetailPanel extends StackPanel {
             songListPanel.add(new SongDetailPanel(songs, i));
         }
 
-        genreLabel.setText(genre);
-        yearLabel.setText(map(year, String::valueOf));
+        var listFormat = ListFormat.getInstance(Locale.getDefault(), ListFormat.Type.STANDARD, ListFormat.Style.NARROW);
+
+        var genres = listOf(this.genres);
+
+        if (!genres.isEmpty()) {
+            genresLabel.setText(listFormat.format(listOf(genres)));
+        } else {
+            genresLabel.setText(null);
+        }
+
+        var years = listOf(mapAll(this.years, String::valueOf));
+
+        if (!years.isEmpty()) {
+            yearsLabel.setText(listFormat.format(years));
+        } else {
+            yearsLabel.setText(null);
+        }
 
         editAlbumButton.setEnabled(!compilation);
         deleteAlbumButton.setEnabled(!compilation);
@@ -177,7 +198,7 @@ public class AlbumDetailPanel extends StackPanel {
     private void editAlbum() {
         var mainFrame = MainFrame.getInstance();
 
-        var editAlbumDialog = new EditAlbumDialog(mainFrame, artist.getName(), name, songs, genre, year, compilation);
+        var editAlbumDialog = new EditAlbumDialog(mainFrame, artist.getName(), name, songs, genres, years, compilation);
 
         editAlbumDialog.pack();
         editAlbumDialog.setLocationRelativeTo(mainFrame);

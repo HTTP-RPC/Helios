@@ -58,6 +58,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.SequencedMap;
+import java.util.TreeSet;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
@@ -300,6 +301,7 @@ public class GenreDetailPanel extends CollectionDetailPanel {
         }
     }
 
+    private Genre genre;
     private SequencedMap<String, List<Song>> albums;
 
     private @Outlet JLabel nameLabel = null;
@@ -346,6 +348,7 @@ public class GenreDetailPanel extends CollectionDetailPanel {
     private static Comparator<ArtistAlbum> artistAlbumComparator = artistComparator.thenComparing(ArtistAlbum::getSortableAlbum);
 
     public GenreDetailPanel(Genre genre, SequencedMap<String, List<Song>> albums) {
+        this.genre = genre;
         this.albums = albums;
 
         var artistAlbums = new ArrayList<ArtistAlbum>();
@@ -520,19 +523,17 @@ public class GenreDetailPanel extends CollectionDetailPanel {
 
         var songs = albums.get(album);
 
-        String genre = null;
-        Integer year = null;
+        var years = new TreeSet<Integer>();
 
         for (var song : songs) {
-            genre = coalesce(genre, song::getGenre);
-            year = coalesce(year, song::getYear);
+            perform(song.getYear(), years::add);
         }
 
         var compilation = artistAlbum.getArtist().isEmpty();
 
         var mainFrame = MainFrame.getInstance();
 
-        var editAlbumDialog = new EditAlbumDialog(mainFrame, artist, album, songs, genre, year, compilation);
+        var editAlbumDialog = new EditAlbumDialog(mainFrame, artist, album, songs, sortedSetOf(genre.getName()), years, compilation);
 
         editAlbumDialog.pack();
         editAlbumDialog.setLocationRelativeTo(mainFrame);

@@ -24,8 +24,8 @@ import javax.swing.JCheckBox;
 import javax.swing.JTextField;
 import java.text.NumberFormat;
 import java.util.List;
-import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.SortedSet;
 
 import static org.httprpc.kilo.util.Optionals.*;
 
@@ -34,8 +34,8 @@ public class EditAlbumDialog extends AbstractDialog {
     private String album;
     private List<Song> songs;
 
-    private String genre;
-    private Integer year;
+    private SortedSet<String> genres;
+    private SortedSet<Integer> years;
 
     private boolean compilation;
 
@@ -53,7 +53,7 @@ public class EditAlbumDialog extends AbstractDialog {
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(EditAlbumDialog.class.getName());
 
     public EditAlbumDialog(MainFrame owner, String artist, String album, List<Song> songs,
-        String genre, Integer year,
+        SortedSet<String> genres, SortedSet<Integer> years,
         boolean compilation) {
         super(owner);
 
@@ -61,8 +61,8 @@ public class EditAlbumDialog extends AbstractDialog {
         this.album = album;
         this.songs = songs;
 
-        this.genre = genre;
-        this.year = year;
+        this.genres = genres;
+        this.years = years;
 
         this.compilation = compilation;
 
@@ -118,10 +118,23 @@ public class EditAlbumDialog extends AbstractDialog {
         artistTextField.setText(artist);
         albumTextField.setText(album);
 
-        genreSuggestionPicker.setText(genre);
+        if (!genres.isEmpty()) {
+            if (genres.size() == 1) {
+                genreSuggestionPicker.setText(genres.first());
+            } else {
+                genreSuggestionPicker.putClientProperty("JTextField.placeholderText", resourceBundle.getString("mixed"));
+            }
+        }
+
         genreSuggestionPicker.setSuggestions(MusicLibrary.getGenreSuggestions());
 
-        yearTextField.setValue(year);
+        if (!years.isEmpty()) {
+            if (years.size() == 1) {
+                yearTextField.setValue(years.first());
+            } else {
+                yearTextField.putClientProperty("JTextField.placeholderText", resourceBundle.getString("mixed"));
+            }
+        }
 
         compilationCheckBox.setSelected(compilation);
     }
@@ -144,11 +157,15 @@ public class EditAlbumDialog extends AbstractDialog {
 
         var genre = genreSuggestionPicker.getText().strip();
 
-        update |= !genre.equals(this.genre);
+        var updateGenre = genres.size() < 2 || !genre.isEmpty();
+
+        update |= updateGenre;
 
         var year = map(yearTextField.getValue(), Number::intValue);
 
-        update |= !Objects.equals(year, this.year);
+        var updateYear = years.size() < 2 || year != null;
+
+        update |= updateYear;
 
         var compilation = compilationCheckBox.isSelected();
 
@@ -183,15 +200,26 @@ public class EditAlbumDialog extends AbstractDialog {
                 var song = new Song();
 
                 song.setID(previousSong.getID());
+
                 song.setArtist(compilation ? previousSong.getArtist() : artist);
                 song.setAlbum(album);
                 song.setTitle(previousSong.getTitle());
+
                 song.setTime(previousSong.getTime());
-                song.setGenre(genre);
-                song.setYear(year);
+
+                if (updateGenre) {
+                    song.setGenre(genre);
+                }
+
+                if (updateYear) {
+                    song.setYear(year);
+                }
+
                 song.setTrackNumber(previousSong.getTrackNumber());
                 song.setDiscNumber(previousSong.getDiscNumber());
+
                 song.setCompilation(compilation);
+
                 song.setType(previousSong.getType());
 
                 MusicLibrary.updateSong(song, previousSong);
