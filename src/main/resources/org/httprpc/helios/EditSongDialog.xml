@@ -30,11 +30,9 @@
             <spacer weight="1"/>
             <row-panel>
                 <button name="previousButton" icon="icons/chevron_left_24dp.svg; 18"
-                    focusable="false"
                     style="buttonType: borderless"
                     toolTipText="previous"/>
                 <button name="nextButton" icon="icons/chevron_right_24dp.svg; 18"
-                    focusable="false"
                     style="buttonType: borderless"
                     toolTipText="next"/>
             </row-panel>
