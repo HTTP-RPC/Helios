@@ -209,10 +209,14 @@ public class EditAlbumDialog extends AbstractDialog {
 
                 if (updateGenre) {
                     song.setGenre(genre);
+                } else {
+                    song.setGenre(previousSong.getGenre());
                 }
 
                 if (updateYear) {
                     song.setYear(year);
+                } else {
+                    song.setYear(previousSong.getYear());
                 }
 
                 song.setTrackNumber(previousSong.getTrackNumber());
