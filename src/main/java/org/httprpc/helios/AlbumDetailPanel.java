@@ -43,7 +43,6 @@ import java.util.ResourceBundle;
 import java.util.SequencedSet;
 import java.util.TreeSet;
 
-import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Optionals.*;
 
 public class AlbumDetailPanel extends StackPanel {
@@ -191,7 +190,7 @@ public class AlbumDetailPanel extends StackPanel {
         var mainFrame = MainFrame.getInstance();
 
         var editAlbumDialog = new EditAlbumDialog(mainFrame, artist.getName(), name, songs,
-            listOf(genres), listOf(years),
+            genres, years,
             compilation);
 
         editAlbumDialog.pack();

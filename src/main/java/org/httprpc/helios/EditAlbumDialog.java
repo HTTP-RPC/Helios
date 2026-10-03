@@ -25,6 +25,7 @@ import javax.swing.JTextField;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.SequencedSet;
 
 import static org.httprpc.kilo.util.Optionals.*;
 
@@ -33,8 +34,8 @@ public class EditAlbumDialog extends AbstractDialog {
     private String album;
     private List<Song> songs;
 
-    private List<String> genres;
-    private List<Integer> years;
+    private SequencedSet<String> genres;
+    private SequencedSet<Integer> years;
 
     private boolean compilation;
 
@@ -52,7 +53,7 @@ public class EditAlbumDialog extends AbstractDialog {
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(EditAlbumDialog.class.getName());
 
     public EditAlbumDialog(MainFrame owner, String artist, String album, List<Song> songs,
-        List<String> genres, List<Integer> years,
+        SequencedSet<String> genres, SequencedSet<Integer> years,
         boolean compilation) {
         super(owner);
 
