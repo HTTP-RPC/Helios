@@ -232,11 +232,11 @@ public class AlbumDetailPanel extends StackPanel {
 
         fileChooser.setFileSelectionMode(SystemFileChooser.FILES_ONLY);
 
-        var filter = new SystemFileChooser.FileNameExtensionFilter(resourceBundle.getString("imageFileFilterDescription"),
+        var fileFilter = new SystemFileChooser.FileNameExtensionFilter(resourceBundle.getString("imageFileFilterDescription"),
             MusicLibrary.JPG_EXTENSION.substring(1),
             MusicLibrary.JPEG_EXTENSION.substring(1));
 
-        fileChooser.addChoosableFileFilter(filter);
+        fileChooser.setFileFilter(fileFilter);
 
         var option = fileChooser.showOpenDialog(getTopLevelAncestor());
 

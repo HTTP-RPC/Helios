@@ -966,11 +966,11 @@ public class MainFrame extends JFrame implements Runnable {
         fileChooser.setFileSelectionMode(SystemFileChooser.DIRECTORIES_ONLY);
         fileChooser.setMultiSelectionEnabled(true);
 
-        var filter = new SystemFileChooser.FileNameExtensionFilter(resourceBundle.getString("audioFileFilterDescription"),
+        var fileFilter = new SystemFileChooser.FileNameExtensionFilter(resourceBundle.getString("audioFileFilterDescription"),
             MusicLibrary.MP3_EXTENSION.substring(1),
             MusicLibrary.M4A_EXTENSION.substring(1));
 
-        fileChooser.addChoosableFileFilter(filter);
+        fileChooser.setFileFilter(fileFilter);
 
         var option = fileChooser.showOpenDialog(this);
 
