@@ -1156,8 +1156,8 @@ public class MainFrame extends JFrame implements Runnable {
 
         UIManager.put("TextComponent.arc", 8);
 
-        UILoader.bind("list", JList.class, () -> {
-            var list = new JList<>() {
+        UILoader.bind("list", UILoader.JxList.class, () -> {
+            var list = new UILoader.JxList<>() {
                 @Override
                 public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
                     return 24;
