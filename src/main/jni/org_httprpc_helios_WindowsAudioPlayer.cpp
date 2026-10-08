@@ -32,7 +32,7 @@ JNIEXPORT void JNICALL Java_org_httprpc_helios_WindowsAudioPlayer_initialize
 
 JNIEXPORT jlong JNICALL Java_org_httprpc_helios_WindowsAudioPlayer_allocate
   (JNIEnv *env, jobject instance, jstring contentPath) {
-    const jchar* contentPathChars = env->GetStringChars(contentPath, nullptr);
+    const jchar *contentPathChars = env->GetStringChars(contentPath, nullptr);
     jsize contentPathLength = env->GetStringLength(contentPath);
 
     winrt::hstring path { reinterpret_cast<const wchar_t*>(contentPathChars), static_cast<uint32_t>(contentPathLength) };
