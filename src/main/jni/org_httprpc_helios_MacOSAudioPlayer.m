@@ -32,79 +32,45 @@ JNIEXPORT jlong JNICALL Java_org_httprpc_helios_MacOSAudioPlayer_allocate
 
 JNIEXPORT void JNICALL Java_org_httprpc_helios_MacOSAudioPlayer_play
   (JNIEnv *env, jobject instance, jlong handle) {
-  AVAudioPlayer *audioPlayer = (AVAudioPlayer *)CFBridgingRelease((CFTypeRef)handle);
-
-  [audioPlayer play];
-
-  CFBridgingRetain(audioPlayer);
+    [(__bridge AVAudioPlayer *)((CFTypeRef)handle) play];
 }
 
 JNIEXPORT void JNICALL Java_org_httprpc_helios_MacOSAudioPlayer_pause
   (JNIEnv *env, jobject instance, jlong handle) {
-  AVAudioPlayer *audioPlayer = (AVAudioPlayer *)CFBridgingRelease((CFTypeRef)handle);
-
-  [audioPlayer pause];
-
-  CFBridgingRetain(audioPlayer);
+    [(__bridge AVAudioPlayer *)((CFTypeRef)handle) pause];
 }
 
 JNIEXPORT jboolean JNICALL Java_org_httprpc_helios_MacOSAudioPlayer_isPlaying
   (JNIEnv *env, jobject instance, jlong handle) {
-  AVAudioPlayer *audioPlayer = (AVAudioPlayer *)CFBridgingRelease((CFTypeRef)handle);
-
-  BOOL playing = [audioPlayer isPlaying];
-
-  CFBridgingRetain(audioPlayer);
-
-  return playing;
+    return [(__bridge AVAudioPlayer *)((CFTypeRef)handle) isPlaying];
 }
 
 JNIEXPORT jdouble JNICALL Java_org_httprpc_helios_MacOSAudioPlayer_getPosition
   (JNIEnv *env, jobject instance, jlong handle) {
-  AVAudioPlayer *audioPlayer = (AVAudioPlayer *)CFBridgingRelease((CFTypeRef)handle);
-
-  NSTimeInterval currentTime = [audioPlayer currentTime];
-
-  CFBridgingRetain(audioPlayer);
-
-  return currentTime;
+    return [(__bridge AVAudioPlayer *)((CFTypeRef)handle) currentTime];
 }
 
 JNIEXPORT void JNICALL Java_org_httprpc_helios_MacOSAudioPlayer_setPosition
   (JNIEnv *env, jobject instance, jlong handle, jdouble position) {
-  AVAudioPlayer *audioPlayer = (AVAudioPlayer *)CFBridgingRelease((CFTypeRef)handle);
-
-  [audioPlayer setCurrentTime:position];
-
-  CFBridgingRetain(audioPlayer);
+    [(__bridge AVAudioPlayer *)((CFTypeRef)handle) setCurrentTime:position];
 }
 
 JNIEXPORT jdouble JNICALL Java_org_httprpc_helios_MacOSAudioPlayer_getVolume
   (JNIEnv *env, jobject instance, jlong handle) {
-  AVAudioPlayer *audioPlayer = (AVAudioPlayer *)CFBridgingRelease((CFTypeRef)handle);
-
-  NSTimeInterval currentTime = [audioPlayer volume];
-
-  CFBridgingRetain(audioPlayer);
-
-  return currentTime;
+    return [(__bridge AVAudioPlayer *)((CFTypeRef)handle) volume];
 }
 
 JNIEXPORT void JNICALL Java_org_httprpc_helios_MacOSAudioPlayer_setVolume
   (JNIEnv *env, jobject instance, jlong handle, jdouble volume) {
-  AVAudioPlayer *audioPlayer = (AVAudioPlayer *)CFBridgingRelease((CFTypeRef)handle);
-
-  [audioPlayer setVolume:volume];
-
-  CFBridgingRetain(audioPlayer);
+    [(__bridge AVAudioPlayer *)((CFTypeRef)handle) setVolume:volume];
 }
 
 JNIEXPORT void JNICALL Java_org_httprpc_helios_MacOSAudioPlayer_destroy
   (JNIEnv *env, jobject instance, jlong handle) {
-    CFBridgingRelease((CFTypeRef)handle);
+    CFRelease((CFTypeRef)handle);
 }
 
 JNIEXPORT jboolean JNICALL Java_org_httprpc_helios_MacOSAudioPlayer_isDarkMode
   (JNIEnv *env, jclass type) {
-    return [[[[NSUserDefaults standardUserDefaults] stringForKey:@"AppleInterfaceStyle"] lowercaseString] isEqualTo:@"Dark"];
+    return [[[[NSUserDefaults standardUserDefaults] stringForKey:@"AppleInterfaceStyle"] lowercaseString] isEqualTo:@"dark"];
 }
