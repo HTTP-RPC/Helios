@@ -31,7 +31,7 @@ extraJavaModuleInfo {
 tasks.withType(JavaCompile).configureEach {
     options.compilerArgs = [
         '-parameters',
-        '-h', "${projectDir}/src/main/jni"
+        '-h', "${projectDir}/src/main/jni/include"
     ]
 }
 

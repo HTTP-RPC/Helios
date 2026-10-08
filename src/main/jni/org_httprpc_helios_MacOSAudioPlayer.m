@@ -12,24 +12,3 @@
  * limitations under the License.
  */
 
-package org.httprpc.helios;
-
-public class Helios {
-    public static void main(String[] args) throws Exception {
-        MusicLibrary.initialize();
-
-        MainFrame.launch();
-    }
-
-    public static boolean isMacOS() {
-        return getOSName().toLowerCase().startsWith("mac");
-    }
-
-    public static boolean isWindows() {
-        return getOSName().startsWith("win");
-    }
-
-    private static String getOSName() {
-        return System.getProperty("os.name").toLowerCase();
-    }
-}
