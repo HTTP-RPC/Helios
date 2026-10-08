@@ -19,10 +19,6 @@ import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import com.formdev.flatlaf.util.SystemFileChooser;
-import com.sun.jna.Platform;
-import com.sun.jna.Pointer;
-import org.httprpc.helios.macos.Foundation;
-import org.httprpc.helios.macos.ObjectiveCRuntime;
 import org.httprpc.sierra.ActivityIndicator;
 import org.httprpc.sierra.BasicListModel;
 import org.httprpc.sierra.ColumnPanel;
@@ -405,7 +401,7 @@ public class MainFrame extends JFrame implements Runnable {
             modifiers |= InputEvent.SHIFT_DOWN_MASK;
         }
 
-        var keyStroke = KeyStroke.getKeyStroke(keyCode, modifiers, !Platform.isMac());
+        var keyStroke = KeyStroke.getKeyStroke(keyCode, modifiers, !Helios.isMacOS());
 
         rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(keyStroke, key);
 
@@ -1125,23 +1121,8 @@ public class MainFrame extends JFrame implements Runnable {
     public static void launch() {
         var darkMode = map(preferences.get(MainFrame.DARK_MODE_KEY, null), Boolean::parseBoolean);
 
-        if (Platform.isMac()) {
-            if (darkMode == null) {
-                var standardUserDefaults = new Pointer(ObjectiveCRuntime.instance.objc_msgSend(Foundation.NSUserDefaults.type,
-                    Foundation.NSUserDefaults.standardUserDefaults));
-
-                var key = new Pointer(ObjectiveCRuntime.instance.objc_msgSend(Foundation.NSString.type,
-                    Foundation.NSString.stringWithUTF8String_,
-                    "AppleInterfaceStyle"));
-
-                var interfaceStyle = new Pointer(ObjectiveCRuntime.instance.objc_msgSend(standardUserDefaults,
-                    Foundation.NSUserDefaults.stringForKey_, key));
-
-                darkMode = coalesce(map(ObjectiveCRuntime.instance.objc_msgSend_String(interfaceStyle, Foundation.NSString.UTF8String),
-                    value -> value.equalsIgnoreCase("dark")), () -> false);
-            }
-
-            if (darkMode) {
+        if (Helios.isMacOS()) {
+            if (coalesce(darkMode, MacOSAudioPlayer::isDarkMode)) {
                 FlatMacDarkLaf.setup();
             } else {
                 FlatMacLightLaf.setup();

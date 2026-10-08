@@ -22,5 +22,4 @@ open module org.httprpc.helios {
     requires com.formdev.flatlaf;
     requires org.xerial.sqlitejdbc;
     requires org.jaudiotagger;
-    requires com.sun.jna;
 }

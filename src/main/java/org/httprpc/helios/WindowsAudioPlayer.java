@@ -14,34 +14,11 @@
 
 package org.httprpc.helios;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 
-public class WindowsAudioPlayer implements AudioPlayer {
-    private long handle;
-
-    private static final String LIBRARY_NAME = "helios.dll";
-
+public class WindowsAudioPlayer extends AudioPlayer {
     static {
-        var jniPath = MusicLibrary.getRootDirectory().resolve("jni");
-
-        try {
-            Files.createDirectories(jniPath);
-        } catch (IOException exception) {
-            throw new RuntimeException(exception);
-        }
-
-        var libraryPath = jniPath.resolve(LIBRARY_NAME);
-
-        try (var inputStream = WindowsAudioPlayer.class.getResourceAsStream(String.format("/%s", LIBRARY_NAME))) {
-            Files.copy(inputStream, libraryPath, StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException exception) {
-            throw new RuntimeException(exception);
-        }
-
-        System.load(libraryPath.toString());
+        load("helios.dll");
 
         initialize();
     }
@@ -49,64 +26,33 @@ public class WindowsAudioPlayer implements AudioPlayer {
     private static native void initialize();
 
     public WindowsAudioPlayer(Path contentPath) {
-        handle = allocate(contentPath.toString());
+        super(contentPath);
     }
-
-    private native long allocate(String contentPath);
 
     @Override
-    public void play() {
-        play(handle);
-    }
-
-    private native void play(long handle);
+    protected native long allocate(String contentPath);
 
     @Override
-    public void pause() {
-        pause(handle);
-    }
-
-    private native void pause(long handle);
+    protected native void play(long handle);
 
     @Override
-    public boolean isPlaying() {
-        return isPlaying(handle);
-    }
-
-    private native boolean isPlaying(long handle);
+    protected native void pause(long handle);
 
     @Override
-    public double getPosition() {
-        return getPosition(handle);
-    }
-
-    private native double getPosition(long handle);
+    protected native boolean isPlaying(long handle);
 
     @Override
-    public void setPosition(double position) {
-        setPosition(handle, position);
-    }
-
-    private native void setPosition(long handle, double position);
+    protected native double getPosition(long handle);
 
     @Override
-    public double getVolume() {
-        return getVolume(handle);
-    }
-
-    private native double getVolume(long handle);
+    protected native void setPosition(long handle, double position);
 
     @Override
-    public void setVolume(double volume) {
-        setVolume(handle, volume);
-    }
-
-    private native void setVolume(long handle, double volume);
+    protected native double getVolume(long handle);
 
     @Override
-    public void dispose() {
-        destroy(handle);
-    }
+    protected native void setVolume(long handle, double volume);
 
-    private native void destroy(long handle);
+    @Override
+    protected native void destroy(long handle);
 }

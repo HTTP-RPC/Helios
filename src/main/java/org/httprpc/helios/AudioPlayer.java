@@ -14,71 +14,139 @@
 
 package org.httprpc.helios;
 
-import com.sun.jna.Platform;
-
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 
-public interface AudioPlayer {
-    void play();
-    void pause();
+public abstract class AudioPlayer {
+    private long handle;
 
-    boolean isPlaying();
+    protected static void load(String libraryName) {
+        var jniPath = MusicLibrary.getRootDirectory().resolve("jni");
 
-    double getPosition();
-    void setPosition(double position);
+        try {
+            Files.createDirectories(jniPath);
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
+        }
 
-    double getVolume();
-    void setVolume(double volume);
+        var libraryPath = jniPath.resolve(libraryName);
 
-    void dispose();
+        try (var inputStream = WindowsAudioPlayer.class.getResourceAsStream(String.format("/%s", libraryName))) {
+            Files.copy(inputStream, libraryPath, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException exception) {
+            throw new RuntimeException(exception);
+        }
+
+        System.load(libraryPath.toString());
+    }
+
+    public AudioPlayer(Path contentPath) {
+        handle = allocate(contentPath.toString());
+    }
+
+    protected abstract long allocate(String contentPath);
+
+    public void play() {
+        play(handle);
+    }
+
+    protected abstract void play(long handle);
+
+    public void pause() {
+        pause(handle);
+    }
+
+    protected abstract void pause(long handle);
+
+    public boolean isPlaying() {
+        return isPlaying(handle);
+    }
+
+    protected abstract boolean isPlaying(long handle);
+
+    public double getPosition() {
+        return getPosition(handle);
+    }
+
+    protected abstract double getPosition(long handle);
+
+    public void setPosition(double position) {
+        setPosition(handle, position);
+    }
+
+    protected abstract void setPosition(long handle, double position);
+
+    public double getVolume() {
+        return getVolume(handle);
+    }
+
+    protected abstract double getVolume(long handle);
+
+    public void setVolume(double volume) {
+        setVolume(handle, volume);
+    }
+
+    protected abstract void setVolume(long handle, double volume);
+
+    public void dispose() {
+        destroy(handle);
+    }
+
+    protected abstract void destroy(long handle);
 
     static AudioPlayer create(Path contentPath) {
         if (Files.exists(contentPath)) {
-            if (Platform.isMac()) {
+            if (Helios.isMacOS()) {
                 return new MacOSAudioPlayer(contentPath);
             } else {
                 return new WindowsAudioPlayer(contentPath);
             }
         } else {
-            return new AudioPlayer() {
+            return new AudioPlayer(contentPath) {
                 @Override
-                public void play() {
+                protected long allocate(String contentPath) {
+                    return 0;
+                }
+
+                @Override
+                protected void play(long handle) {
                     // No-op
                 }
 
                 @Override
-                public void pause() {
+                protected void pause(long handle) {
                     // No-op
                 }
 
                 @Override
-                public boolean isPlaying() {
+                protected boolean isPlaying(long handle) {
                     return false;
                 }
 
                 @Override
-                public double getPosition() {
-                    return 0.0;
+                protected double getPosition(long handle) {
+                    return 0;
                 }
 
                 @Override
-                public void setPosition(double position) {
+                protected void setPosition(long handle, double position) {
                     // No-op
                 }
 
                 @Override
-                public double getVolume() {
-                    return 0.0;
+                protected double getVolume(long handle) {
+                    return 0;
                 }
 
                 @Override
-                public void setVolume(double volume) {
+                protected void setVolume(long handle, double volume) {
                     // No-op
                 }
 
                 @Override
-                public void dispose() {
+                protected void destroy(long handle) {
                     // No-op
                 }
             };

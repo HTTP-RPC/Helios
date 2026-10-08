@@ -14,67 +14,43 @@
 
 package org.httprpc.helios;
 
-import com.sun.jna.Pointer;
-import org.httprpc.helios.macos.AVFoundation;
-import org.httprpc.helios.macos.Foundation;
-import org.httprpc.helios.macos.ObjectiveCRuntime;
-
 import java.nio.file.Path;
 
-public class MacOSAudioPlayer implements AudioPlayer {
-    private Pointer audioPlayer;
+public class MacOSAudioPlayer extends AudioPlayer {
+    static {
+        load("helios.dylib");
+    }
 
     public MacOSAudioPlayer(Path contentPath) {
-        var urlString = new Pointer(ObjectiveCRuntime.instance.objc_msgSend(Foundation.NSString.type,
-            Foundation.NSString.stringWithUTF8String_,
-            contentPath.toString()));
-
-        var url = new Pointer(ObjectiveCRuntime.instance.objc_msgSend(Foundation.NSURL.type,
-            Foundation.NSURL.fileURLWithPath_,
-            urlString));
-
-        audioPlayer = new Pointer(ObjectiveCRuntime.instance.objc_msgSend(ObjectiveCRuntime.alloc(AVFoundation.AVAudioPlayer.type),
-            AVFoundation.AVAudioPlayer.initWithContentsOfURL_Error_,
-            url, null));
+        super(contentPath);
     }
 
     @Override
-    public void play() {
-        ObjectiveCRuntime.instance.objc_msgSend(audioPlayer, AVFoundation.AVAudioPlayer.play);
-    }
+    protected native long allocate(String contentPath);
 
     @Override
-    public void pause() {
-        ObjectiveCRuntime.instance.objc_msgSend(audioPlayer, AVFoundation.AVAudioPlayer.pause);
-    }
+    protected native void play(long handle);
 
     @Override
-    public boolean isPlaying() {
-        return ObjectiveCRuntime.instance.objc_msgSend(audioPlayer, AVFoundation.AVAudioPlayer.isPlaying) > 0;
-    }
+    protected native void pause(long handle);
 
     @Override
-    public double getPosition() {
-        return ObjectiveCRuntime.instance.objc_msgSend_double(audioPlayer, AVFoundation.AVAudioPlayer.currentTime);
-    }
+    protected native boolean isPlaying(long handle);
 
     @Override
-    public void setPosition(double position) {
-        ObjectiveCRuntime.instance.objc_msgSend(audioPlayer, AVFoundation.AVAudioPlayer.setCurrentTime_, position);
-    }
+    protected native double getPosition(long handle);
 
     @Override
-    public double getVolume() {
-        return ObjectiveCRuntime.instance.objc_msgSend_float(audioPlayer, AVFoundation.AVAudioPlayer.volume);
-    }
+    protected native void setPosition(long handle, double position);
 
     @Override
-    public void setVolume(double volume) {
-        ObjectiveCRuntime.instance.objc_msgSend(audioPlayer, AVFoundation.AVAudioPlayer.setVolume_, (float)volume);
-    }
+    protected native double getVolume(long handle);
 
     @Override
-    public void dispose() {
-        ObjectiveCRuntime.release(audioPlayer);
-    }
+    protected native void setVolume(long handle, double volume);
+
+    @Override
+    protected native void destroy(long handle);
+
+    public static native boolean isDarkMode();
 }

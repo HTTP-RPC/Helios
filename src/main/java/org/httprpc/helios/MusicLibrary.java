@@ -14,7 +14,6 @@
 
 package org.httprpc.helios;
 
-import com.sun.jna.Platform;
 import org.httprpc.kilo.Name;
 import org.httprpc.kilo.WebServiceProxy;
 import org.httprpc.kilo.beans.BeanAdapter;
@@ -750,7 +749,7 @@ public class MusicLibrary {
         for (var i = 0; i < n; i++) {
             var c = component.charAt(i);
 
-            if (c == '/' || c == '\\' || c == ':' || (Platform.isWindows() && isReservedWindowsCharacter(c))) {
+            if (c == '/' || c == '\\' || c == ':' || (Helios.isWindows() && isReservedWindowsCharacter(c))) {
                 c = '_';
             }
 
