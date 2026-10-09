@@ -49,8 +49,6 @@ tasks.register("buildMacOS", Exec) {
 }
 
 tasks.register("packageMacOS", Exec) {
-    dependsOn 'buildMacOS'
-
     executable = 'jpackage'
 
     args = [
