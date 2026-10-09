@@ -239,8 +239,8 @@
 				DYLIB_CURRENT_VERSION = 1;
 				EXECUTABLE_PREFIX = lib;
 				HEADER_SEARCH_PATHS = (
-					"/Library/Java/JavaVirtualMachines/jdk-25.jdk/Contents/Home/include",
-					"/Library/Java/JavaVirtualMachines/jdk-25.jdk/Contents/Home/include/darwin",
+					"$(JAVA_HOME)/include",
+					"$(JAVA_HOME)/include/darwin",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.6;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -257,8 +257,8 @@
 				DYLIB_CURRENT_VERSION = 1;
 				EXECUTABLE_PREFIX = lib;
 				HEADER_SEARCH_PATHS = (
-					"/Library/Java/JavaVirtualMachines/jdk-25.jdk/Contents/Home/include",
-					"/Library/Java/JavaVirtualMachines/jdk-25.jdk/Contents/Home/include/darwin",
+					"$(JAVA_HOME)/include",
+					"$(JAVA_HOME)/include/darwin",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.6;
 				PRODUCT_NAME = "$(TARGET_NAME)";
