@@ -4,7 +4,12 @@
 .idea/dataSources.local.xml
 .idea/sqldialects.xml
 .idea/queries
-*.log
-**/build*
+.vs
+build
+build-macos
+build-windows
+Helios.xcodeproj/project.xcworkspace/xcuserdata
+Helios.xcodeproj/xcuserdata
+Helios.vcxproj.user
+Helios-*
 **/.DS_Store
-Helios*
