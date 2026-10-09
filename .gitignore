@@ -7,4 +7,6 @@
 *.log
 **/build
 **/.DS_Store
+Helios.xcodeproj/xcuserdata/
+Helios.xcodeproj/project.xcworkspace/xcuserdata/
 Helios-*
