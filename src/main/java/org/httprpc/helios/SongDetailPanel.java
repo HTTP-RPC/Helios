@@ -45,13 +45,14 @@ public class SongDetailPanel extends StackPanel {
     private List<Song> songs;
     private int songIndex;
 
+    private @Outlet JButton playFromButton = null;
+
     private @Outlet JLabel trackNumberLabel = null;
     private @Outlet JLabel nowPlayingLabel = null;
 
     private @Outlet JLabel titleLabel = null;
 
     private @Outlet RowPanel buttonPanel = null;
-    private @Outlet JButton playFromButton = null;
     private @Outlet MenuButton addToPlaylistButton = null;
     private @Outlet JButton editSongButton = null;
     private @Outlet JButton deleteSongButton = null;
@@ -76,6 +77,9 @@ public class SongDetailPanel extends StackPanel {
 
         add(content);
 
+        playFromButton.addActionListener(event -> playFrom());
+        playFromButton.setVisible(false);
+
         trackNumberLabel.setText("000");
         trackNumberLabel.setPreferredSize(trackNumberLabel.getPreferredSize());
 
@@ -88,8 +92,6 @@ public class SongDetailPanel extends StackPanel {
         titleLabel.setEnabled(!song.isCompilation());
 
         buttonPanel.setVisible(false);
-
-        playFromButton.addActionListener(event -> playFrom());
 
         addToPlaylistButton.setEnabled(false);
 
@@ -232,6 +234,10 @@ public class SongDetailPanel extends StackPanel {
     }
 
     public void showCurrentSong(Song song) {
+        if (isOpaque()) {
+            return;
+        }
+
         var current = song != null && song.getID().equals(songs.get(songIndex).getID());
 
         trackNumberLabel.setVisible(!current);
@@ -245,11 +251,20 @@ public class SongDetailPanel extends StackPanel {
     private void showButtons() {
         setOpaque(true);
 
+        playFromButton.setVisible(true);
+
+        trackNumberLabel.setVisible(false);
+        nowPlayingLabel.setVisible(false);
+
         buttonPanel.setVisible(true);
     }
 
     private void hideButtons() {
         setOpaque(false);
+
+        playFromButton.setVisible(false);
+
+        showCurrentSong(MainFrame.getInstance().getCurrentSong());
 
         buttonPanel.setVisible(false);
     }

@@ -4,6 +4,11 @@
 
 <row-panel spacing="8" padding="2, 4, 2, 4">
     <stack-panel>
+        <button name="playFromButton" icon="icons/play_arrow_24dp.svg; 18"
+            focusable="false"
+            toolTipText="playFrom"
+            style="buttonType: borderless"/>
+
         <label name="trackNumberLabel" horizontalAlignment="trailing" enabled="false"/>
         <label name="nowPlayingLabel" icon="icons/sensors_24dp.svg; 18" horizontalAlignment="trailing" enabled="false"/>
     </stack-panel>
@@ -11,11 +16,6 @@
     <label name="titleLabel" weight="1"/>
 
     <row-panel name="buttonPanel">
-        <button name="playFromButton" icon="icons/play_arrow_24dp.svg; 18"
-            focusable="false"
-            toolTipText="playFrom"
-            style="buttonType: borderless"/>
-
         <menu-button name="addToPlaylistButton" icon="icons/playlist_add_24dp.svg; 18"
             focusable="false"
             toolTipText="addToPlaylist"
