@@ -12,6 +12,11 @@
  * limitations under the License.
  */
 
+#pragma comment(lib, "runtimeobject.lib")
+
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+
 #include <jni.h>
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Storage.h>
@@ -19,6 +24,22 @@
 #include <winrt/Windows.Media.Core.h>
 #include <winrt/Windows.Media.Playback.h>
 #include "org_httprpc_helios_WindowsAudioPlayer.h"
+
+BOOL APIENTRY DllMain(HMODULE hModule,
+    DWORD  ul_reason_for_call,
+    LPVOID lpReserved
+)
+{
+    switch (ul_reason_for_call)
+    {
+    case DLL_PROCESS_ATTACH:
+    case DLL_THREAD_ATTACH:
+    case DLL_THREAD_DETACH:
+    case DLL_PROCESS_DETACH:
+        break;
+    }
+    return TRUE;
+}
 
 using namespace winrt::Windows::Storage;
 using namespace winrt::Windows::Storage::Streams;

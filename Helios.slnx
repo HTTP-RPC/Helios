@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="Helios.vcxproj" Id="13ea054f-e454-4903-b8be-8f502a014d2a" />
+</Solution>
