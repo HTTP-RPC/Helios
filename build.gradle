@@ -85,6 +85,10 @@ tasks.register("stapleMacOS", Exec) {
     args = ['staple', "${application.applicationName}-${version}.dmg"]
 }
 
+tasks.register("buildWindows", Exec) {
+    executable = 'bin/build-windows.bat'
+}
+
 tasks.register("packageWindows", Exec) {
     executable = 'jpackage'
 
