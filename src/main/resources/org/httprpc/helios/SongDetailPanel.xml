@@ -9,8 +9,8 @@
             toolTipText="playFrom"
             style="buttonType: borderless"/>
 
-        <label name="trackNumberLabel" horizontalAlignment="trailing" enabled="false"/>
-        <label name="nowPlayingLabel" icon="icons/sensors_24dp.svg; 18" horizontalAlignment="trailing" enabled="false"/>
+        <label name="trackNumberLabel" horizontalAlignment="center" enabled="false"/>
+        <label name="nowPlayingLabel" icon="icons/sensors_24dp.svg; 18" horizontalAlignment="center" enabled="false"/>
     </stack-panel>
 
     <label name="titleLabel" weight="1"/>
