@@ -24,7 +24,7 @@ import java.nio.file.Path;
 import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Optionals.*;
 
-public class MacOSx64AudioPlayer extends AudioPlayer {
+public class MacOSAudioPlayer_x64 extends AudioPlayer {
     public interface ObjectiveCRuntime extends Library {
         ObjectiveCRuntime instance = Native.load("objc", ObjectiveCRuntime.class, mapOf(
             entry(Library.OPTION_FUNCTION_MAPPER, (FunctionMapper)(library, method) -> {
@@ -114,7 +114,7 @@ public class MacOSx64AudioPlayer extends AudioPlayer {
 
     private Pointer audioPlayer;
 
-    public MacOSx64AudioPlayer(Path contentPath) {
+    public MacOSAudioPlayer_x64(Path contentPath) {
         super(contentPath);
     }
 

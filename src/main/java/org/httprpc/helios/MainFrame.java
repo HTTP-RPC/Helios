@@ -1122,7 +1122,7 @@ public class MainFrame extends JFrame implements Runnable {
         var darkMode = map(preferences.get(MainFrame.DARK_MODE_KEY, null), Boolean::parseBoolean);
 
         if (Helios.isMacOS()) {
-            if (coalesce(darkMode, () -> AudioPlayer.isARM() ? MacOSAudioPlayer.isDarkMode() : MacOSx64AudioPlayer.isDarkMode())) {
+            if (coalesce(darkMode, () -> AudioPlayer.isARM() ? MacOSAudioPlayer.isDarkMode() : MacOSAudioPlayer_x64.isDarkMode())) {
                 FlatMacDarkLaf.setup();
             } else {
                 FlatMacLightLaf.setup();

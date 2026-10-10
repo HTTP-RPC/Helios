@@ -102,7 +102,7 @@ public abstract class AudioPlayer {
                 if (isARM()) {
                     return new MacOSAudioPlayer(contentPath);
                 } else {
-                    return new MacOSx64AudioPlayer(contentPath);
+                    return new MacOSAudioPlayer_x64(contentPath);
                 }
             } else {
                 return new WindowsAudioPlayer(contentPath);

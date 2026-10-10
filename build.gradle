@@ -62,10 +62,15 @@ tasks.register("packageMacOS", Exec) {
         '--module', "${application.mainModule.get()}/${application.mainClass.get()}",
         '--module-path', "${configurations.runtimeClasspath.asPath}:build/libs",
         '--java-options', '--enable-native-access=org.httprpc.helios,com.formdev.flatlaf,org.xerial.sqlitejdbc,com.sun.jna',
-        '--app-version', "${version}",
-        '--mac-sign',
-        '--mac-signing-key-user-name', System.getenv('MAC_SIGNING_KEY_USER_NAME')
+        '--app-version', "${version}"
     ]
+
+    if (System.getProperty("os.arch").equalsIgnoreCase("aarch64")) {
+        args += [
+            '--mac-sign',
+            '--mac-signing-key-user-name', System.getenv('MAC_SIGNING_KEY_USER_NAME')
+        ]
+    }
 }
 
 tasks.register("notarizeMacOS", Exec) {
