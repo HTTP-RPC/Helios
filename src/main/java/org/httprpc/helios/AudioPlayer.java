@@ -96,10 +96,14 @@ public abstract class AudioPlayer {
 
     protected abstract void destroy(long handle);
 
-    static AudioPlayer create(Path contentPath) {
+    public static AudioPlayer create(Path contentPath) {
         if (Files.exists(contentPath)) {
             if (Helios.isMacOS()) {
-                return new MacOSAudioPlayer(contentPath);
+                if (isARM()) {
+                    return new MacOSAudioPlayer(contentPath);
+                } else {
+                    return new MacOSx64AudioPlayer(contentPath);
+                }
             } else {
                 return new WindowsAudioPlayer(contentPath);
             }
@@ -151,5 +155,9 @@ public abstract class AudioPlayer {
                 }
             };
         }
+    }
+
+    public static boolean isARM() {
+        return System.getProperty("os.arch").equalsIgnoreCase("aarch64");
     }
 }

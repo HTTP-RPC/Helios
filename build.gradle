@@ -13,6 +13,7 @@ dependencies {
     implementation "com.formdev:flatlaf:${flatLafVersion}"
     implementation "org.xerial:sqlite-jdbc:${sqliteJDBCVersion}"
     implementation "net.jthink:jaudiotagger:${jAudioTaggerVersion}"
+    implementation "net.java.dev.jna:jna-platform-jpms:${jnaVersion}"
 }
 
 extraJavaModuleInfo {
@@ -56,7 +57,7 @@ tasks.register("packageMacOS", Exec) {
         '--vendor', 'httprpc.org',
         '--module', "${application.mainModule.get()}/${application.mainClass.get()}",
         '--module-path', "${configurations.runtimeClasspath.asPath}:build/libs",
-        '--java-options', '--enable-native-access=org.httprpc.helios,com.formdev.flatlaf,org.xerial.sqlitejdbc',
+        '--java-options', '--enable-native-access=org.httprpc.helios,com.formdev.flatlaf,org.xerial.sqlitejdbc,net.java.dev.jna',
         '--app-version', "${version}",
         '--mac-sign',
         '--mac-signing-key-user-name', System.getenv('MAC_SIGNING_KEY_USER_NAME')
@@ -97,7 +98,7 @@ tasks.register("packageWindows", Exec) {
         '--vendor', 'httprpc.org',
         '--module', "${application.mainModule.get()}/${application.mainClass.get()}",
         '--module-path', "${configurations.runtimeClasspath.asPath};build/libs",
-        '--java-options', '--enable-native-access=org.httprpc.helios,com.formdev.flatlaf,org.xerial.sqlitejdbc',
+        '--java-options', '--enable-native-access=org.httprpc.helios,com.formdev.flatlaf,org.xerial.sqlitejdbc,net.java.dev.jna',
         '--app-version', "${version}",
         '--win-shortcut'
     ]
