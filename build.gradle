@@ -41,10 +41,6 @@ application {
 
     mainModule = 'org.httprpc.helios'
     mainClass = 'org.httprpc.helios.Helios'
-
-    applicationDefaultJvmArgs = [
-        '--enable-native-access=org.httprpc.helios,com.formdev.flatlaf,org.xerial.sqlitejdbc,com.sun.jna'
-    ]
 }
 
 version = '1.0.3'
