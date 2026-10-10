@@ -41,6 +41,10 @@ application {
 
     mainModule = 'org.httprpc.helios'
     mainClass = 'org.httprpc.helios.Helios'
+
+    applicationDefaultJvmArgs = [
+        '--enable-native-access=org.httprpc.helios,com.formdev.flatlaf,org.xerial.sqlitejdbc,com.sun.jna'
+    ]
 }
 
 version = '1.0.3'
@@ -57,7 +61,7 @@ tasks.register("packageMacOS", Exec) {
         '--vendor', 'httprpc.org',
         '--module', "${application.mainModule.get()}/${application.mainClass.get()}",
         '--module-path', "${configurations.runtimeClasspath.asPath}:build/libs",
-        '--java-options', '--enable-native-access=org.httprpc.helios,com.formdev.flatlaf,org.xerial.sqlitejdbc,net.java.dev.jna',
+        '--java-options', '--enable-native-access=org.httprpc.helios,com.formdev.flatlaf,org.xerial.sqlitejdbc,com.sun.jna',
         '--app-version', "${version}",
         '--mac-sign',
         '--mac-signing-key-user-name', System.getenv('MAC_SIGNING_KEY_USER_NAME')
@@ -98,7 +102,7 @@ tasks.register("packageWindows", Exec) {
         '--vendor', 'httprpc.org',
         '--module', "${application.mainModule.get()}/${application.mainClass.get()}",
         '--module-path', "${configurations.runtimeClasspath.asPath};build/libs",
-        '--java-options', '--enable-native-access=org.httprpc.helios,com.formdev.flatlaf,org.xerial.sqlitejdbc,net.java.dev.jna',
+        '--java-options', '--enable-native-access=org.httprpc.helios,com.formdev.flatlaf,org.xerial.sqlitejdbc,com.sun.jna',
         '--app-version', "${version}",
         '--win-shortcut'
     ]
