@@ -4,7 +4,7 @@
 
 <column-panel spacing="8">
     <row-panel spacing="4" alignToBaseline="true">
-        <label name="nameLabel" styleClass="h2"/>
+        <label name="nameLabel" styleClass="h2" alignmentX="1"/>
         <button name="playAlbumButton" icon="icons/play_arrow_24dp.svg; 18"
             focusable="false"
             toolTipText="playAlbum"
