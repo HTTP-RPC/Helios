@@ -29,10 +29,13 @@ extraJavaModuleInfo {
     }
 }
 
+compileJava {
+    options.headerOutputDirectory = "${projectDir}/src/main/jni/include"
+}
+
 tasks.withType(JavaCompile).configureEach {
     options.compilerArgs = [
-        '-parameters',
-        '-h', "${projectDir}/src/main/jni/include"
+        '-parameters'
     ]
 }
 
