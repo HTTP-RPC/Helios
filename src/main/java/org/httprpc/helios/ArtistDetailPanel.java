@@ -21,13 +21,16 @@ import org.httprpc.sierra.UILoader;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.SequencedMap;
+import java.util.TreeSet;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
+import static org.httprpc.kilo.util.Optionals.*;
 
 public class ArtistDetailPanel extends CollectionDetailPanel {
     private @Outlet JLabel nameLabel = null;
@@ -48,7 +51,27 @@ public class ArtistDetailPanel extends CollectionDetailPanel {
             var name = entry.getKey();
             var songs = entry.getValue();
 
-            albumListPanel.add(new AlbumDetailPanel(artist, name, songs));
+            var genres = new LinkedHashSet<String>();
+            var years = new TreeSet<Integer>();
+
+            var n = songs.size();
+
+            for (var i = 0; i < n; i++) {
+                var song = songs.get(i);
+
+                perform(song.getGenre(), genres::add);
+                perform(song.getYear(), years::add);
+            }
+
+            var artistAlbum = new ArtistAlbum();
+
+            artistAlbum.setArtist(artist.getName());
+            artistAlbum.setAlbum(name);
+
+            artistAlbum.setGenres(genres);
+            artistAlbum.setYears(years);
+
+            albumListPanel.add(new AlbumDetailPanel(artistAlbum, songs));
         }
 
         setScrollableTracksViewportWidth(true);

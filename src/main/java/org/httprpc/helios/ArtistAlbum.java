@@ -19,6 +19,7 @@ import org.httprpc.kilo.sql.Table;
 
 import java.awt.image.BufferedImage;
 import java.lang.ref.SoftReference;
+import java.util.SequencedSet;
 
 import static org.httprpc.kilo.util.Optionals.*;
 
@@ -29,6 +30,9 @@ public class ArtistAlbum {
 
     private String album;
     private String sortableAlbum;
+
+    private SequencedSet<String> genres;
+    private SequencedSet<Integer> years;
 
     private SoftReference<BufferedImage> artwork = new SoftReference<>(null);
 
@@ -60,6 +64,22 @@ public class ArtistAlbum {
 
     public String getSortableAlbum() {
         return sortableAlbum;
+    }
+
+    public SequencedSet<String> getGenres() {
+        return genres;
+    }
+
+    public void setGenres(SequencedSet<String> genres) {
+        this.genres = genres;
+    }
+
+    public SequencedSet<Integer> getYears() {
+        return years;
+    }
+
+    public void setYears(SequencedSet<Integer> years) {
+        this.years = years;
     }
 
     public BufferedImage getArtwork() {

@@ -37,21 +37,12 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.SequencedSet;
-import java.util.TreeSet;
-
-import static org.httprpc.kilo.util.Optionals.*;
 
 public class AlbumDetailPanel extends StackPanel {
-    private Artist artist;
-    private String name;
+    private ArtistAlbum artistAlbum;
     private List<Song> songs;
-
-    private SequencedSet<String> genres = new LinkedHashSet<>();
-    private SequencedSet<Integer> years = new TreeSet<>();
 
     private boolean compilation = false;
 
@@ -75,14 +66,13 @@ public class AlbumDetailPanel extends StackPanel {
 
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(AlbumDetailPanel.class.getName());
 
-    public AlbumDetailPanel(Artist artist, String name, List<Song> songs) {
-        this.artist = artist;
-        this.name = name;
+    public AlbumDetailPanel(ArtistAlbum artistAlbum, List<Song> songs) {
+        this.artistAlbum = artistAlbum;
         this.songs = songs;
 
         add(UILoader.load(this, "AlbumDetailPanel.xml", resourceBundle));
 
-        nameLabel.setText(name);
+        nameLabel.setText(artistAlbum.getAlbum());
 
         playAlbumButton.addActionListener(event -> MainFrame.getInstance().playAll(songs));
 
@@ -132,9 +122,6 @@ public class AlbumDetailPanel extends StackPanel {
         for (var i = 0; i < n; i++) {
             var song = songs.get(i);
 
-            perform(song.getGenre(), genres::add);
-            perform(song.getYear(), years::add);
-
             var discNumber = song.getDiscNumber();
 
             if (discNumber != null) {
@@ -150,11 +137,15 @@ public class AlbumDetailPanel extends StackPanel {
             songListPanel.add(new SongDetailPanel(songs, i));
         }
 
+        var genres = artistAlbum.getGenres();
+
         if (!genres.isEmpty()) {
             genreLabel.setText(genres.getFirst());
         } else {
             genreLabel.setText(null);
         }
+
+        var years = artistAlbum.getYears();
 
         if (!years.isEmpty()) {
             yearLabel.setText(String.valueOf(years.getLast()));
@@ -165,7 +156,7 @@ public class AlbumDetailPanel extends StackPanel {
         editAlbumButton.setEnabled(!compilation);
         deleteAlbumButton.setEnabled(!compilation);
 
-        var artworkPath = MusicLibrary.getArtworkPath(artist.getName(), name, compilation);
+        var artworkPath = MusicLibrary.getArtworkPath(artistAlbum.getArtist(), artistAlbum.getAlbum(), compilation);
 
         if (Files.exists(artworkPath)) {
             MainFrame.getTaskExecutor().execute(() -> {
@@ -189,9 +180,7 @@ public class AlbumDetailPanel extends StackPanel {
     private void editAlbum() {
         var mainFrame = MainFrame.getInstance();
 
-        var editAlbumDialog = new EditAlbumDialog(mainFrame, artist.getName(), name, songs,
-            genres, years,
-            compilation);
+        var editAlbumDialog = new EditAlbumDialog(mainFrame, artistAlbum, songs, compilation);
 
         editAlbumDialog.pack();
         editAlbumDialog.setLocationRelativeTo(mainFrame);
@@ -201,7 +190,7 @@ public class AlbumDetailPanel extends StackPanel {
 
     private void deleteAlbum() {
         var option = JOptionPane.showConfirmDialog(getTopLevelAncestor(),
-            String.format(resourceBundle.getString("confirmDeleteMessageFormat"), name),
+            String.format(resourceBundle.getString("confirmDeleteMessageFormat"), artistAlbum.getAlbum()),
             resourceBundle.getString("deleteAlbum"),
             JOptionPane.YES_NO_OPTION,
             JOptionPane.WARNING_MESSAGE);
@@ -247,7 +236,7 @@ public class AlbumDetailPanel extends StackPanel {
 
     private void deleteArtwork() {
         var option = JOptionPane.showConfirmDialog(getTopLevelAncestor(),
-            String.format(resourceBundle.getString("confirmDeleteArtworkMessageFormat"), name),
+            String.format(resourceBundle.getString("confirmDeleteArtworkMessageFormat"), artistAlbum.getAlbum()),
             resourceBundle.getString("deleteArtwork"),
             JOptionPane.YES_NO_OPTION,
             JOptionPane.WARNING_MESSAGE);
@@ -277,9 +266,9 @@ public class AlbumDetailPanel extends StackPanel {
 
         MainFrame.getTaskExecutor().execute(() -> {
             if (artwork != null) {
-                MusicLibrary.updateAlbumArtwork(artist.getName(), name, false, artwork);
+                MusicLibrary.updateAlbumArtwork(artistAlbum.getArtist(), artistAlbum.getAlbum(), false, artwork);
             } else {
-                MusicLibrary.deleteAlbumArtwork(artist.getName(), name, false);
+                MusicLibrary.deleteAlbumArtwork(artistAlbum.getArtist(), artistAlbum.getAlbum(), false);
             }
 
             return null;
@@ -287,7 +276,7 @@ public class AlbumDetailPanel extends StackPanel {
     }
 
     public boolean matches(String name) {
-        return this.name.equals(name);
+        return artistAlbum.getAlbum().equals(name);
     }
 
     public void showCurrentSong(Song song) {

@@ -518,24 +518,27 @@ public class GenreDetailPanel extends CollectionDetailPanel {
     private void editAlbum() {
         var artistAlbum = artistAlbumList.getSelectedValue();
 
-        var artist = artistAlbum.getArtist();
-        var album = artistAlbum.getAlbum();
+        var songs = albums.get(artistAlbum.getAlbum());
 
-        var songs = albums.get(album);
+        if (artistAlbum.getGenres() == null) {
+            artistAlbum.setGenres(setOf(genre.getName()));
+        }
 
-        var years = new TreeSet<Integer>();
+        if (artistAlbum.getYears() == null) {
+            var years = new TreeSet<Integer>();
 
-        for (var song : songs) {
-            perform(song.getYear(), years::add);
+            for (var song : songs) {
+                perform(song.getYear(), years::add);
+            }
+
+            artistAlbum.setYears(years);
         }
 
         var compilation = artistAlbum.getArtist().isEmpty();
 
         var mainFrame = MainFrame.getInstance();
 
-        var editAlbumDialog = new EditAlbumDialog(mainFrame, artist, album, songs,
-            setOf(genre.getName()), years,
-            compilation);
+        var editAlbumDialog = new EditAlbumDialog(mainFrame, artistAlbum, songs, compilation);
 
         editAlbumDialog.pack();
         editAlbumDialog.setLocationRelativeTo(mainFrame);

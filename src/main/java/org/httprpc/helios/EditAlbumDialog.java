@@ -25,17 +25,12 @@ import javax.swing.JTextField;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.SequencedSet;
 
 import static org.httprpc.kilo.util.Optionals.*;
 
 public class EditAlbumDialog extends AbstractDialog {
-    private String artist;
-    private String album;
+    private ArtistAlbum artistAlbum;
     private List<Song> songs;
-
-    private SequencedSet<String> genres;
-    private SequencedSet<Integer> years;
 
     private boolean compilation;
 
@@ -52,17 +47,11 @@ public class EditAlbumDialog extends AbstractDialog {
 
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(EditAlbumDialog.class.getName());
 
-    public EditAlbumDialog(MainFrame owner, String artist, String album, List<Song> songs,
-        SequencedSet<String> genres, SequencedSet<Integer> years,
-        boolean compilation) {
+    public EditAlbumDialog(MainFrame owner, ArtistAlbum artistAlbum, List<Song> songs, boolean compilation) {
         super(owner);
 
-        this.artist = artist;
-        this.album = album;
+        this.artistAlbum = artistAlbum;
         this.songs = songs;
-
-        this.genres = genres;
-        this.years = years;
 
         this.compilation = compilation;
 
@@ -102,7 +91,7 @@ public class EditAlbumDialog extends AbstractDialog {
             artistTextField.setText(null);
             artistTextField.setEnabled(false);
         } else {
-            artistTextField.setText(artist);
+            artistTextField.setText(artistAlbum.getArtist());
             artistTextField.setEnabled(true);
         }
     }
@@ -115,8 +104,10 @@ public class EditAlbumDialog extends AbstractDialog {
     }
 
     private void load() {
-        artistTextField.setText(artist);
-        albumTextField.setText(album);
+        artistTextField.setText(artistAlbum.getArtist());
+        albumTextField.setText(artistAlbum.getAlbum());
+
+        var genres = artistAlbum.getGenres();
 
         if (!genres.isEmpty()) {
             if (genres.size() == 1) {
@@ -127,6 +118,8 @@ public class EditAlbumDialog extends AbstractDialog {
         }
 
         genreSuggestionPicker.setSuggestions(MusicLibrary.getGenreSuggestions());
+
+        var years = artistAlbum.getYears();
 
         if (!years.isEmpty()) {
             if (years.size() == 1) {
@@ -144,7 +137,7 @@ public class EditAlbumDialog extends AbstractDialog {
 
         var artist = artistTextField.getText().strip();
 
-        update |= !artist.equals(this.artist);
+        update |= !artist.equals(artistAlbum.getArtist());
 
         var album = albumTextField.getText().strip();
 
@@ -153,17 +146,17 @@ public class EditAlbumDialog extends AbstractDialog {
             return;
         }
 
-        update |= !album.equals(this.album);
+        update |= !album.equals(artistAlbum.getAlbum());
 
         var genre = genreSuggestionPicker.getText().strip();
 
-        var updateGenre = genres.size() < 2 || !genre.isEmpty();
+        var updateGenre = artistAlbum.getGenres().size() < 2 || !genre.isEmpty();
 
         update |= updateGenre;
 
         var year = map(yearTextField.getValue(), Number::intValue);
 
-        var updateYear = years.size() < 2 || year != null;
+        var updateYear = artistAlbum.getYears().size() < 2 || year != null;
 
         update |= updateYear;
 
