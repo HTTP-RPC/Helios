@@ -514,13 +514,10 @@ public class MainFrame extends JFrame implements Runnable {
 
         goToSongButton.addActionListener(event -> showSong(queue.get(queueIndex)));
 
-        var thumbColor = UIManager.getColor("ProgressBar.foreground");
-        var thumbSize = UIManager.getInt("Slider.trackWidth") * 2;
+        var thumbSize = UIManager.getInt("Slider.trackWidth") * 3;
 
         positionSlider.putClientProperty(FlatClientProperties.STYLE, mapOf(
-            entry("thumbColor", thumbColor),
             entry("thumbSize", new Dimension(thumbSize, thumbSize)),
-            entry("thumbBorderWidth", 0),
             entry("focusWidth", 0)
         ));
 
