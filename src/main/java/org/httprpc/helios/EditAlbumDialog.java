@@ -148,15 +148,19 @@ public class EditAlbumDialog extends AbstractDialog {
 
         update |= !album.equals(artistAlbum.getAlbum());
 
+        var genres = artistAlbum.getGenres();
+
         var genre = genreSuggestionPicker.getText().strip();
 
-        var updateGenre = artistAlbum.getGenres().size() < 2 || !genre.isEmpty();
+        var updateGenre = (genres.size() == 1) ? !genres.getFirst().equals(genre) : !genre.isEmpty();
 
         update |= updateGenre;
 
+        var years = artistAlbum.getYears();
+
         var year = map(yearTextField.getValue(), Number::intValue);
 
-        var updateYear = artistAlbum.getYears().size() < 2 || year != null;
+        var updateYear = (years.size() == 1) ? !years.getFirst().equals(year) : year != null;
 
         update |= updateYear;
 
