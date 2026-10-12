@@ -46,7 +46,7 @@ application {
     mainClass = 'org.httprpc.helios.Helios'
 }
 
-version = '1.0.4'
+version = '1.0.5'
 
 tasks.register("buildMacOS", Exec) {
     executable = 'bin/build-macos.sh'

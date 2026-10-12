@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.SequencedMap;
 import java.util.TreeSet;
@@ -59,8 +58,6 @@ public class ArtistDetailPanel extends CollectionDetailPanel {
 
         nameLabel.setText(artist.getName());
 
-        playAllButton.addActionListener(event -> MainFrame.getInstance().playAll(listOf(flatten(albums.entrySet(), Map.Entry::getValue))));
-
         var artistAlbums = new ArrayList<ArtistAlbum>(albums.size());
 
         for (var entry : albums.entrySet()) {
@@ -91,6 +88,12 @@ public class ArtistDetailPanel extends CollectionDetailPanel {
         }
 
         artistAlbums.sort(yearComparator.thenComparing(nameComparator));
+
+        playAllButton.addActionListener(event -> {
+            var artistSongs = listOf(flatten(mapAll(artistAlbums, artistAlbum -> albums.get(artistAlbum.getAlbum())), songs -> songs));
+
+            MainFrame.getInstance().playAll(artistSongs);
+        });
 
         for (var artistAlbum : artistAlbums) {
             albumListPanel.add(new AlbumDetailPanel(artistAlbum, albums.get(artistAlbum.getAlbum())));
