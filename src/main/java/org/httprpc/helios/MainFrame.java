@@ -268,6 +268,8 @@ public class MainFrame extends JFrame implements Runnable {
         }
     });
 
+    private int position = -1;
+
     private QueueDialog queueDialog = null;
 
     private static MainFrame instance = null;
@@ -379,7 +381,7 @@ public class MainFrame extends JFrame implements Runnable {
 
         bind(KeyEvent.VK_RIGHT, true, false, SKIP_FORWARD_KEY, event -> {
             if (audioPlayer != null) {
-                audioPlayer.setPosition(Math.min(audioPlayer.getPosition() + SKIP_INCREMENT, queue.get(queueIndex).getTime() - 1));
+                audioPlayer.setPosition(Math.min(audioPlayer.getPosition() + SKIP_INCREMENT, positionSlider.getMaximum() - 1));
 
                 updatePosition();
             }
@@ -523,8 +525,20 @@ public class MainFrame extends JFrame implements Runnable {
         ));
 
         positionSlider.addChangeListener(event -> {
-            if (positionSlider.getValueIsAdjusting() && audioPlayer != null) {
-                audioPlayer.setPosition(positionSlider.getValue());
+            if (positionSlider.getValueIsAdjusting()) {
+                position = positionSlider.getValue();
+
+                if (position == positionSlider.getMaximum()) {
+                    position--;
+                }
+
+                return;
+            }
+
+            if (position != -1) {
+                audioPlayer.setPosition(position);
+
+                position = -1;
             }
         });
 
@@ -918,7 +932,9 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     private void updatePosition() {
-        positionSlider.setValue((int)Math.round(audioPlayer.getPosition()));
+        if (!positionSlider.getValueIsAdjusting()) {
+            positionSlider.setValue((int)Math.round(audioPlayer.getPosition()));
+        }
 
         var elapsedDuration = Duration.ofSeconds(positionSlider.getValue());
         var totalDuration = Duration.ofSeconds(positionSlider.getMaximum());
