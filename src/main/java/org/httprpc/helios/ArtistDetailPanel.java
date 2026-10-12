@@ -21,6 +21,8 @@ import org.httprpc.sierra.UILoader;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -40,12 +42,26 @@ public class ArtistDetailPanel extends CollectionDetailPanel {
 
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(ArtistDetailPanel.class.getName());
 
+    private static final Comparator<ArtistAlbum> nameComparator = Comparator.comparing(ArtistAlbum::getArtist);
+
+    private static final Comparator<ArtistAlbum> yearComparator = (artistAlbum1, artistAlbum2) -> {
+        var years1 = artistAlbum1.getYears();
+        var year1 = years1.isEmpty() ? 0 : years1.getLast();
+
+        var years2 = artistAlbum2.getYears();
+        var year2 = years2.isEmpty() ? 0 : years2.getLast();
+
+        return Integer.compare(year1, year2);
+    };
+
     public ArtistDetailPanel(Artist artist, SequencedMap<String, List<Song>> albums) {
         add(UILoader.load(this, "ArtistDetailPanel.xml", resourceBundle));
 
         nameLabel.setText(artist.getName());
 
         playAllButton.addActionListener(event -> MainFrame.getInstance().playAll(listOf(flatten(albums.entrySet(), Map.Entry::getValue))));
+
+        var artistAlbums = new ArrayList<ArtistAlbum>(albums.size());
 
         for (var entry : albums.entrySet()) {
             var name = entry.getKey();
@@ -71,7 +87,13 @@ public class ArtistDetailPanel extends CollectionDetailPanel {
             artistAlbum.setGenres(genres);
             artistAlbum.setYears(years);
 
-            albumListPanel.add(new AlbumDetailPanel(artistAlbum, songs));
+            artistAlbums.add(artistAlbum);
+        }
+
+        artistAlbums.sort(yearComparator.thenComparing(nameComparator));
+
+        for (var artistAlbum : artistAlbums) {
+            albumListPanel.add(new AlbumDetailPanel(artistAlbum, albums.get(artistAlbum.getAlbum())));
         }
 
         setScrollableTracksViewportWidth(true);
