@@ -1,3 +1,3 @@
-xcodebuild -scheme Helios -derivedDataPath ./build-macos
+xcodebuild -scheme Helios -configuration Release -derivedDataPath ./build-macos
 
-cp build-macos/Build/Products/Debug/libHelios.dylib src/main/resources/helios.dylib
+cp build-macos/Build/Products/Release/libHelios.dylib src/main/resources/helios.dylib
