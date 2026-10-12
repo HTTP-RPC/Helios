@@ -118,7 +118,7 @@ public class MusicLibrary {
                     return false;
                 }
 
-                return collectionName.startsWith(lowerCaseName) || lowerCaseName.startsWith(collectionName);
+                return collectionName.startsWith(lowerCaseName);
             }));
         }
 
@@ -871,8 +871,6 @@ public class MusicLibrary {
             if (Files.exists(artworkPath)) {
                 continue;
             }
-
-            System.out.println(String.format("Downloading artwork for %s / %s", artist, album));
 
             var t0 = System.currentTimeMillis();
 
