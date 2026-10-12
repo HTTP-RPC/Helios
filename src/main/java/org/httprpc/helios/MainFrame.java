@@ -14,6 +14,7 @@
 
 package org.httprpc.helios;
 
+import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
@@ -38,7 +39,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
-import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
@@ -209,7 +209,7 @@ public class MainFrame extends JFrame implements Runnable {
 
     private @Outlet JButton goToSongButton = null;
 
-    private @Outlet JProgressBar positionProgressBar = null;
+    private @Outlet JSlider positionSlider = null;
 
     private @Outlet JSlider volumeSlider = null;
 
@@ -512,7 +512,23 @@ public class MainFrame extends JFrame implements Runnable {
 
         goToSongButton.addActionListener(event -> showSong(queue.get(queueIndex)));
 
-        positionProgressBar.setValue(0);
+        var thumbColor = UIManager.getColor("ProgressBar.foreground");
+        var thumbSize = UIManager.getInt("Slider.trackWidth") * 2;
+
+        positionSlider.putClientProperty(FlatClientProperties.STYLE, mapOf(
+            entry("thumbColor", thumbColor),
+            entry("thumbSize", new Dimension(thumbSize, thumbSize)),
+            entry("thumbBorderWidth", 0),
+            entry("focusWidth", 0)
+        ));
+
+        positionSlider.addChangeListener(event -> {
+            if (positionSlider.getValueIsAdjusting() && audioPlayer != null) {
+                audioPlayer.setPosition(positionSlider.getValue());
+            }
+        });
+
+        positionSlider.setValue(0);
 
         var volume = Math.clamp(preferences.getDouble(VOLUME_KEY, 1.0), 0.0, 1.0);
 
@@ -814,7 +830,7 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     private void movePrevious() {
-        var elapsedTime = positionProgressBar.getValue();
+        var elapsedTime = positionSlider.getValue();
 
         var playing = map(audioPlayer, AudioPlayer::isPlaying);
 
@@ -870,9 +886,9 @@ public class MainFrame extends JFrame implements Runnable {
         songTitleLabel.setText(song.getTitle());
         artistAlbumLabel.setText(String.format(resourceBundle.getString("artistAlbumFormat"), artist, album));
 
-        positionProgressBar.setValue(0);
+        positionSlider.setValue(0);
 
-        positionProgressBar.setMaximum(song.getTime());
+        positionSlider.setMaximum(song.getTime());
 
         if (audioPlayer == null) {
             audioPlayer = AudioPlayer.create(MusicLibrary.getContentPath(song));
@@ -894,7 +910,7 @@ public class MainFrame extends JFrame implements Runnable {
         songTitleLabel.setText(" ");
         artistAlbumLabel.setText(" ");
 
-        positionProgressBar.setValue(0);
+        positionSlider.setValue(0);
 
         perform(audioPlayer, AudioPlayer::dispose);
 
@@ -902,10 +918,10 @@ public class MainFrame extends JFrame implements Runnable {
     }
 
     private void updatePosition() {
-        positionProgressBar.setValue((int)Math.round(audioPlayer.getPosition()));
+        positionSlider.setValue((int)Math.round(audioPlayer.getPosition()));
 
-        var elapsedDuration = Duration.ofSeconds(positionProgressBar.getValue());
-        var totalDuration = Duration.ofSeconds(positionProgressBar.getMaximum());
+        var elapsedDuration = Duration.ofSeconds(positionSlider.getValue());
+        var totalDuration = Duration.ofSeconds(positionSlider.getMaximum());
 
         timeLabel.setText(String.format(resourceBundle.getString("timeFormat"),
             elapsedDuration.toMinutesPart(), elapsedDuration.toSecondsPart(),

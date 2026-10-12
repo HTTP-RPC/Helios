@@ -94,7 +94,7 @@
                 </column-panel>
             </row-panel>
 
-            <progress-bar name="positionProgressBar"/>
+            <slider name="positionSlider" focusable="false"/>
         </column-panel>
 
         <row-panel spacing="8" weight="1">
