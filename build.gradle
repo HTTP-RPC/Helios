@@ -111,3 +111,30 @@ tasks.register("packageWindows", Exec) {
         '--win-shortcut'
     ]
 }
+
+tasks.register("prepareWindows", Exec) {
+    dependsOn 'packageWindows'
+
+    executable = 'attrib'
+
+    args = [
+        '-r', "${application.applicationName}-${version}.exe"
+    ]
+}
+
+tasks.register("signWindows", Exec) {
+    dependsOn 'prepareWindows'
+
+    executable = 'signtool'
+
+    args = [
+        'sign',
+        '/f', System.getenv('SIGNTOOL_CERTIFICATE'),
+        '/p', System.getenv('SIGNTOOL_PASSWORD'),
+        '/d', "${application.applicationName}",
+        '/fd', 'SHA256',
+        '/tr', 'http://timestamp.digicert.com',
+        '/td', 'SHA256',
+        "${application.applicationName}-${version}.exe"
+    ]
+}
