@@ -22,7 +22,7 @@ public class Helios {
     }
 
     public static boolean isMacOS() {
-        return getOSName().toLowerCase().startsWith("mac");
+        return getOSName().startsWith("mac");
     }
 
     public static boolean isWindows() {

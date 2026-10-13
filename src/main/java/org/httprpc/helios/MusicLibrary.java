@@ -731,7 +731,7 @@ public class MusicLibrary {
 
     public static Path getArtworkPath(String artist, String album, boolean compilation) {
         if (compilation) {
-            return rootDirectory.resolve("artwork").resolve(escape(String.format("%s.jpg", album)));
+            return artworkDirectory.resolve(escape(String.format("%s.jpg", album)));
         } else {
             return getPath(artist, album).resolve("artwork.jpg");
         }
