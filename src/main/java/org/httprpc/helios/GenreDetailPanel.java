@@ -730,18 +730,40 @@ public class GenreDetailPanel extends CollectionDetailPanel {
 
         for (var i = 0; i < n; i++) {
             if (artistAlbumModel.getElementAt(i).getAlbum().equals(album)) {
-                selectAlbum(i);
+                selectAlbum(i, song);
 
                 break;
             }
         }
     }
 
-    private void selectAlbum(int index) {
+    private void selectAlbum(int index, Song song) {
         SwingUtilities.invokeLater(() -> {
             artistAlbumList.setSelectedIndex(index);
             artistAlbumList.ensureIndexIsVisible(index);
             artistAlbumList.requestFocus();
+
+            var songListModel = songList.getModel();
+
+            var n = songListModel.getSize();
+
+            var id = song.getID();
+
+            for (var i = 0; i < n; i++) {
+                if (songListModel.getElementAt(i).getID().equals(id)) {
+                    selectSong(i);
+
+                    break;
+                }
+            }
+        });
+    }
+
+    private void selectSong(int index) {
+        SwingUtilities.invokeLater(() -> {
+            songList.setSelectedIndex(index);
+            songList.ensureIndexIsVisible(index);
+            songList.requestFocus();
         });
     }
 

@@ -168,6 +168,10 @@ public class SongDetailPanel extends StackPanel {
         });
     }
 
+    public Song getSong() {
+        return songs.get(songIndex);
+    }
+
     private void playFrom() {
         MainFrame.getInstance().playAll(listOf(songs.subList(songIndex, songs.size())));
     }

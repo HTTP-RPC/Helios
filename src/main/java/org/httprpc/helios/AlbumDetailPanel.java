@@ -26,6 +26,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JSeparator;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -177,6 +178,10 @@ public class AlbumDetailPanel extends StackPanel {
         }
     }
 
+    public ArtistAlbum getArtistAlbum() {
+        return artistAlbum;
+    }
+
     private void editAlbum() {
         var mainFrame = MainFrame.getInstance();
 
@@ -275,8 +280,19 @@ public class AlbumDetailPanel extends StackPanel {
         }, (result, exception) -> glassPane.setVisible(false));
     }
 
-    public boolean matches(String name) {
-        return artistAlbum.getAlbum().equals(name);
+    public void scrollToSong(Song song) {
+        var id = song.getID();
+
+        var n = songListPanel.getComponentCount();
+
+        for (var i = 0; i < n; i++) {
+            if (songListPanel.getComponent(i) instanceof SongDetailPanel songDetailPanel
+                && songDetailPanel.getSong().getID().equals(id)) {
+                scrollRectToVisible(SwingUtilities.convertRectangle(songListPanel, songDetailPanel.getBounds(), this));
+
+                break;
+            }
+        }
     }
 
     public void showCurrentSong(Song song) {

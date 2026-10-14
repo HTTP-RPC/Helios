@@ -20,7 +20,6 @@ import org.httprpc.sierra.UILoader;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.SwingUtilities;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
@@ -121,8 +120,8 @@ public class ArtistDetailPanel extends CollectionDetailPanel {
         for (var i = 0; i < n; i++) {
             var albumDetailPanel = (AlbumDetailPanel)albumListPanel.getComponent(i);
 
-            if (albumDetailPanel.matches(album)) {
-                scrollRectToVisible(SwingUtilities.convertRectangle(albumListPanel, albumDetailPanel.getBounds(), this));
+            if (albumDetailPanel.getArtistAlbum().getAlbum().equals(album)) {
+                albumDetailPanel.scrollToSong(song);
 
                 break;
             }
