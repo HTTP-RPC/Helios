@@ -21,7 +21,7 @@ JNIEXPORT jlong JNICALL Java_org_httprpc_helios_MacOSAudioPlayer_allocate
   (JNIEnv *env, jobject instance, jstring contentPath) {
     const char *contentPathChars = (*env)->GetStringUTFChars(env, contentPath, 0);
 
-    id url = [NSURL URLWithString:[NSString stringWithUTF8String:contentPathChars]];
+    id url = [NSURL fileURLWithPath:[NSString stringWithUTF8String:contentPathChars]];
 
     (*env)->ReleaseStringUTFChars(env, contentPath, contentPathChars);
 
