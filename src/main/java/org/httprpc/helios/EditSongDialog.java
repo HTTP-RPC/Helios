@@ -223,19 +223,21 @@ public class EditSongDialog extends AbstractDialog {
         okButton.setEnabled(false);
 
         MainFrame.getTaskExecutor().execute(() -> MusicLibrary.updateSong(song, previousSong), (result, exception) -> {
+            glassPane.setVisible(false);
+
+            cancelButton.setEnabled(true);
+            okButton.setEnabled(true);
+
             if (coalesce(result, () -> false)) {
                 MainFrame.getInstance().loadAll();
 
                 songs.set(songIndex, song);
 
-                glassPane.setVisible(false);
-
-                cancelButton.setEnabled(true);
-                okButton.setEnabled(true);
-
                 callback.run();
             } else {
                 UIManager.getLookAndFeel().provideErrorFeedback(artistTextField);
+
+                artistTextField.requestFocus();
             }
         });
     }

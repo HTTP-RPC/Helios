@@ -543,18 +543,26 @@ public class MusicLibrary {
 
             var discNumber = song.getDiscNumber();
 
-            if (discNumber != null) {
-                tag.setField(FieldKey.DISC_NO, map(discNumber, Object::toString));
-            } else {
-                tag.deleteField(FieldKey.DISC_NO);
+            try {
+                if (discNumber != null) {
+                    tag.setField(FieldKey.DISC_NO, map(discNumber, Object::toString));
+                } else {
+                    tag.deleteField(FieldKey.DISC_NO);
+                }
+            } catch (Exception exception) {
+                // No-op
             }
 
             var compilation = song.isCompilation();
 
-            tag.setField(FieldKey.IS_COMPILATION, String.valueOf(compilation ? 1 : 0));
+            try {
+                tag.setField(FieldKey.IS_COMPILATION, String.valueOf(compilation ? 1 : 0));
 
-            if (!compilation) {
-                tag.setField(FieldKey.ALBUM_ARTIST, artist);
+                if (!compilation) {
+                    tag.setField(FieldKey.ALBUM_ARTIST, artist);
+                }
+            } catch (Exception exception) {
+                // No-op
             }
         } catch (FieldDataInvalidException exception) {
             throw new RuntimeException(exception);

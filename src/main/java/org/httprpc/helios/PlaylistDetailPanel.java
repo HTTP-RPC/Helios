@@ -294,6 +294,8 @@ public class PlaylistDetailPanel extends CollectionDetailPanel {
         if (name.isEmpty()) {
             revertPlaylistNameChange();
         } else {
+            var previousName = playlist.getName();
+
             playlist.setName(name);
 
             if ((playlist.getID() == null) ? MusicLibrary.addPlaylist(playlist) : MusicLibrary.updatePlaylist(playlist)) {
@@ -301,6 +303,8 @@ public class PlaylistDetailPanel extends CollectionDetailPanel {
 
                 endPlaylistNameEdit();
             } else {
+                playlist.setName(previousName);
+
                 nameTextField.selectAll();
 
                 UIManager.getLookAndFeel().provideErrorFeedback(nameTextField);
