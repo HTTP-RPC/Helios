@@ -529,13 +529,13 @@ public class MainFrame extends JFrame implements Runnable {
                     position--;
                 }
 
+                updatePosition();
+
                 return;
             }
 
             if (position != -1) {
                 audioPlayer.setPosition(position);
-
-                updatePosition();
 
                 position = -1;
             }
