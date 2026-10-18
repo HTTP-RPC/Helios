@@ -172,12 +172,14 @@ public class PlaylistDetailPanel extends CollectionDetailPanel {
         playButton.addActionListener(event -> {
             var selectedRows = songTable.getSelectedRows();
 
+            var mainFrame = MainFrame.getInstance();
+
             if (selectedRows.length == 0) {
-                MainFrame.getInstance().playAll(songs);
+                mainFrame.playAll(songs, 0);
             } else if (selectedRows.length == 1) {
-                MainFrame.getInstance().playAll(songs.subList(selectedRows[0], songs.size()));
+                mainFrame.playAll(songs, selectedRows[0]);
             } else {
-                MainFrame.getInstance().playAll(listOf(mapAll(iterableOf(selectedRows), songs::get)));
+                mainFrame.playAll(listOf(mapAll(iterableOf(selectedRows), songs::get)), 0);
             }
         });
 

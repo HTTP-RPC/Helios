@@ -75,7 +75,7 @@ public class AlbumDetailPanel extends StackPanel {
 
         nameLabel.setText(artistAlbum.getAlbum());
 
-        playAlbumButton.addActionListener(event -> MainFrame.getInstance().playAll(songs));
+        playAlbumButton.addActionListener(event -> MainFrame.getInstance().playAll(songs, 0));
 
         editAlbumButton.addActionListener(event -> editAlbum());
         deleteAlbumButton.addActionListener(event -> deleteAlbum());

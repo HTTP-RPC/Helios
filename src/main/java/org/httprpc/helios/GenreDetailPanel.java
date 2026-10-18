@@ -384,20 +384,20 @@ public class GenreDetailPanel extends CollectionDetailPanel {
         playSelectedButton.addActionListener(event -> {
             var artistAlbum = artistAlbumList.getSelectedValue();
 
-            List<Song> songs;
-            if (artistAlbum == null) {
-                songs = listOf(flatten(mapAll(artistAlbums, ArtistAlbum::getAlbum), albums::get));
-            } else {
-                songs = albums.get(artistAlbum.getAlbum());
+            var mainFrame = MainFrame.getInstance();
 
+            if (artistAlbum == null) {
+                mainFrame.playAll(listOf(flatten(mapAll(artistAlbums, ArtistAlbum::getAlbum), albums::get)), 0);
+            } else {
+                var songs = albums.get(artistAlbum.getAlbum());
                 var songIndex = songList.getSelectedIndex();
 
-                if (songIndex != -1) {
-                    songs = songs.subList(songIndex, songs.size());
+                if (songIndex == -1) {
+                    mainFrame.playAll(songs, 0);
+                } else {
+                    mainFrame.playAll(songs, songIndex);
                 }
             }
-
-            MainFrame.getInstance().playAll(songs);
         });
 
         addToPlaylistButton.setEnabled(false);

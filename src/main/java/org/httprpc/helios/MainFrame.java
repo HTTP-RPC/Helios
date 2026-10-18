@@ -489,7 +489,7 @@ public class MainFrame extends JFrame implements Runnable {
             if (!songs.isEmpty()
                 && shuffleButton.isSelected()
                 && coalesce(map(audioPlayer, AudioPlayer::isPlaying), () -> false)) {
-                playAll(songs);
+                playAll(songs, 0);
             }
         });
 
@@ -806,7 +806,7 @@ public class MainFrame extends JFrame implements Runnable {
         }
     }
 
-    public void playAll(List<Song> songs) {
+    public void playAll(List<Song> songs, int from) {
         unloadSong();
 
         this.songs = songs;
@@ -818,7 +818,7 @@ public class MainFrame extends JFrame implements Runnable {
             java.util.Collections.shuffle(queue);
         }
 
-        queueIndex = 0;
+        queueIndex = from;
 
         loadSong();
         play();

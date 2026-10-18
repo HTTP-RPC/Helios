@@ -100,7 +100,7 @@ public class ArtistDetailPanel extends CollectionDetailPanel {
         playAllButton.addActionListener(event -> {
             var artistSongs = listOf(flatten(mapAll(artistAlbums, artistAlbum -> albums.get(artistAlbum.getAlbum())), songs -> songs));
 
-            MainFrame.getInstance().playAll(artistSongs);
+            MainFrame.getInstance().playAll(artistSongs, 0);
         });
 
         for (var artistAlbum : artistAlbums) {

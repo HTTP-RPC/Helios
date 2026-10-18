@@ -38,7 +38,6 @@ import java.time.Duration;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Optionals.*;
 
 public class SongDetailPanel extends StackPanel {
@@ -173,7 +172,7 @@ public class SongDetailPanel extends StackPanel {
     }
 
     private void playFrom() {
-        MainFrame.getInstance().playAll(listOf(songs.subList(songIndex, songs.size())));
+        MainFrame.getInstance().playAll(songs, songIndex);
     }
 
     private void addToPlaylist(Playlist playlist) {
