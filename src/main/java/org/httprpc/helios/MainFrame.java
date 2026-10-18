@@ -486,11 +486,20 @@ public class MainFrame extends JFrame implements Runnable {
         });
 
         shuffleButton.addActionListener(event -> {
-            if (!songs.isEmpty()
-                && shuffleButton.isSelected()
-                && coalesce(map(audioPlayer, AudioPlayer::isPlaying), () -> false)) {
-                playAll(songs, 0);
+            if (songs.isEmpty()) {
+                return;
             }
+
+            int from;
+            if (shuffleButton.isSelected()) {
+                from = queueIndex;
+            } else {
+                var songID = queue.get(queueIndex).getID();
+
+                from = indexOf(songs, whereEqualTo(Song::getID, songID));
+            }
+
+            queueAll(songs, from);
         });
 
         var repeatIcon = (UILoader.SVGIcon)repeatButton.getIcon();
@@ -809,6 +818,13 @@ public class MainFrame extends JFrame implements Runnable {
     public void playAll(List<Song> songs, int from) {
         unloadSong();
 
+        queueAll(songs, from);
+
+        loadSong();
+        play();
+    }
+
+    private void queueAll(List<Song> songs, int from) {
         this.songs = songs;
 
         queue.clear();
@@ -816,12 +832,19 @@ public class MainFrame extends JFrame implements Runnable {
 
         if (shuffleButton.isSelected()) {
             java.util.Collections.shuffle(queue);
+
+            var songID = songs.get(from).getID();
+
+            java.util.Collections.swap(queue, indexOf(queue, whereEqualTo(Song::getID, songID)), 0);
+
+            queueIndex = 0;
+        } else {
+            queueIndex = from;
         }
 
-        queueIndex = from;
-
-        loadSong();
-        play();
+        if (queueDialog != null) {
+            queueDialog.update(queueIndex);
+        }
     }
 
     private void play() {
