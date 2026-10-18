@@ -91,13 +91,11 @@ public class ArtistDetailPanel extends CollectionDetailPanel {
 
         var albumSortOrder = map(preferences.get(MainFrame.ALBUM_SORT_ORDER_KEY, null), AlbumSortOrder::valueOf);
 
-        var comparator = switch (coalesce(albumSortOrder, () -> AlbumSortOrder.NAME)) {
+        artistAlbums.sort(switch (albumSortOrder) {
             case NAME -> nameComparator;
             case YEAR_ASCENDING -> yearComparator.thenComparing(nameComparator);
             case YEAR_DESCENDING -> yearComparator.reversed().thenComparing(nameComparator);
-        };
-
-        artistAlbums.sort(comparator);
+        });
 
         playAllButton.addActionListener(event -> {
             var artistSongs = listOf(flatten(mapAll(artistAlbums, artistAlbum -> albums.get(artistAlbum.getAlbum())), songs -> songs));

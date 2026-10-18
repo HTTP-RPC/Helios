@@ -82,7 +82,7 @@ public class SettingsDialog extends AbstractDialog {
 
         var albumSortOrder = map(preferences.get(MainFrame.ALBUM_SORT_ORDER_KEY, null), AlbumSortOrder::valueOf);
 
-        if (albumSortOrder == null || albumSortOrder == AlbumSortOrder.NAME) {
+        if (albumSortOrder == AlbumSortOrder.NAME) {
             nameRadioButton.setSelected(true);
         } else {
             yearRadioButton.setSelected(true);
@@ -125,7 +125,7 @@ public class SettingsDialog extends AbstractDialog {
             // No-op
         }
 
-        MainFrame.getInstance().loadArtists();
+        MainFrame.getInstance().loadAll();
 
         dispose();
     }

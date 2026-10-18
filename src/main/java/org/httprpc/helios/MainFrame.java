@@ -270,12 +270,15 @@ public class MainFrame extends JFrame implements Runnable {
 
     private int position = -1;
 
+    private double skipIncrement = 0.0;
+
     private QueueDialog queueDialog = null;
 
     private static MainFrame instance = null;
 
     public static final String DARK_MODE_KEY = "darkMode";
     public static final String ALBUM_SORT_ORDER_KEY = "albumSortOrder";
+    public static final String SKIP_INCREMENT_KEY = "skipIncrement";
 
     private static final String PLAY_PAUSE_KEY = "playPause";
     private static final String PREVIOUS_KEY = "previous";
@@ -310,7 +313,6 @@ public class MainFrame extends JFrame implements Runnable {
     private static final int GENRE_TAB_INDEX = 1;
     private static final int PLAYLIST_TAB_INDEX = 2;
 
-    private static final double SKIP_INCREMENT = 5.0;
     private static final double VOLUME_INCREMENT = 0.1;
 
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(MainFrame.class.getName());
@@ -374,7 +376,7 @@ public class MainFrame extends JFrame implements Runnable {
 
         bind(KeyEvent.VK_LEFT, true, false, SKIP_BACKWARD_KEY, event -> {
             if (audioPlayer != null) {
-                audioPlayer.setPosition(Math.max(audioPlayer.getPosition() - SKIP_INCREMENT, 0));
+                audioPlayer.setPosition(Math.max(audioPlayer.getPosition() - skipIncrement, 0));
 
                 updatePosition();
             }
@@ -382,7 +384,7 @@ public class MainFrame extends JFrame implements Runnable {
 
         bind(KeyEvent.VK_RIGHT, true, false, SKIP_FORWARD_KEY, event -> {
             if (audioPlayer != null) {
-                audioPlayer.setPosition(Math.min(audioPlayer.getPosition() + SKIP_INCREMENT, positionSlider.getMaximum() - 1));
+                audioPlayer.setPosition(Math.min(audioPlayer.getPosition() + skipIncrement, positionSlider.getMaximum() - 1));
 
                 updatePosition();
             }
@@ -747,6 +749,8 @@ public class MainFrame extends JFrame implements Runnable {
         queue.removeIf(deleted);
 
         queueIndex = Math.min(queueIndex, queue.size());
+
+        skipIncrement = map(preferences.get(SKIP_INCREMENT_KEY, null), Double::valueOf);
 
         if (queueDialog != null) {
             queueDialog.update(queueIndex);
@@ -1203,6 +1207,20 @@ public class MainFrame extends JFrame implements Runnable {
 
             return list;
         });
+
+        try {
+            if (preferences.get(ALBUM_SORT_ORDER_KEY, null) == null) {
+                preferences.put(ALBUM_SORT_ORDER_KEY, AlbumSortOrder.NAME.toString());
+            }
+
+            if (preferences.get(SKIP_INCREMENT_KEY, null) == null) {
+                preferences.put(SKIP_INCREMENT_KEY, String.valueOf(5.0));
+            }
+
+            preferences.flush();
+        } catch (BackingStoreException exception) {
+            // No-op
+        }
 
         instance = new MainFrame();
 
