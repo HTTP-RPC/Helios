@@ -275,6 +275,7 @@ public class MainFrame extends JFrame implements Runnable {
     private static MainFrame instance = null;
 
     public static final String DARK_MODE_KEY = "darkMode";
+    public static final String ALBUM_SORT_ORDER_KEY = "albumSortOrder";
 
     private static final String PLAY_PAUSE_KEY = "playPause";
     private static final String PREVIOUS_KEY = "previous";

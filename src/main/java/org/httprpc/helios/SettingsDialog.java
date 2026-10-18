@@ -18,6 +18,7 @@ import org.httprpc.sierra.Outlet;
 import org.httprpc.sierra.UILoader;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JRadioButton;
 import java.util.ResourceBundle;
 import java.util.prefs.BackingStoreException;
@@ -30,6 +31,10 @@ public class SettingsDialog extends AbstractDialog {
     private @Outlet JRadioButton lightRadioButton = null;
     private @Outlet JRadioButton darkRadioButton = null;
 
+    private @Outlet JRadioButton nameRadioButton = null;
+    private @Outlet JRadioButton yearRadioButton = null;
+    private @Outlet JCheckBox descendingCheckBox = null;
+
     private @Outlet JButton cancelButton = null;
     private @Outlet JButton okButton = null;
 
@@ -41,6 +46,9 @@ public class SettingsDialog extends AbstractDialog {
         setTitle(resourceBundle.getString("windowTitle"));
 
         setContentPane(UILoader.load(this, "SettingsDialog.xml", resourceBundle));
+
+        nameRadioButton.addActionListener(event -> updateAlbumSortOrder());
+        yearRadioButton.addActionListener(event -> updateAlbumSortOrder());
 
         cancelButton.addActionListener(event -> cancel());
         okButton.addActionListener(event -> save());
@@ -71,6 +79,27 @@ public class SettingsDialog extends AbstractDialog {
         } else {
             lightRadioButton.setSelected(true);
         }
+
+        var albumSortOrder = map(preferences.get(MainFrame.ALBUM_SORT_ORDER_KEY, null), AlbumSortOrder::valueOf);
+
+        if (albumSortOrder == null || albumSortOrder == AlbumSortOrder.NAME) {
+            nameRadioButton.setSelected(true);
+        } else {
+            yearRadioButton.setSelected(true);
+
+            descendingCheckBox.setSelected(albumSortOrder == AlbumSortOrder.YEAR_DESCENDING);
+        }
+
+        updateAlbumSortOrder();
+    }
+
+    private void updateAlbumSortOrder() {
+        if (nameRadioButton.isSelected()) {
+            descendingCheckBox.setSelected(false);
+            descendingCheckBox.setEnabled(false);
+        } else {
+            descendingCheckBox.setEnabled(true);
+        }
     }
 
     private void save() {
@@ -82,11 +111,21 @@ public class SettingsDialog extends AbstractDialog {
             preferences.putBoolean(MainFrame.DARK_MODE_KEY, darkRadioButton.isSelected());
         }
 
+        if (nameRadioButton.isSelected()) {
+            preferences.put(MainFrame.ALBUM_SORT_ORDER_KEY, AlbumSortOrder.NAME.toString());
+        } else if (!descendingCheckBox.isSelected()) {
+            preferences.put(MainFrame.ALBUM_SORT_ORDER_KEY, AlbumSortOrder.YEAR_ASCENDING.toString());
+        } else {
+            preferences.put(MainFrame.ALBUM_SORT_ORDER_KEY, AlbumSortOrder.YEAR_DESCENDING.toString());
+        }
+
         try {
             preferences.flush();
         } catch (BackingStoreException exception) {
             // No-op
         }
+
+        MainFrame.getInstance().loadArtists();
 
         dispose();
     }

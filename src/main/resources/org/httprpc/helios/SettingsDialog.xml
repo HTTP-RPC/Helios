@@ -11,7 +11,15 @@
                 <radio-button name="darkRadioButton" text="dark" group="appearance"/>
             </column-panel>
 
-            <label text="requiresRestart" enabled="false"/>
+            <label text="requiresRestart" styleClass="small" enabled="false"/>
+        </column-panel>
+
+        <spacer height="4"/>
+
+        <column-panel label="sortAlbumsBy">
+            <radio-button name="nameRadioButton" text="name" group="albumSort"/>
+            <radio-button name="yearRadioButton" text="year" group="albumSort"/>
+            <check-box name="descendingCheckBox" text="descending"/>
         </column-panel>
     </form-panel>
 

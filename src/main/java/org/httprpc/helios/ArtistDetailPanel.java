@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.SequencedMap;
 import java.util.TreeSet;
+import java.util.prefs.Preferences;
 
 import static org.httprpc.kilo.util.Collections.*;
 import static org.httprpc.kilo.util.Iterables.*;
@@ -86,7 +87,17 @@ public class ArtistDetailPanel extends CollectionDetailPanel {
             artistAlbums.add(artistAlbum);
         }
 
-        artistAlbums.sort(yearComparator.thenComparing(nameComparator));
+        var preferences = Preferences.userRoot().node(MainFrame.class.getName());
+
+        var albumSortOrder = map(preferences.get(MainFrame.ALBUM_SORT_ORDER_KEY, null), AlbumSortOrder::valueOf);
+
+        var comparator = switch (coalesce(albumSortOrder, () -> AlbumSortOrder.NAME)) {
+            case NAME -> nameComparator;
+            case YEAR_ASCENDING -> yearComparator.thenComparing(nameComparator);
+            case YEAR_DESCENDING -> yearComparator.reversed().thenComparing(nameComparator);
+        };
+
+        artistAlbums.sort(comparator);
 
         playAllButton.addActionListener(event -> {
             var artistSongs = listOf(flatten(mapAll(artistAlbums, artistAlbum -> albums.get(artistAlbum.getAlbum())), songs -> songs));
