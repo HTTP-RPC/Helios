@@ -83,4 +83,15 @@ public abstract class AbstractDialog extends JDialog {
 
         component.requestFocus();
     }
+
+    protected void alertInvalid(String key, JComponent component) {
+        var message = String.format(resourceBundle.getString("invalidValueFormat"),
+            ResourceBundle.getBundle(getClass().getName()).getString(key));
+
+        JOptionPane.showMessageDialog(this, message,
+            resourceBundle.getString("error"),
+            JOptionPane.ERROR_MESSAGE);
+
+        component.requestFocus();
+    }
 }

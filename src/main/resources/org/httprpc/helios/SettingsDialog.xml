@@ -21,6 +21,13 @@
             <radio-button name="yearRadioButton" text="year" group="albumSort"/>
             <check-box name="descendingCheckBox" text="descending"/>
         </column-panel>
+
+        <spacer height="4"/>
+
+        <row-panel label="skipIncrement" spacing="2" alignToBaseline="true">
+            <number-field name="skipIncrementTextField" columns="2"/>
+            <label text="seconds" enabled="false"/>
+        </row-panel>
     </form-panel>
 
     <separator/>

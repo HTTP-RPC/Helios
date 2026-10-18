@@ -269,8 +269,7 @@ public class MainFrame extends JFrame implements Runnable {
     });
 
     private int position = -1;
-
-    private double skipIncrement = 0.0;
+    private int skipIncrement = -1;
 
     private QueueDialog queueDialog = null;
 
@@ -750,7 +749,7 @@ public class MainFrame extends JFrame implements Runnable {
 
         queueIndex = Math.min(queueIndex, queue.size());
 
-        skipIncrement = map(preferences.get(SKIP_INCREMENT_KEY, null), Double::valueOf);
+        skipIncrement = map(preferences.get(SKIP_INCREMENT_KEY, null), Integer::valueOf);
 
         if (queueDialog != null) {
             queueDialog.update(queueIndex);
@@ -1214,7 +1213,7 @@ public class MainFrame extends JFrame implements Runnable {
             }
 
             if (preferences.get(SKIP_INCREMENT_KEY, null) == null) {
-                preferences.put(SKIP_INCREMENT_KEY, String.valueOf(5.0));
+                preferences.put(SKIP_INCREMENT_KEY, String.valueOf(5));
             }
 
             preferences.flush();

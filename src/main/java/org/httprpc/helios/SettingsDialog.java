@@ -14,12 +14,14 @@
 
 package org.httprpc.helios;
 
+import org.httprpc.sierra.NumberField;
 import org.httprpc.sierra.Outlet;
 import org.httprpc.sierra.UILoader;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JRadioButton;
+import java.text.NumberFormat;
 import java.util.ResourceBundle;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
@@ -35,6 +37,8 @@ public class SettingsDialog extends AbstractDialog {
     private @Outlet JRadioButton yearRadioButton = null;
     private @Outlet JCheckBox descendingCheckBox = null;
 
+    private @Outlet NumberField skipIncrementTextField = null;
+
     private @Outlet JButton cancelButton = null;
     private @Outlet JButton okButton = null;
 
@@ -49,6 +53,8 @@ public class SettingsDialog extends AbstractDialog {
 
         nameRadioButton.addActionListener(event -> updateAlbumSortOrder());
         yearRadioButton.addActionListener(event -> updateAlbumSortOrder());
+
+        skipIncrementTextField.setFormat(NumberFormat.getIntegerInstance());
 
         cancelButton.addActionListener(event -> cancel());
         okButton.addActionListener(event -> save());
@@ -91,6 +97,8 @@ public class SettingsDialog extends AbstractDialog {
         }
 
         updateAlbumSortOrder();
+
+        skipIncrementTextField.setValue(map(preferences.get(MainFrame.SKIP_INCREMENT_KEY, null), Integer::valueOf));
     }
 
     private void updateAlbumSortOrder() {
@@ -118,6 +126,20 @@ public class SettingsDialog extends AbstractDialog {
         } else {
             preferences.put(MainFrame.ALBUM_SORT_ORDER_KEY, AlbumSortOrder.YEAR_DESCENDING.toString());
         }
+
+        var skipIncrement = map(skipIncrementTextField.getValue(), Number::intValue);
+
+        if (skipIncrement == null) {
+            alertRequired("skipIncrement", skipIncrementTextField);
+            return;
+        }
+
+        if (skipIncrement < 1 || skipIncrement > 15) {
+            alertInvalid("skipIncrement", skipIncrementTextField);
+            return;
+        }
+
+        preferences.put(MainFrame.SKIP_INCREMENT_KEY, String.valueOf(skipIncrement));
 
         try {
             preferences.flush();
