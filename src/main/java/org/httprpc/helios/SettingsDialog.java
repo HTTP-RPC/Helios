@@ -17,9 +17,11 @@ package org.httprpc.helios;
 import org.httprpc.sierra.NumberField;
 import org.httprpc.sierra.Outlet;
 import org.httprpc.sierra.UILoader;
+import org.httprpc.sierra.ValidatedTextField;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JList;
 import javax.swing.JRadioButton;
 import java.text.NumberFormat;
 import java.util.ResourceBundle;
@@ -38,6 +40,19 @@ public class SettingsDialog extends AbstractDialog {
     private @Outlet JCheckBox descendingCheckBox = null;
 
     private @Outlet NumberField skipIncrementTextField = null;
+
+    private @Outlet JCheckBox synchronizeLibraryCheckBox = null;
+
+    private @Outlet JRadioButton hostRadioButton = null;
+    private @Outlet JRadioButton joinRadioButton = null;
+
+    private @Outlet ValidatedTextField hostNameTextField = null;
+    private @Outlet NumberField portTextField = null;
+
+    private @Outlet JList<?> linkedDeviceList = null;
+
+    private @Outlet JButton linkDeviceButton = null;
+    private @Outlet JButton removeLinkedDeviceButton = null;
 
     private @Outlet JButton cancelButton = null;
     private @Outlet JButton okButton = null;

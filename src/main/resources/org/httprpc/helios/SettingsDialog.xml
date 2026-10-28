@@ -3,32 +3,80 @@
 <!DOCTYPE column-panel SYSTEM "sierra.dtd">
 
 <column-panel spacing="8" padding="8" opaque="true">
-    <form-panel>
-        <column-panel label="appearance" spacing="4">
-            <column-panel>
-                <radio-button name="systemDefaultRadioButton" text="systemDefault" group="appearance"/>
-                <radio-button name="lightRadioButton" text="light" group="appearance"/>
-                <radio-button name="darkRadioButton" text="dark" group="appearance"/>
+    <row-panel spacing="8">
+        <column-panel>
+            <form-panel>
+                <column-panel label="appearance" spacing="4">
+                    <column-panel>
+                        <radio-button name="systemDefaultRadioButton" text="systemDefault" group="appearance"/>
+                        <radio-button name="lightRadioButton" text="light" group="appearance"/>
+                        <radio-button name="darkRadioButton" text="dark" group="appearance"/>
+                    </column-panel>
+
+                    <label text="requiresRestart" styleClass="small" enabled="false"/>
+                </column-panel>
+
+                <spacer height="4"/>
+
+                <column-panel label="sortAlbumsBy">
+                    <radio-button name="nameRadioButton" text="name" group="albumSort"/>
+                    <radio-button name="yearRadioButton" text="year" group="albumSort"/>
+                    <check-box name="descendingCheckBox" text="descending"/>
+                </column-panel>
+
+                <spacer height="4"/>
+
+                <row-panel label="skipIncrement" spacing="2" alignToBaseline="true">
+                    <number-field name="skipIncrementTextField" columns="2"/>
+                    <label text="seconds" enabled="false"/>
+                </row-panel>
+            </form-panel>
+
+            <spacer weight="1"/>
+        </column-panel>
+
+        <separator orientation="vertical"/>
+
+        <column-panel spacing="4">
+            <column-panel spacing="2">
+                <check-box name="synchronizeLibraryCheckBox" text="synchronizeLibrary"/>
+
+                <row-panel spacing="4">
+                    <row-panel spacing="2">
+                        <radio-button name="hostRadioButton" text="host" group="libraryRole"/>
+                        <radio-button name="joinRadioButton" text="join" group="libraryRole"/>
+                    </row-panel>
+
+                    <row-panel spacing="4">
+                        <validated-text-field name="hostNameTextField" columns="16" placeholderText="hostName"/>
+                        <number-field name="portTextField" columns="4" placeholderText="port"/>
+                    </row-panel>
+                </row-panel>
             </column-panel>
 
-            <label text="requiresRestart" styleClass="small" enabled="false"/>
+            <column-panel spacing="2">
+                <scroll-pane>
+                    <list name="linkedDeviceList" visibleRowCount="6"/>
+                </scroll-pane>
+
+                <row-panel>
+                    <button name="linkDeviceButton" icon="icons/add_link_24dp.svg; 18"
+                        focusable="false"
+                        toolTipText="linkDevice"
+                        style="buttonType: borderless"/>
+
+                    <button name="removeLinkedDeviceButton" icon="icons/remove_24dp.svg; 18"
+                        focusable="false"
+                        toolTipText="removeLinkedDevice"
+                        style="buttonType: borderless"/>
+                </row-panel>
+            </column-panel>
+
+            <label text="synchronizationDisclaimer" styleClass="small" enabled="false"/>
+
+            <spacer weight="1"/>
         </column-panel>
-
-        <spacer height="4"/>
-
-        <column-panel label="sortAlbumsBy">
-            <radio-button name="nameRadioButton" text="name" group="albumSort"/>
-            <radio-button name="yearRadioButton" text="year" group="albumSort"/>
-            <check-box name="descendingCheckBox" text="descending"/>
-        </column-panel>
-
-        <spacer height="4"/>
-
-        <row-panel label="skipIncrement" spacing="2" alignToBaseline="true">
-            <number-field name="skipIncrementTextField" columns="2"/>
-            <label text="seconds" enabled="false"/>
-        </row-panel>
-    </form-panel>
+    </row-panel>
 
     <separator/>
 
