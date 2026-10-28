@@ -23,4 +23,5 @@ open module org.httprpc.helios {
     requires org.xerial.sqlitejdbc;
     requires org.jaudiotagger;
     requires com.sun.jna;
+    requires jdk.httpserver;
 }
