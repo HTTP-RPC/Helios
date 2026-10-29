@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE column-panel SYSTEM "sierra.dtd">
+
+<column-panel spacing="8" padding="16" opaque="true">
+    <label text="instructions"/>
+
+    <label name="codeLabel" horizontalAlignment="center" styleClass="h1"/>
+
+    <spacer height="4"/>
+
+    <activity-indicator name="activityIndicator"/>
+
+    <spacer height="8"/>
+
+    <row-panel>
+        <spacer weight="1"/>
+        <button name="cancelButton" text="cancel"/>
+        <spacer weight="1"/>
+    </row-panel>
+</column-panel>

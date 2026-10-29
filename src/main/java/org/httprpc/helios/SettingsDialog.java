@@ -82,6 +82,9 @@ public class SettingsDialog extends AbstractDialog {
 
         portTextField.setFormat(integerFormat);
 
+        linkDeviceButton.addActionListener(event -> linkDevice());
+        removeLinkedDeviceButton.addActionListener(event -> removeLinkedDevice());
+
         cancelButton.addActionListener(event -> cancel());
         okButton.addActionListener(event -> save());
 
@@ -165,6 +168,19 @@ public class SettingsDialog extends AbstractDialog {
 
         linkDeviceButton.setEnabled(synchronizeLibrary && host);
         removeLinkedDeviceButton.setEnabled(synchronizeLibrary && host);
+    }
+
+    private void linkDevice() {
+        var linkDeviceDialog = new LinkDeviceDialog(this);
+
+        linkDeviceDialog.pack();
+        linkDeviceDialog.setLocationRelativeTo(this);
+
+        linkDeviceDialog.setVisible(true);
+    }
+
+    private void removeLinkedDevice() {
+        // TODO
     }
 
     private void save() {

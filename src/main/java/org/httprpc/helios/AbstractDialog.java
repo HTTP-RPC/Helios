@@ -19,6 +19,7 @@ import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -33,12 +34,12 @@ public abstract class AbstractDialog extends JDialog {
 
     private static final ResourceBundle resourceBundle = ResourceBundle.getBundle(AbstractDialog.class.getName());
 
-    public AbstractDialog(MainFrame owner) {
+    public AbstractDialog(Window owner) {
         this(owner, true);
     }
 
-    public AbstractDialog(MainFrame owner, boolean modal) {
-        super(owner, modal);
+    public AbstractDialog(Window owner, boolean modal) {
+        super(owner, ModalityType.APPLICATION_MODAL);
 
         rootPane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, false), ESCAPE_ACTION_KEY);
 
