@@ -43,13 +43,18 @@
 
                 <row-panel spacing="4">
                     <row-panel spacing="2">
-                        <radio-button name="hostRadioButton" text="host" group="libraryRole"/>
-                        <radio-button name="joinRadioButton" text="join" group="libraryRole"/>
+                        <radio-button name="hostRadioButton" text="host" group="role"/>
+                        <radio-button name="joinRadioButton" text="join" group="role"/>
                     </row-panel>
 
                     <row-panel spacing="4">
-                        <validated-text-field name="hostNameTextField" columns="16" placeholderText="hostName"/>
-                        <number-field name="portTextField" columns="4" placeholderText="port"/>
+                        <validated-text-field name="hostNameTextField"
+                            columns="16"
+                            pattern="hostNamePattern"
+                            placeholderText="hostName"/>
+                        <number-field name="portTextField"
+                            columns="4"
+                            placeholderText="port"/>
                     </row-panel>
                 </row-panel>
             </column-panel>

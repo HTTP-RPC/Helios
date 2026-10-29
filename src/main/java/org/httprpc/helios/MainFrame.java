@@ -279,6 +279,11 @@ public class MainFrame extends JFrame implements Runnable {
     public static final String ALBUM_SORT_ORDER_KEY = "albumSortOrder";
     public static final String SKIP_INCREMENT_KEY = "skipIncrement";
 
+    public static final String SYNCHRONIZE_LIBRARY_KEY = "synchronizeLibrary";
+    public static final String HOST_KEY = "host";
+    public static final String HOST_NAME_KEY = "hostName";
+    public static final String PORT_KEY = "port";
+
     private static final String PLAY_PAUSE_KEY = "playPause";
     private static final String PREVIOUS_KEY = "previous";
     private static final String NEXT_KEY = "next";
@@ -1236,7 +1241,19 @@ public class MainFrame extends JFrame implements Runnable {
             }
 
             if (preferences.get(SKIP_INCREMENT_KEY, null) == null) {
-                preferences.put(SKIP_INCREMENT_KEY, String.valueOf(5));
+                preferences.putInt(SKIP_INCREMENT_KEY, 5);
+            }
+
+            if (preferences.get(SYNCHRONIZE_LIBRARY_KEY, null) == null) {
+                preferences.putBoolean(SYNCHRONIZE_LIBRARY_KEY, false);
+            }
+
+            if (preferences.get(HOST_KEY, null) == null) {
+                preferences.putBoolean(HOST_KEY, true);
+            }
+
+            if (preferences.get(PORT_KEY, null) == null) {
+                preferences.putInt(PORT_KEY, 3380);
             }
 
             preferences.flush();

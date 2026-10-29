@@ -69,7 +69,18 @@ public class SettingsDialog extends AbstractDialog {
         nameRadioButton.addActionListener(event -> updateAlbumSortOrder());
         yearRadioButton.addActionListener(event -> updateAlbumSortOrder());
 
-        skipIncrementTextField.setFormat(NumberFormat.getIntegerInstance());
+        var integerFormat = NumberFormat.getIntegerInstance();
+
+        integerFormat.setGroupingUsed(false);
+
+        skipIncrementTextField.setFormat(integerFormat);
+
+        synchronizeLibraryCheckBox.addActionListener(event -> updateRole());
+
+        hostRadioButton.addActionListener(event -> updateRole());
+        joinRadioButton.addActionListener(event -> updateRole());
+
+        portTextField.setFormat(integerFormat);
 
         cancelButton.addActionListener(event -> cancel());
         okButton.addActionListener(event -> save());
@@ -111,7 +122,17 @@ public class SettingsDialog extends AbstractDialog {
             descendingCheckBox.setSelected(albumSortOrder == AlbumSortOrder.YEAR_DESCENDING);
         }
 
+        synchronizeLibraryCheckBox.setSelected(map(preferences.get(MainFrame.SYNCHRONIZE_LIBRARY_KEY, null), Boolean::valueOf));
+
+        var host = map(preferences.get(MainFrame.HOST_KEY, null), Boolean::valueOf);
+
+        hostRadioButton.setSelected(host);
+        joinRadioButton.setSelected(!host);
+
+        portTextField.setValue(map(preferences.get(MainFrame.PORT_KEY, null), Integer::valueOf));
+
         updateAlbumSortOrder();
+        updateRole();
 
         skipIncrementTextField.setValue(map(preferences.get(MainFrame.SKIP_INCREMENT_KEY, null), Integer::valueOf));
     }
@@ -123,6 +144,27 @@ public class SettingsDialog extends AbstractDialog {
         } else {
             descendingCheckBox.setEnabled(true);
         }
+    }
+
+    private void updateRole() {
+        var preferences = Preferences.userRoot().node(MainFrame.class.getName());
+
+        var synchronizeLibrary = synchronizeLibraryCheckBox.isSelected();
+        var host = hostRadioButton.isSelected();
+
+        hostRadioButton.setEnabled(synchronizeLibrary);
+        joinRadioButton.setEnabled(synchronizeLibrary);
+
+        hostNameTextField.setValue(host ? null : preferences.get(MainFrame.HOST_NAME_KEY, null));
+        hostNameTextField.setEnabled(!host);
+
+        portTextField.setEnabled(synchronizeLibrary);
+
+        // TODO Clear/populate device list
+        linkedDeviceList.setEnabled(synchronizeLibrary && host);
+
+        linkDeviceButton.setEnabled(synchronizeLibrary && host);
+        removeLinkedDeviceButton.setEnabled(synchronizeLibrary && host);
     }
 
     private void save() {
@@ -154,7 +196,40 @@ public class SettingsDialog extends AbstractDialog {
             return;
         }
 
-        preferences.put(MainFrame.SKIP_INCREMENT_KEY, String.valueOf(skipIncrement));
+        preferences.putInt(MainFrame.SKIP_INCREMENT_KEY, skipIncrement);
+
+        var synchronizeLibrary = synchronizeLibraryCheckBox.isSelected();
+        var host = hostRadioButton.isSelected();
+
+        var hostName = hostNameTextField.getValue();
+
+        if (!host && hostName == null) {
+            alertRequired("hostName", hostNameTextField);
+            return;
+        }
+
+        var port = map(portTextField.getValue(), Number::intValue);
+
+        if (port == null) {
+            alertRequired("port", portTextField);
+            return;
+        }
+
+        if (port < 0 || port > 65535) {
+            alertInvalid("port", portTextField);
+            return;
+        }
+
+        preferences.putBoolean(MainFrame.SYNCHRONIZE_LIBRARY_KEY, synchronizeLibrary);
+        preferences.putBoolean(MainFrame.HOST_KEY, host);
+
+        if (hostName == null) {
+            preferences.remove(MainFrame.HOST_NAME_KEY);
+        } else {
+            preferences.put(MainFrame.HOST_NAME_KEY, hostName);
+        }
+
+        preferences.putInt(MainFrame.PORT_KEY, port);
 
         try {
             preferences.flush();
