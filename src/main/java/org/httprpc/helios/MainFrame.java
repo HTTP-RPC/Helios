@@ -684,6 +684,11 @@ public class MainFrame extends JFrame implements Runnable {
             }
 
             @Override
+            public void windowActivated(WindowEvent event) {
+                getContentPane().repaint();
+            }
+
+            @Override
             public void windowDeactivated(WindowEvent event) {
                 if (collectionTabbedPane.getSelectedIndex() == ARTIST_TAB_INDEX) {
                     perform((ArtistDetailPanel)getCollectionDetailPanel(), ArtistDetailPanel::deactivate);
