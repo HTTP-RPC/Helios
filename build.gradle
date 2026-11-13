@@ -135,6 +135,7 @@ tasks.register("packageWindows", Exec) {
         '--module-path', "${configurations.runtimeClasspath.asPath};build/libs",
         '--java-options', '--enable-native-access=org.httprpc.helios,com.formdev.flatlaf,org.xerial.sqlitejdbc,com.sun.jna',
         '--app-version', "${version}",
+        '--icon', 'helios.ico',
         '--win-shortcut'
     ]
 }
