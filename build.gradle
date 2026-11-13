@@ -66,7 +66,17 @@ tasks.register("buildMacOS", Exec) {
     executable = 'bin/build-macos.sh'
 }
 
+tasks.register("createMacOSIcon", Exec) {
+    executable = 'iconutil'
+
+    args = [
+        '-c', 'icns', 'helios.iconset'
+    ]
+}
+
 tasks.register("packageMacOS", Exec) {
+    dependsOn 'createMacOSIcon'
+
     executable = 'jpackage'
 
     args = [
@@ -75,7 +85,8 @@ tasks.register("packageMacOS", Exec) {
         '--module', "${application.mainModule.get()}/${application.mainClass.get()}",
         '--module-path', "${configurations.runtimeClasspath.asPath}:build/libs",
         '--java-options', '--enable-native-access=org.httprpc.helios,com.formdev.flatlaf,org.xerial.sqlitejdbc,com.sun.jna',
-        '--app-version', "${version}"
+        '--app-version', "${version}",
+        '--icon', 'helios.icns'
     ]
 
     if (System.getProperty("os.arch").equalsIgnoreCase("aarch64")) {
@@ -105,7 +116,9 @@ tasks.register("stapleMacOS", Exec) {
 
     executable = 'stapler'
 
-    args = ['staple', "${application.applicationName}-${version}.dmg"]
+    args = [
+        'staple', "${application.applicationName}-${version}.dmg"
+    ]
 }
 
 tasks.register("buildWindows", Exec) {
